@@ -1,0 +1,972 @@
+[
+  {
+    "line": 63,
+    "name": "Deca 100 (Fast) Npp NO STOCK",
+    "category": "INJECTABLE OILS",
+    "dosageInfo": "10ml Vial 100mg",
+    "description": "Nandrolone Phenylpropionate",
+    "price": "NA",
+    "brand": "UPA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 66,
+    "name": "Masteron P 100 (Short)",
+    "category": "INJECTABLE OILS",
+    "dosageInfo": "10ml Vial 100mg",
+    "description": "Drostanalone Propionate",
+    "price": "-",
+    "brand": "UPA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 177,
+    "name": "Pethidine",
+    "category": "Pharmaceuticals",
+    "dosageInfo": "10x1ml Amps 50MG",
+    "description": "Pethidine – Relieves pain and tension",
+    "price": "DM",
+    "brand": "Pharma",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 204,
+    "name": "Mechano Growth Factor 5000 mcg",
+    "category": "Peptides",
+    "dosageInfo": "1 Vial 5mg",
+    "description": "",
+    "price": "R780",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 211,
+    "name": "Anapolon Oral",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 50MG",
+    "description": "",
+    "price": "R540",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 212,
+    "name": "Anavar Oral",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 10mg",
+    "description": "",
+    "price": "R480",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 213,
+    "name": "Anavar Oral Extra Strength",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 50MG",
+    "description": "",
+    "price": "R900",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 214,
+    "name": "Arimidex",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 1mg",
+    "description": "",
+    "price": "R440",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 215,
+    "name": "Cialis Daily Oral",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 5mg",
+    "description": "",
+    "price": "R250",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 216,
+    "name": "Cialis Once Off Oral",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 20mg",
+    "description": "",
+    "price": "R280",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 217,
+    "name": "Clen HCL",
+    "category": "Orals",
+    "dosageInfo": "100 Tablets 40mcg",
+    "description": "",
+    "price": "R280",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 218,
+    "name": "Clomid",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 50MG",
+    "description": "",
+    "price": "R400",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 219,
+    "name": "CYT3 Matrix Oral",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 2mg",
+    "description": "",
+    "price": "R320",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 220,
+    "name": "Dbol Oral",
+    "category": "Orals",
+    "dosageInfo": "100 Tablets 10mg",
+    "description": "",
+    "price": "R300",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 221,
+    "name": "Dbol Oral Extra Strength",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 50MG",
+    "description": "",
+    "price": "R510",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 222,
+    "name": "Femara",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 2.5mg",
+    "description": "",
+    "price": "R440",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 223,
+    "name": "Halotestin Oral",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 5mg",
+    "description": "",
+    "price": "R720",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 224,
+    "name": "Nolvadex",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 20mg",
+    "description": "",
+    "price": "R250",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 225,
+    "name": "Prima Oral",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 20mg",
+    "description": "",
+    "price": "R850",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 226,
+    "name": "Proviron Oral",
+    "category": "Orals",
+    "dosageInfo": "50 Tablets 25mg",
+    "description": "",
+    "price": "R510",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 227,
+    "name": "Sibutra HCL",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 30mg",
+    "description": "",
+    "price": "R580",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 228,
+    "name": "Tertroxin – T3",
+    "category": "Orals",
+    "dosageInfo": "100 Tablets 20mcg",
+    "description": "",
+    "price": "R280",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 229,
+    "name": "Turanabol Oral",
+    "category": "Orals",
+    "dosageInfo": "100 Tablets 10mg",
+    "description": "",
+    "price": "R440",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 230,
+    "name": "Viagra Oral",
+    "category": "Orals",
+    "dosageInfo": "30 Tablets 100mg",
+    "description": "",
+    "price": "R350",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 231,
+    "name": "Windstrol Oral",
+    "category": "Orals",
+    "dosageInfo": "100 Tablets 10mg",
+    "description": "",
+    "price": "R370",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 232,
+    "name": "Yohimbine HCL",
+    "category": "Orals",
+    "dosageInfo": "100 Tablets 2mg",
+    "description": "",
+    "price": "R270",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 256,
+    "name": "Epistane Oral",
+    "category": "Pro Hormone",
+    "dosageInfo": "50 Tablets 10mg",
+    "description": "",
+    "price": "R550",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 257,
+    "name": "Supadrol",
+    "category": "Pro Hormone",
+    "dosageInfo": "50 Tablets 10mg",
+    "description": "",
+    "price": "R340",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 258,
+    "name": "Cardarine (GW 501516)",
+    "category": "SARMS",
+    "dosageInfo": "50 Tablets 10mg",
+    "description": "",
+    "price": "R660",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 259,
+    "name": "Ligandrol LGD4033",
+    "category": "SARMS",
+    "dosageInfo": "50 Tablets 5mg",
+    "description": "",
+    "price": "R330",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 260,
+    "name": "Nutrobal (MK 677)",
+    "category": "SARMS",
+    "dosageInfo": "50 Tablets 10mg",
+    "description": "",
+    "price": "R720",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 261,
+    "name": "Ostarine (MK 2866)",
+    "category": "SARMS",
+    "dosageInfo": "50 Tablets 12,5mg",
+    "description": "",
+    "price": "R490",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 262,
+    "name": "Testolone (RAD 140)",
+    "category": "SARMS",
+    "dosageInfo": "50 Tablets 10mg",
+    "description": "",
+    "price": "R880",
+    "brand": "Vmed",
+    "issue": "missing_description"
+  },
+  {
+    "line": 328,
+    "name": "CagriSema 12mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 12mg",
+    "description": "",
+    "price": "R2,400",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 329,
+    "name": "GHK-CU 50mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 50MG",
+    "description": "",
+    "price": "R1,100",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 330,
+    "name": "Retatrutide 32mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 32mg",
+    "description": "",
+    "price": "R3,000",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 331,
+    "name": "Retatrutide 64mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 64mg",
+    "description": "",
+    "price": "R4,000",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 332,
+    "name": "Semaglutide 6mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 6mg",
+    "description": "",
+    "price": "R1,800",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 333,
+    "name": "Tirzepatide 30mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 30mg",
+    "description": "",
+    "price": "R2,500",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 334,
+    "name": "Tirzepatide 60mg (PEN)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Pen 60mg",
+    "description": "",
+    "price": "R3,200",
+    "brand": "BP",
+    "issue": "missing_description"
+  },
+  {
+    "line": 335,
+    "name": "Retatrutide PEN",
+    "category": "Pens",
+    "dosageInfo": "1x1.5ml Pen 30mg",
+    "description": "",
+    "price": "R2,000",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 336,
+    "name": "Tirzepatide PEN",
+    "category": "Pens",
+    "dosageInfo": "1x2.4ml Pen 30mg",
+    "description": "",
+    "price": "R1,800",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 337,
+    "name": "Tirzepatide Self Mix Vial",
+    "category": "Pens",
+    "dosageInfo": "1 Vial 30mg",
+    "description": "",
+    "price": "R1,500",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 338,
+    "name": "Ozempic – Izempic",
+    "category": "Pens",
+    "dosageInfo": "1x2ml Pen 5mg",
+    "description": "",
+    "price": "R1,250",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 339,
+    "name": "Ozempic Self Mix Vial",
+    "category": "Pens",
+    "dosageInfo": "1 Vial 5mg",
+    "description": "",
+    "price": "R850",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 340,
+    "name": "Ozempic / Tirzepatide Hybrid",
+    "category": "Pens",
+    "dosageInfo": "1x1.8ml Pen 34mg",
+    "description": "",
+    "price": "R2,350",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 341,
+    "name": "GHK-CU PEN",
+    "category": "Pens",
+    "dosageInfo": "1x 1.8ml Pen 50MG",
+    "description": "",
+    "price": "R800",
+    "brand": "Ipharma",
+    "issue": "missing_description"
+  },
+  {
+    "line": 444,
+    "name": "Tesamorelin (COMING SOON)",
+    "category": "Pens",
+    "dosageInfo": "1 Pen 30mg",
+    "description": "Tesamoreilin",
+    "price": "NA",
+    "brand": "DP",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 446,
+    "name": "Tirzeta (COMING SOON)",
+    "category": "Pens",
+    "dosageInfo": "1 Pen 60mg",
+    "description": "Glp-1, GIP, Glucagon",
+    "price": "NA",
+    "brand": "DP",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 475,
+    "name": "Testosterone Suspension",
+    "category": "INJECTABLE OILS",
+    "dosageInfo": "20ml Vial 100mg",
+    "description": "Testosterone Suspension (Water Solution)",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 484,
+    "name": "Anavar 50 – Extra Strength",
+    "category": "ORAL ANABOLICS",
+    "dosageInfo": "50 Tablets 50MG",
+    "description": "1-Testosterone (4-Dihydroboldenone)",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 488,
+    "name": "BPC 157 – Healing Caps",
+    "category": "ORAL ANABOLICS",
+    "dosageInfo": "30 Caps 500mcg",
+    "description": "Regenarative Pentadecapeptide",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 498,
+    "name": "CYT3",
+    "category": "ORAL ANABOLICS",
+    "dosageInfo": "50 Tablets NA",
+    "description": "37.5mcg Clenbuterol, 5.4mg Yohimbine, 25mcg T3",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 519,
+    "name": "NovaDomium – Anti – Ishemia",
+    "category": "ORAL ANABOLICS",
+    "dosageInfo": "50 Caps 500mg",
+    "description": "Mildronate – Anti Ischemia (Increase Blood Flow)",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 520,
+    "name": "NovaDroxen – Testosterone Caps",
+    "category": "ORAL ANABOLICS",
+    "dosageInfo": "50 Tablets 40mg",
+    "description": "Testosterone Undecanoate",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 521,
+    "name": "NovaHair – Minoxidil 5%",
+    "category": "ORAL ANABOLICS",
+    "dosageInfo": "2x 100ml 0.05",
+    "description": "Hair Loss – Minoxidil 5%, Alcohol, Propylene Glycol, Purified Water",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 555,
+    "name": "Epitalon Kit 50mg",
+    "category": "PEPTIDES",
+    "dosageInfo": "10 Vials 5mg",
+    "description": "Epitalon (Anti Aging Tetrapeptide)",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 565,
+    "name": "Hexarelin",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 2000mcg",
+    "description": "Examorelin",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 581,
+    "name": "MOTS – C Kit 50mg",
+    "category": "PEPTIDES",
+    "dosageInfo": "10 Vials 5mg",
+    "description": "Mots-C",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 584,
+    "name": "Ozempic – Vial – 5mg",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 5mg",
+    "description": "Weightloss – Semaglutide – Treat Type 2 Diabetes and Obesity",
+    "price": "NA",
+    "brand": "NOVA",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 614,
+    "name": "Needles",
+    "category": "INJECTABLE OILS",
+    "dosageInfo": "1 Box x6 Units",
+    "description": "",
+    "price": "R66",
+    "brand": "P",
+    "issue": "missing_description"
+  },
+  {
+    "line": 629,
+    "name": "Dynabolon",
+    "category": "INJECTABLE",
+    "dosageInfo": "10ml 200mg",
+    "description": "",
+    "price": "R590",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 632,
+    "name": "Masteron P 100 (Short)",
+    "category": "INJECTABLE",
+    "dosageInfo": "10ml 100mg",
+    "description": "Drostanolone Propionate 100mg",
+    "price": "-",
+    "brand": "OT",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 634,
+    "name": "Super Test (NO STOCK)",
+    "category": "INJECTABLE",
+    "dosageInfo": "10ml 350mg",
+    "description": "Testosterone Blend",
+    "price": "NA",
+    "brand": "OT",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 643,
+    "name": "Arimidex",
+    "category": "ORAL",
+    "dosageInfo": "30 Tabs 1mg",
+    "description": "",
+    "price": "R360",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 644,
+    "name": "Cialis Daily 5",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 5mg",
+    "description": "",
+    "price": "R360",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 645,
+    "name": "Cialis Max",
+    "category": "ORAL",
+    "dosageInfo": "10 Tabs 20mg",
+    "description": "",
+    "price": "R170",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 647,
+    "name": "Clomid",
+    "category": "ORAL",
+    "dosageInfo": "30 Tabs 50MG",
+    "description": "",
+    "price": "R260",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 648,
+    "name": "CYT3",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 25/40/5",
+    "description": "",
+    "price": "R220",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 649,
+    "name": "DHEA (NO STOCK)",
+    "category": "ORAL",
+    "dosageInfo": "30 Tabs 50MG",
+    "description": "",
+    "price": "R200",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 651,
+    "name": "Modafinil",
+    "category": "ORAL",
+    "dosageInfo": "15 Tabs 100mg",
+    "description": "",
+    "price": "R220",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 652,
+    "name": "Peroviron",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 20mg",
+    "description": "",
+    "price": "R440",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 653,
+    "name": "Superdrol",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 15mg",
+    "description": "",
+    "price": "R310",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 655,
+    "name": "Tamoxifen",
+    "category": "ORAL",
+    "dosageInfo": "30 Tabs 20mg",
+    "description": "",
+    "price": "R180",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 658,
+    "name": "Yohimbine",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs NA",
+    "description": "",
+    "price": "NA",
+    "brand": "OT",
+    "issue": "invalid_price, missing_description"
+  },
+  {
+    "line": 659,
+    "name": "Yohimbine HCL (NO STOCK)",
+    "category": "ORAL",
+    "dosageInfo": "120 Caps 5mg",
+    "description": "Yohimbe HCL",
+    "price": "NA",
+    "brand": "OT",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 660,
+    "name": "BPC 157",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 5mg",
+    "description": "",
+    "price": "R350",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 661,
+    "name": "GHK CU",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 50MG",
+    "description": "",
+    "price": "R450",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 662,
+    "name": "Melano Tan",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 10mg",
+    "description": "",
+    "price": "R350",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 663,
+    "name": "Mots – C",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 10mg",
+    "description": "",
+    "price": "R500",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 664,
+    "name": "TB 500 (NO STOCK)",
+    "category": "PEPTIDES",
+    "dosageInfo": "1 Vial 5mg",
+    "description": "",
+    "price": "R350",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 665,
+    "name": "Tropin 100iu",
+    "category": "PEPTIDES",
+    "dosageInfo": "10 Vials 10iu",
+    "description": "",
+    "price": "R1,950",
+    "brand": "OT",
+    "issue": "missing_description"
+  },
+  {
+    "line": 674,
+    "name": "Masteron P 100 (Short)",
+    "category": "INJECTABLE",
+    "dosageInfo": "10ml 100mg",
+    "description": "Drostanolone Propionate 100mg",
+    "price": "-",
+    "brand": "KH",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 681,
+    "name": "Tren E 100 (Long)",
+    "category": "INJECTABLE",
+    "dosageInfo": "10ml 200mg",
+    "description": "Trenbolone Enanthate 200mg",
+    "price": "-",
+    "brand": "KH",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 683,
+    "name": "Winstrol Inj 100",
+    "category": "INJECTABLE",
+    "dosageInfo": "10ml 100mg",
+    "description": "Stanazol",
+    "price": "-",
+    "brand": "KH",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 686,
+    "name": "Arimidex",
+    "category": "ORAL",
+    "dosageInfo": "30 Tabs 1mg",
+    "description": "",
+    "price": "R470",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 689,
+    "name": "Clomid",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 50MG",
+    "description": "",
+    "price": "R430",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 691,
+    "name": "Proviron",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 25mg",
+    "description": "",
+    "price": "R630",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 692,
+    "name": "T3",
+    "category": "ORAL",
+    "dosageInfo": "100 Tabs 25mg",
+    "description": "Liothyroic - T3",
+    "price": "-",
+    "brand": "KH",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 693,
+    "name": "Tamoxifen",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 20mg",
+    "description": "",
+    "price": "R450",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 696,
+    "name": "Primobolin",
+    "category": "ORAL",
+    "dosageInfo": "100 Tablets 25mg",
+    "description": "Methenolone Acetate",
+    "price": "-",
+    "brand": "KH",
+    "issue": "invalid_price"
+  },
+  {
+    "line": 697,
+    "name": "Halotestin",
+    "category": "ORAL",
+    "dosageInfo": "50 Tabs 10mg",
+    "description": "",
+    "price": "R930",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 698,
+    "name": "GW 501516 – Cardarine",
+    "category": "SARMS",
+    "dosageInfo": "50 Tabs 10mg",
+    "description": "",
+    "price": "R430",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 699,
+    "name": "MK 2866 – Ostarine",
+    "category": "SARMS",
+    "dosageInfo": "50 Tabs 10mg",
+    "description": "",
+    "price": "R400",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 700,
+    "name": "MK 677 – Ibutamoren",
+    "category": "SARMS",
+    "dosageInfo": "50 Tabs 10mg",
+    "description": "",
+    "price": "R520",
+    "brand": "KH",
+    "issue": "missing_description"
+  },
+  {
+    "line": 701,
+    "name": "LGD 4033 – Ligandrol",
+    "category": "SARMS",
+    "dosageInfo": "50 Tabs 10mg",
+    "description": "",
+    "price": "-",
+    "brand": "KH",
+    "issue": "invalid_price, missing_description"
+  },
+  {
+    "line": 702,
+    "name": "RAD 140 – Testolone",
+    "category": "SARMS",
+    "dosageInfo": "50 Tabs 10mg",
+    "description": "",
+    "price": "R650",
+    "brand": "KH",
+    "issue": "missing_description"
+  }
+]

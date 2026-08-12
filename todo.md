@@ -78,3 +78,8 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Add route/component test asserting `/admin/dashboard` renders successfully.
 
 - [x] Add true route-level integration test rendering App at `/admin/dashboard`.
+
+## Active Implementation — CSV Catalogue Import
+- [ ] Inspect uploaded CSV structure.
+- [ ] Parse and import CSV products into database.
+- [ ] Verify storefront and admin product lists reflect CSV data.
