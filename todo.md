@@ -42,3 +42,11 @@ Source-project work is preserved below for reference. Those completed items are 
 - [ ] Save a checkpoint for the completed implementation.
 - [x] Refine the approval status filters so all options remain visible without horizontal clipping on small screens.
 - [x] Replace the stale Anabolics Africa document title with Gorilla Gear Nutrition.
+
+## Active Implementation — Product and Image Import
+
+- [x] Inspect uploaded catalogue files and image assets for Gorilla Gear Nutrition.
+- [x] Normalize product names, categories, pricing, and descriptions.
+- [x] Import categories and products into the database.
+- [x] Upload product images and match them by filename/SKU.
+- [x] Validate populated storefront display and quote flow.
