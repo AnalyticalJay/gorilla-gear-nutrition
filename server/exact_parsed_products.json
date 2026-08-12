@@ -1,0 +1,137 @@
+[
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "1",
+    "quantity": "1 Vial",
+    "strength": "30mg",
+    "description": "1 Vial 30mg",
+    "price": 1500
+  },
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "1",
+    "quantity": "1 Vial",
+    "strength": "30mg",
+    "description": "1 Vial 30mg",
+    "price": 1450
+  },
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "1",
+    "quantity": "1 Vial",
+    "strength": "10mg",
+    "description": "1 Vial 10mg",
+    "price": 850
+  },
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "1",
+    "quantity": "1 Vial",
+    "strength": "20mg",
+    "description": "1 Vial 20mg",
+    "price": 850
+  },
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "GHK - CU",
+    "quantity": "1 Vial",
+    "strength": "100mg",
+    "description": "GHK - CU   1 Vial 100mg",
+    "price": 500
+  },
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "30ml",
+    "quantity": "30ml",
+    "strength": "Standard",
+    "description": "30ml Blend",
+    "price": 550
+  },
+  {
+    "brand": "Ouroboros Labs",
+    "category": "Peptides",
+    "name": "1",
+    "quantity": "1 Vial",
+    "strength": "40mg",
+    "description": "1 Vial 40mg",
+    "price": 850
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "100mg",
+    "description": "10ml Vial 100mg",
+    "price": 540
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "250mg",
+    "description": "10ml Vial 250mg",
+    "price": 800
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "300mg",
+    "description": "10ml Vial 300mg",
+    "price": 900
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "Equipoise 250",
+    "quantity": "10ml Vial",
+    "strength": "250mg",
+    "description": "Equipoise 250 10ml Vial 250mg",
+    "price": 700
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "200mg",
+    "description": "10ml Vial 200mg",
+    "price": 1220
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "100mg",
+    "description": "10ml Vial 100mg",
+    "price": 800
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "100mg",
+    "description": "10ml Vial 100mg",
+    "price": 1350
+  },
+  {
+    "brand": "Keifei Pharmaceuticals",
+    "category": "Peptides",
+    "name": "10ml",
+    "quantity": "10ml Vial",
+    "strength": "100mg",
+    "description": "10ml Vial 100mg",
+    "price": 1220
+  }
+]
