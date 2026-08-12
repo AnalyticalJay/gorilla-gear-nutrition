@@ -20,7 +20,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const brandAssets = {
-  logo: "/manus-storage/gorilla-gear-hero-logo-transparent_4c041e29.png",
+  logo: "/manus-storage/gorilla-gear-logo-black_d11aea3e.png",
   categories: {
     peptides: "/manus-storage/peptides_012076bb.jpg",
     injectables: "/manus-storage/injectable-oils_6ddb2648.jpg",
@@ -138,7 +138,7 @@ export default function Home() {
                 <div className="absolute -bottom-3 left-8 h-3 w-28 bg-[#111111] sm:-bottom-6 sm:left-12 sm:h-4 sm:w-40" />
                 <div className="relative flex aspect-square w-full items-center justify-center">
                   <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(215,71,47,0.16) 0, transparent 27%), radial-gradient(circle at 80% 75%, rgba(216,243,111,0.48) 0, transparent 30%)" }} />
-                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition illustrated gorilla logo" className="relative z-10 h-full w-full object-contain" />
+                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition illustrated gorilla logo" className="relative z-10 h-full w-full object-contain mix-blend-screen" />
                 </div>
               </motion.div>
             </div>
