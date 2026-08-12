@@ -201,3 +201,8 @@
 - [x] Create or reconcile Testoviron 250, Sustanon 250, and Deca-Durabolin 100 catalogue records in the correct injectable category.
 - [x] Upload and link the three verified source images to the new HD Labs Amps records.
 - [x] Verify the new Amps product pages on phone and desktop and save a checkpoint.
+
+## Active Implementation — Homepage Hero Logo Replacement
+- [x] Upload the supplied Gorilla Gear Nutrition hero artwork to managed storage.
+- [x] Replace the current hero logo image and tune responsive sizing without cropping the artwork incorrectly.
+- [ ] Verify the updated hero on desktop and mobile and save a checkpoint.
