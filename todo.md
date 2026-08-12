@@ -13,7 +13,7 @@
 - [x] Complete the gated commerce foundation, approval workflow, product catalogue, quote cart, admin review, EFT, PayFast flow, and S3-backed image management.
 - [x] Complete responsive storefront, mobile navigation, quote progress tracking, customer-admin comments, bulk product import, and bulk image matching.
 - [x] Complete the source Anabolics Africa / HD Labs rebrand and admin dashboard alert work.
-- [ ] Source PayFast merchant credentials, production notification URL, and final source checkpoint remain historical follow-up items.
+- [x] Source PayFast merchant credentials, production notification URL, and final source checkpoint remain historical follow-up items.
 
 ## Active Copy Session — Gorilla Gear Nutrition
 
@@ -33,7 +33,7 @@
 ## Future User-Requested Work
 
 - [ ] Re-upload and fully populate the Gorilla Gear Nutrition product catalogue and product images.
-- [ ] Configure new-project PayFast credentials and the production notification URL when ready.
+- [x] Configure new-project PayFast credentials and the production notification URL when ready.
 - [ ] Reconnect GitHub or bind a custom domain if required.
 - [x] Implement further storefront or homepage polish requested by the user.
 
@@ -151,3 +151,8 @@
 - [x] Add explicit pending, approved, and rejected proof-of-payment states to the customer order detail.
 - [x] Show clear badge styling and state-specific guidance, including re-upload guidance for rejected proof.
 - [x] Add regression coverage and verify the status badge on responsive customer views.
+
+## Active Implementation — PayFast Credential Setup
+- [x] Securely configure the supplied PayFast Merchant ID and Merchant Key through project secrets.
+- [x] Configure production notification URL and secret verification for PayFast ITN callbacks.
+- [x] Validate PayFast credential presence and network reachability with Vitest specs.

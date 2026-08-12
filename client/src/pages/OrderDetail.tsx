@@ -49,11 +49,11 @@ export default function OrderDetail() {
         utils.orders.detail.invalidate({ orderId: parsedOrderId });
         return;
       }
-      if (!data.payfastReference) {
-        toast.error("PayFast reference could not be created.");
+      if (!data.payfastData) {
+        toast.error("PayFast checkout data could not be generated.");
         return;
       }
-      submitPayFast({ orderId: data.orderId, payfastReference: data.payfastReference, total: data.total });
+      submitPayFast(data.payfastData);
     },
     onError: (error) => toast.error(error.message),
   });
@@ -77,24 +77,17 @@ export default function OrderDetail() {
     reader.readAsDataURL(file);
   };
 
-  const submitPayFast = (payment: { orderId: number; payfastReference: string; total: string }) => {
+  const submitPayFast = (payfastData?: Record<string, string>) => {
+    if (!payfastData) {
+      toast.error("PayFast checkout data could not be generated.");
+      return;
+    }
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "https://www.payfast.co.za/eng/process";
-    const params: Record<string, string> = {
-      merchant_id: import.meta.env.VITE_PAYFAST_MERCHANT_ID || "10000100",
-      merchant_key: import.meta.env.VITE_PAYFAST_MERCHANT_KEY || "46f0cd694581a",
-      return_url: `${window.location.origin}/order-success/${payment.orderId}`,
-      cancel_url: `${window.location.origin}/orders/${payment.orderId}`,
-      notify_url: `${window.location.origin}/api/trpc/orders.payfastItn`,
-      m_payment_id: payment.payfastReference,
-      amount: parseFloat(payment.total).toFixed(2),
-      item_name: `Gorilla Gear Nutrition Approved Quote #${payment.orderId}`,
-      email_address: (user as any)?.email ?? "",
-      name_first: ((user as any)?.fullName ?? "").split(" ")[0] ?? "",
-      name_last: ((user as any)?.fullName ?? "").split(" ").slice(1).join(" ") || ".",
-    };
-    Object.entries(params).forEach(([key, value]) => {
+    form.action = payfastData.actionUrl || "https://www.payfast.co.za/eng/process";
+    const dataToSend = { ...payfastData };
+    delete dataToSend.actionUrl;
+    Object.entries(dataToSend).forEach(([key, value]) => {
       const input = document.createElement("input");
       input.type = "hidden";
       input.name = key;

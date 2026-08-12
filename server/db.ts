@@ -993,6 +993,13 @@ export async function rejectProofOfPayment(orderId: number, adminId: number, not
   }).where(eq(orders.id, orderId));
 }
 
+export async function getOrderByPayFastReference(payfastReference: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(orders).where(eq(orders.payfastReference, payfastReference)).limit(1);
+  return rows[0];
+}
+
 export async function updateOrderPayment(
   payfastReference: string,
   paymentStatus: "paid" | "failed"

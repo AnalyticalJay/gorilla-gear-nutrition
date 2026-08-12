@@ -6,6 +6,7 @@ import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
+import { getPayFastConfig, generatePayFastSignature, verifyPayFastItnSignature } from "./payfast";
 import {
   addProductImage,
   calculateDelivery,
@@ -28,6 +29,7 @@ import {
   getCategories,
   getDb,
   getOrderById,
+  getOrderByPayFastReference,
   getOrderComments,
   getProductById,
   getProductBySlug,
@@ -529,7 +531,32 @@ export const appRouter = router({
           throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Quote must be approved before payment" });
         }
         const payment = await chooseQuotePayment(input.orderId, ctx.user.id, input.method);
-        return { ...payment, orderId: input.orderId, method: input.method };
+        let payfastData: Record<string, string> | undefined = undefined;
+        if (input.method === "payfast") {
+          const cfg = getPayFastConfig();
+          const ref = payment.payfastReference || `AA-${input.orderId}-${Date.now()}`;
+          const origin = ctx.req.headers.origin || `https://${ctx.req.headers.host || "localhost:3000"}`;
+          const params: Record<string, string | number> = {
+            merchant_id: cfg.merchantId,
+            merchant_key: cfg.merchantKey,
+            return_url: `${origin}/order-success/${input.orderId}`,
+            cancel_url: `${origin}/orders/${input.orderId}`,
+            notify_url: `${origin}/api/payments/payfast/itn`,
+            m_payment_id: ref,
+            amount: parseFloat(String(quote.totalAmount)).toFixed(2),
+            item_name: `Gorilla Gear Nutrition Approved Quote #${input.orderId}`,
+            email_address: (ctx.user as any)?.email ?? "",
+            name_first: ((ctx.user as any)?.fullName ?? "").split(" ")[0] ?? "",
+            name_last: ((ctx.user as any)?.fullName ?? "").split(" ").slice(1).join(" ") || ".",
+          };
+          const signature = generatePayFastSignature(params, cfg.passphrase);
+          payfastData = {
+            actionUrl: cfg.isSandbox ? "https://sandbox.payfast.co.za/eng/process" : "https://www.payfast.co.za/eng/process",
+            ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
+            signature,
+          };
+        }
+        return { ...payment, orderId: input.orderId, method: input.method, payfastData };
       }),
 
     review: adminProcedure
@@ -581,7 +608,7 @@ export const appRouter = router({
         return { success: true, url };
       }),
 
-    // PayFast ITN webhook (public, verified by signature)
+    // Legacy tRPC ITN compatibility route. PayFast should use /api/payments/payfast/itn.
     payfastItn: publicProcedure
       .input(z.object({
         m_payment_id: z.string(),
@@ -589,9 +616,19 @@ export const appRouter = router({
         payment_status: z.string(),
         item_name: z.string().optional(),
         amount_gross: z.string().optional(),
+        merchant_id: z.string().optional(),
         signature: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
+        const cfg = getPayFastConfig();
+        if (input.merchant_id !== cfg.merchantId || !input.signature || !verifyPayFastItnSignature(input, input.signature, cfg.passphrase)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid PayFast ITN signature" });
+        }
+        const order = await getOrderByPayFastReference(input.m_payment_id);
+        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Payment reference not found" });
+        if (input.amount_gross && Number(input.amount_gross).toFixed(2) !== Number(order.totalAmount).toFixed(2)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Payment amount mismatch" });
+        }
         const status = input.payment_status === "COMPLETE" ? "paid" : "failed";
         await updateOrderPayment(input.m_payment_id, status);
         return { success: true };

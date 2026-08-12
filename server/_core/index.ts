@@ -6,6 +6,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
+import { getOrderByPayFastReference, updateOrderPayment } from "../db";
+import { getPayFastConfig, verifyPayFastItnSignature } from "../payfast";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
@@ -36,6 +38,37 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+
+  // PayFast sends ITN callbacks as form-encoded POST data, not tRPC JSON.
+  app.post("/api/payments/payfast/itn", async (req, res) => {
+    try {
+      const payload = Object.fromEntries(Object.entries(req.body ?? {}).map(([key, value]) => [key, String(value ?? "")]));
+      const cfg = getPayFastConfig();
+      if (payload.merchant_id !== cfg.merchantId || !payload.signature || !verifyPayFastItnSignature(payload, payload.signature, cfg.passphrase)) {
+        res.status(400).send("Invalid PayFast signature");
+        return;
+      }
+      if (!payload.m_payment_id || !payload.payment_status) {
+        res.status(400).send("Missing PayFast payment fields");
+        return;
+      }
+      const order = await getOrderByPayFastReference(payload.m_payment_id);
+      if (!order) {
+        res.status(404).send("Payment reference not found");
+        return;
+      }
+      if (payload.amount_gross && Number(payload.amount_gross).toFixed(2) !== Number(order.totalAmount).toFixed(2)) {
+        res.status(400).send("Payment amount mismatch");
+        return;
+      }
+      const status = payload.payment_status === "COMPLETE" ? "paid" : "failed";
+      await updateOrderPayment(payload.m_payment_id, status);
+      res.status(200).send("OK");
+    } catch (error) {
+      console.error("[PayFast ITN] Failed to process callback", error);
+      res.status(500).send("ITN processing failed");
+    }
+  });
   // tRPC API
   app.use(
     "/api/trpc",
