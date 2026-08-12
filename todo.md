@@ -106,3 +106,12 @@
 - [x] Disambiguate NOVA Clenbuterol 40 to the 100-tablet product using the package image and remove the incorrect 50-tablet link.
 - [x] Remove duplicate re-import image rows and make the importer idempotent for future reruns.
 - [x] Re-run the strict matcher with zero ambiguous associations; retain the six documented no-match records for catalog follow-up.
+
+## Image Coverage Audit
+- [x] Audit all 703 active products and document image coverage by inferred brand.
+- [x] Confirm remaining image gaps require additional source archives or verified product records; do not fabricate or cross-brand image associations.
+
+## Active Implementation — Homepage Polish and Responsive Optimization
+- [x] Refine the homepage visual hierarchy, spacing, CTA presentation, and responsive behavior.
+- [x] Verify the homepage at desktop, tablet, and phone widths and address any overflow or clipping.
+- [x] Add or update homepage component tests for the polished responsive structure.

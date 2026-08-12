@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
@@ -47,14 +48,14 @@ export default function Home() {
   const isApproved = (user as any)?.status === "approved";
   const isPending = (user as any)?.status === "pending";
 
-  const featuredQuery = trpc.products.list.useQuery({ featuredOnly: true });
-  const allProductsQuery = trpc.products.list.useQuery(
-    {},
-    { enabled: !!(featuredQuery.data && featuredQuery.data.length < 4) },
+  const featuredQuery = trpc.products.listPage.useQuery({ featuredOnly: true, limit: 4, offset: 0 });
+  const allProductsQuery = trpc.products.listPage.useQuery(
+    { limit: 4, offset: 0 },
+    { enabled: !!(featuredQuery.data && featuredQuery.data.items.length < 4) },
   );
-  const displayProducts = featuredQuery.data && featuredQuery.data.length >= 1
-    ? featuredQuery.data
-    : allProductsQuery.data ?? [];
+  const displayProducts = featuredQuery.data && featuredQuery.data.items.length >= 1
+    ? featuredQuery.data.items
+    : allProductsQuery.data?.items ?? [];
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] text-[#161616]">
@@ -64,35 +65,35 @@ export default function Home() {
         <section className="relative overflow-hidden border-b border-black/10 bg-[#f7f5f0]">
           <div className="pointer-events-none absolute -right-28 top-20 h-72 w-72 rounded-full bg-[#d8f36f]/55 blur-3xl" />
           <div className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-[#e4a28f]/25 blur-3xl" />
-          <div className="container relative py-14 sm:py-20 lg:py-24">
-            <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+          <div className="container relative pb-14 pt-24 sm:pb-20 sm:pt-20 lg:py-24">
+            <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
               <motion.div
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-black/15 bg-white/65 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-black/65">
+                <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-black/15 bg-white/65 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-black/65">
                   <span className="h-2 w-2 rounded-full bg-[#d7472f]" />
                   Premium performance nutrition
                 </div>
-                <h1 className="max-w-3xl text-[clamp(3.2rem,8vw,6.8rem)] font-black uppercase leading-[0.86] tracking-[-0.075em] text-[#101010]">
+                <h1 className="max-w-3xl text-[clamp(2.9rem,14vw,6.8rem)] sm:text-[clamp(3.2rem,8vw,6.8rem)] font-black uppercase leading-[0.86] tracking-[-0.075em] text-[#101010]">
                   Fuel your
                   <span className="block text-[#d7472f]">potential.</span>
                   <span className="mt-2 block text-[0.68em] tracking-[-0.055em]">Built to perform.</span>
                 </h1>
-                <p className="mt-7 max-w-xl text-base leading-7 text-black/62 sm:text-lg">
+                <p className="mt-6 max-w-xl text-[15px] leading-7 text-black/62 sm:mt-7 sm:text-lg">
                   Gorilla Gear Nutrition is a private South African catalogue for serious athletes and dedicated fitness enthusiasts. Apply for access to browse the range and request a tailored quote.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   {!isAuthenticated ? (
                     <>
-                      <Link href="/register" className="no-underline">
+                      <Link href="/register" className="w-full no-underline sm:w-auto">
                         <Button size="lg" className="h-12 w-full rounded-sm bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f] sm:w-auto">
                           Apply for membership
                           <ArrowUpRight className="ml-2 h-4 w-4" />
                         </Button>
                       </Link>
-                      <Link href="/products" className="no-underline">
+                      <Link href="/products" className="w-full no-underline sm:w-auto">
                         <Button size="lg" variant="outline" className="h-12 w-full rounded-sm border-black/25 bg-transparent px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-[#111111] hover:border-black hover:bg-white sm:w-auto">
                           Browse products
                         </Button>
@@ -104,15 +105,15 @@ export default function Home() {
                       Application pending review
                     </div>
                   ) : isApproved ? (
-                    <Link href="/products" className="no-underline">
-                      <Button size="lg" className="h-12 rounded-sm bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f]">
+                    <Link href="/products" className="w-full no-underline sm:w-auto">
+                      <Button size="lg" className="h-12 w-full rounded-sm sm:w-auto bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f]">
                         Enter member catalogue
                         <ArrowUpRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>
                   ) : null}
                 </div>
-                <div className="mt-10 grid max-w-xl grid-cols-2 gap-x-6 gap-y-4 border-t border-black/15 pt-6 sm:grid-cols-4">
+                <div className="mt-8 grid max-w-xl grid-cols-2 gap-x-4 gap-y-4 border-t border-black/15 pt-6 sm:mt-10 sm:grid-cols-4 sm:gap-x-6">
                   {[
                     { icon: ShieldCheck, label: "Verified range" },
                     { icon: LockKeyhole, label: "Private access" },
@@ -135,10 +136,10 @@ export default function Home() {
               >
                 <div className="absolute -right-3 top-8 h-16 w-3 bg-[#d7472f] sm:-right-6 sm:h-24 sm:w-4" />
                 <div className="absolute -bottom-3 left-8 h-3 w-28 bg-[#111111] sm:-bottom-6 sm:left-12 sm:h-4 sm:w-40" />
-                <div className="relative flex min-h-[380px] items-center justify-center overflow-hidden rounded-[2rem] border border-black/10 bg-white/75 px-10 py-10 shadow-[0_24px_70px_rgba(0,0,0,0.12)] sm:min-h-[500px] sm:px-16">
+                <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-[1.5rem] border border-black/10 bg-white/75 px-6 py-8 shadow-[0_24px_70px_rgba(0,0,0,0.12)] sm:min-h-[500px] sm:rounded-[2rem] sm:px-16 sm:py-10">
                   <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(215,71,47,0.16) 0, transparent 27%), radial-gradient(circle at 80% 75%, rgba(216,243,111,0.48) 0, transparent 30%)" }} />
-                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition" className="relative z-10 max-h-[360px] w-full object-contain mix-blend-multiply drop-shadow-[0_20px_22px_rgba(0,0,0,0.18)] sm:max-h-[450px]" />
-                  <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between border-t border-black/10 pt-4 text-[9px] font-extrabold uppercase tracking-[0.18em] text-black/45">
+                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition" className="relative z-10 max-h-[260px] w-full object-contain mix-blend-multiply drop-shadow-[0_20px_22px_rgba(0,0,0,0.18)] sm:max-h-[450px]" />
+                  <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 border-t border-black/10 pt-4 text-[9px] font-extrabold uppercase tracking-[0.18em] text-black/45">
                     <span>Gorilla Gear Nutrition</span>
                     <span>South Africa</span>
                   </div>
@@ -155,7 +156,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-b border-black/10 bg-white py-20 sm:py-24">
+        <section className="border-b border-black/10 bg-white py-14 sm:py-20 lg:py-24">
           <div className="container">
             <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
               <div>
@@ -185,7 +186,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-b border-black/10 bg-[#f7f5f0] py-20 sm:py-24">
+        <section className="border-b border-black/10 bg-[#f7f5f0] py-14 sm:py-20 lg:py-24">
           <div className="container">
             <div className="mb-10 max-w-xl">
               <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">Browse by category</p>
@@ -193,7 +194,7 @@ export default function Home() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {categories.map((category, index) => (
-                <Link key={category.name} href="/products" className="group relative min-h-[260px] overflow-hidden rounded-2xl bg-[#111111] no-underline">
+                <Link key={category.name} href="/products" className="group relative min-h-[220px] overflow-hidden rounded-2xl sm:min-h-[260px] bg-[#111111] no-underline">
                   <img src={category.image} alt={category.name} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-500 group-hover:scale-105 group-hover:opacity-85" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-5 text-white">
@@ -207,7 +208,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-b border-black/10 bg-white py-20 sm:py-24">
+        <section className="border-b border-black/10 bg-white py-14 sm:py-20 lg:py-24">
           <div className="container">
             <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
               <div>
@@ -229,16 +230,16 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-[#111111] py-16 text-white sm:py-20">
+        <section className="bg-[#111111] py-12 text-white sm:py-16 lg:py-20">
           <div className="container">
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#191919] px-6 py-14 text-center sm:px-10">
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#191919] px-5 py-10 text-center sm:rounded-[2rem] sm:px-10 sm:py-14">
               <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-[#d8f36f]/15 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#d7472f]/20 blur-3xl" />
               <div className="relative">
                 <p className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d8f36f]">Your next phase starts here</p>
                 <h2 className="mx-auto max-w-3xl text-4xl font-black uppercase leading-[0.9] tracking-[-0.055em] sm:text-6xl">Ready to fuel your <span className="text-[#d7472f]">potential?</span></h2>
                 <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-white/60">Apply for membership, get verified, and access the Gorilla Gear Nutrition catalogue built for dedicated performance.</p>
-                {!isAuthenticated && <Link href="/register" className="mt-8 inline-flex no-underline"><Button size="lg" className="h-12 rounded-sm bg-[#d7472f] px-8 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#ef6447]">Get started today <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>}
+                {!isAuthenticated && <Link href="/register" className="mt-8 inline-flex w-full justify-center no-underline sm:w-auto"><Button size="lg" className="h-12 rounded-sm bg-[#d7472f] px-8 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#ef6447]">Get started today <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>}
               </div>
             </div>
           </div>

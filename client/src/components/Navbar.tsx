@@ -29,13 +29,13 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-[#1E293B] bg-[#0A0A0A]/90 backdrop-blur-md">
       <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 no-underline">
+      <div className="container flex h-16 items-center justify-between gap-2">
+        <Link href="/" className="flex min-w-0 items-center gap-2 no-underline sm:gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded bg-[#111111] border border-[#1E293B]">
             <span className="font-black tracking-wider text-white">GG</span>
           </div>
-          <div>
-            <span className="block text-sm font-black uppercase tracking-wider text-white">Gorilla Gear</span>
+          <div className="min-w-0">
+            <span className="block truncate text-sm font-black uppercase tracking-wider text-white">Gorilla Gear</span>
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#0EA5E9]">Nutrition</span>
           </div>
         </Link>
@@ -56,7 +56,7 @@ export default function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {isApproved && (
             <Link href="/cart" className="relative flex h-10 w-10 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white hover:border-[#0EA5E9]/50">
               <ShoppingCart className="h-4 w-4" />
@@ -67,9 +67,9 @@ export default function Navbar() {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-10 border-[#1E293B] bg-[#111111] text-xs font-bold uppercase tracking-wider text-white hover:border-[#0EA5E9]/50">
-                  <User className="mr-2 h-3.5 w-3.5 text-[#0EA5E9]" />
-                  <span className="max-w-[100px] truncate sm:max-w-[140px]">{(user as any)?.name || (user as any)?.email || "Account"}</span>
+                <Button aria-label="Open account menu" variant="outline" className="h-10 min-w-10 border-[#1E293B] bg-[#111111] px-2 text-xs font-bold uppercase tracking-wider text-white hover:border-[#0EA5E9]/50 sm:px-3">
+                  <User className="h-3.5 w-3.5 text-[#0EA5E9] sm:mr-2" />
+                  <span className="hidden max-w-[100px] truncate sm:inline sm:max-w-[140px]">{(user as any)?.name || (user as any)?.email || "Account"}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 border-[#1E293B] bg-[#0F0F0F] text-white">
@@ -93,7 +93,7 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 sm:flex">
               <Link href="/login" className="no-underline">
                 <Button variant="outline" className="h-9 border-[#1E293B] bg-transparent text-xs font-bold uppercase tracking-wider text-white hover:border-[#0EA5E9]/50 hover:bg-[#0EA5E9]/10">
                   Sign In
@@ -125,6 +125,16 @@ export default function Navbar() {
               <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-white no-underline">
                 Admin Dashboard
               </Link>
+            )}
+            {!isAuthenticated && (
+              <div className="grid grid-cols-2 gap-2 border-t border-[#1E293B] pt-3">
+                <Link href="/login" onClick={() => setMobileOpen(false)} className="no-underline">
+                  <Button variant="outline" className="h-10 w-full border-[#1E293B] bg-transparent text-xs font-bold uppercase tracking-wider text-white">Sign In</Button>
+                </Link>
+                <Link href="/register" onClick={() => setMobileOpen(false)} className="no-underline">
+                  <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-white" style={{ background: "linear-gradient(135deg, #E11D48, #BE123C)" }}>Apply Access</Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
