@@ -171,3 +171,9 @@
 - [x] Confirm the real tracking number or an explicitly authorized temporary test value.
 - [x] Add the authorized tracking number to Order #1 without changing payment approval state.
 - [x] Verify the customer timeline and responsive tracking display after shipment-state correction.
+
+## Active Implementation — HD Labs Injectable Image Collection
+- [x] Browse the supplied HD Labs links page and inventory injectable product image URLs.
+- [x] Match injectable images strictly to existing HD Labs injectable catalogue products.
+- [x] Upload verified images to managed storage and link them to the correct products.
+- [ ] Verify representative injectable product rendering and save a checkpoint.
