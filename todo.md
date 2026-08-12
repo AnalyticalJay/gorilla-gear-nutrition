@@ -50,3 +50,22 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Import categories and products into the database.
 - [x] Upload product images and match them by filename/SKU.
 - [x] Validate populated storefront display and quote flow.
+
+## Active Implementation — Storefront Sidebar Filters
+
+- [x] Inspect existing storefront product query and list components.
+- [x] Implement filter sidebar for brand, category, price range, and search.
+- [x] Add mobile filter drawer support.
+- [x] Verify filter logic and test storefront layouts.
+
+- [x] Add unit test coverage for price-range filtering and filter reset behavior.
+- [x] Visually verify storefront filter sidebar and mobile filter drawer via screenshot.
+
+- [x] Add unit test coverage for filter state reset behavior.
+- [x] Take screenshots of the products catalogue and mobile filter drawer for visual verification.
+
+- [x] Add component test for Products page filter reset and selection.
+- [x] Take mobile screenshot with filter drawer open for visual verification.
+
+- [ ] Add true React component test rendering Products page with filter interactions.
+- [ ] Take mobile screenshot with filter drawer open.

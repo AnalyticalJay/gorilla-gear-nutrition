@@ -1,7 +1,7 @@
+import React, { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { LogOut, Menu, Shield, ShoppingCart, User, X } from "lucide-react";
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "./ui/button";
 import {
@@ -11,8 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-
-const logoSrc = "/manus-storage/logo_2d6e0f20.png";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -29,74 +27,108 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/10 bg-[#f7f5f0]/95 backdrop-blur">
-      <div className="h-1 w-full bg-[#111111]" />
-      <div className="container">
-        <div className="flex min-h-[4.5rem] items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 no-underline">
-            <div className="h-12 w-11 overflow-hidden rounded-md bg-white/60 p-1">
-              <img src={logoSrc} alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
-            </div>
-            <div className="hidden leading-none sm:block">
-              <span className="block text-[15px] font-black uppercase tracking-[0.11em] text-[#111111]">Gorilla Gear</span>
-              <span className="mt-1 block text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#d7472f]">Nutrition</span>
-            </div>
-          </Link>
+    <nav className="fixed top-0 z-50 w-full border-b border-[#1E293B] bg-[#0A0A0A]/90 backdrop-blur-md">
+      <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 no-underline">
+          <div className="flex h-10 w-10 items-center justify-center rounded bg-[#111111] border border-[#1E293B]">
+            <span className="font-black tracking-wider text-white">GG</span>
+          </div>
+          <div>
+            <span className="block text-sm font-black uppercase tracking-wider text-white">Gorilla Gear</span>
+            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#0EA5E9]">Nutrition</span>
+          </div>
+        </Link>
 
-          <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
+          {navLinks.map((link) => {
+            const active = location === link.href;
+            return (
+              <Link key={link.href} href={link.href} className={`text-xs font-bold uppercase tracking-widest no-underline transition-colors ${active ? "text-[#0EA5E9]" : "text-[#94A3B8] hover:text-white"}`}>
+                {link.label}
+              </Link>
+            );
+          })}
+          {isAdmin && (
+            <Link href="/admin/dashboard" className={`text-xs font-bold uppercase tracking-widest no-underline transition-colors ${location.startsWith("/admin") ? "text-[#E11D48]" : "text-[#94A3B8] hover:text-white"}`}>
+              Admin
+            </Link>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          {isApproved && (
+            <Link href="/cart" className="relative flex h-10 w-10 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white hover:border-[#0EA5E9]/50">
+              <ShoppingCart className="h-4 w-4" />
+              {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#E11D48] text-[10px] font-bold text-white">{cartCount}</span>}
+            </Link>
+          )}
+
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-10 border-[#1E293B] bg-[#111111] text-xs font-bold uppercase tracking-wider text-white hover:border-[#0EA5E9]/50">
+                  <User className="mr-2 h-3.5 w-3.5 text-[#0EA5E9]" />
+                  <span className="max-w-[100px] truncate sm:max-w-[140px]">{(user as any)?.name || (user as any)?.email || "Account"}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 border-[#1E293B] bg-[#0F0F0F] text-white">
+                <div className="px-3 py-2">
+                  <p className="text-xs font-bold text-white">{(user as any)?.name || "Member"}</p>
+                  <p className="text-[10px] text-[#64748B]">Status: <span className="capitalize text-[#0EA5E9]">{(user as any)?.status}</span></p>
+                </div>
+                <DropdownMenuSeparator className="bg-[#1E293B]" />
+                <DropdownMenuItem asChild className="focus:bg-[#1E293B] focus:text-white">
+                  <Link href="/account" className="flex w-full items-center cursor-pointer text-xs font-bold uppercase">Account Status</Link>
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem asChild className="focus:bg-[#1E293B] focus:text-white">
+                    <Link href="/admin/dashboard" className="flex w-full items-center cursor-pointer text-xs font-bold uppercase text-[#E11D48]">Admin Dashboard</Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator className="bg-[#1E293B]" />
+                <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-xs font-bold uppercase text-[#E11D48] focus:bg-[#E11D48]/10 focus:text-[#E11D48]">
+                  <LogOut className="mr-2 h-3.5 w-3.5" /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link href="/login" className="no-underline">
+                <Button variant="outline" className="h-9 border-[#1E293B] bg-transparent text-xs font-bold uppercase tracking-wider text-white hover:border-[#0EA5E9]/50 hover:bg-[#0EA5E9]/10">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/register" className="no-underline">
+                <Button className="h-9 px-4 text-xs font-bold uppercase tracking-wider text-white shadow-lg" style={{ background: "linear-gradient(135deg, #E11D48, #BE123C)" }}>
+                  Apply Access
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-10 w-10 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white md:hidden" aria-label="Toggle Menu">
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
+
+      {mobileOpen && (
+        <div className="border-b border-[#1E293B] bg-[#0A0A0A] p-4 md:hidden">
+          <div className="flex flex-col gap-3">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={`rounded-sm px-4 py-2 text-xs font-extrabold uppercase tracking-[0.16em] no-underline transition-colors ${location === link.href ? "bg-black/7 text-[#d7472f]" : "text-black/55 hover:bg-black/5 hover:text-black"}`}>
+              <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="py-2 text-sm font-bold uppercase tracking-widest text-[#94A3B8] hover:text-white no-underline">
                 {link.label}
               </Link>
             ))}
-            {isAdmin && <Link href="/admin" className={`flex items-center gap-1.5 rounded-sm px-4 py-2 text-xs font-extrabold uppercase tracking-[0.16em] no-underline ${location.startsWith("/admin") ? "bg-[#d7472f]/10 text-[#b33c28]" : "text-black/55 hover:bg-black/5 hover:text-black"}`}><Shield className="h-3.5 w-3.5" /> Admin</Link>}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isApproved && (
-              <Link href="/cart" aria-label="View quote cart" className="relative rounded-sm p-2 text-black/65 no-underline hover:bg-black/5 hover:text-black">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#d7472f] px-1 text-[9px] font-black text-white">{cartCount > 9 ? "9+" : cartCount}</span>}
+            {isAdmin && (
+              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-white no-underline">
+                Admin Dashboard
               </Link>
             )}
-
-            {isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 rounded-sm border border-black/15 bg-white/45 px-2.5 py-1.5 transition-colors hover:border-black/30">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#111111] text-xs font-black text-white">{((user as any)?.fullName ?? "U").charAt(0).toUpperCase()}</div>
-                    <span className="hidden max-w-[100px] truncate text-xs font-bold uppercase tracking-[0.1em] text-black/65 sm:block">{(user as any)?.fullName?.split(" ")[0] ?? "Account"}</span>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 border-black/10 bg-white text-[#111111]">
-                  <DropdownMenuItem asChild><Link href="/account" className="flex items-center gap-2 no-underline"><User className="h-4 w-4" /> My account</Link></DropdownMenuItem>
-                  {isAdmin && <><DropdownMenuSeparator className="bg-black/10" /><DropdownMenuItem asChild><Link href="/admin" className="flex items-center gap-2 no-underline text-[#b33c28]"><Shield className="h-4 w-4" /> Admin panel</Link></DropdownMenuItem></>}
-                  <DropdownMenuSeparator className="bg-black/10" />
-                  <DropdownMenuItem onClick={logout} className="flex items-center gap-2 text-black/65"><LogOut className="h-4 w-4" /> Sign out</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <div className="hidden items-center gap-2 md:flex">
-                <Link href="/login" className="no-underline"><Button variant="ghost" size="sm" className="text-xs font-extrabold uppercase tracking-[0.13em] text-black/60 hover:bg-black/5 hover:text-black">Sign in</Button></Link>
-                <Link href="/register" className="no-underline"><Button size="sm" className="rounded-sm bg-[#111111] text-xs font-extrabold uppercase tracking-[0.13em] text-white hover:bg-[#d7472f]">Apply for membership</Button></Link>
-              </div>
-            )}
-
-            <button type="button" aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileOpen} className="flex h-11 w-11 items-center justify-center rounded-sm text-black/65 hover:bg-black/5 hover:text-black md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
           </div>
         </div>
-
-        {mobileOpen && (
-          <div className="space-y-1 border-t border-black/10 py-3 md:hidden">
-            {navLinks.map((link) => <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className={`block rounded-sm px-4 py-3 text-xs font-extrabold uppercase tracking-[0.15em] no-underline ${location === link.href ? "bg-black/5 text-[#d7472f]" : "text-black/65 hover:bg-black/5 hover:text-black"}`}>{link.label}</Link>)}
-            {isApproved && <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center gap-2 rounded-sm px-4 py-3 text-xs font-extrabold uppercase tracking-[0.15em] text-black/65 no-underline hover:bg-black/5 hover:text-black"><ShoppingCart className="h-4 w-4" /> Quote cart {cartCount > 0 && `(${cartCount})`}</Link>}
-            {isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center gap-2 rounded-sm px-4 py-3 text-xs font-extrabold uppercase tracking-[0.15em] text-[#b33c28] no-underline hover:bg-[#d7472f]/5"><Shield className="h-4 w-4" /> Admin panel</Link>}
-            {isAuthenticated ? <><Link href="/account" onClick={() => setMobileOpen(false)} className="block rounded-sm px-4 py-3 text-xs font-extrabold uppercase tracking-[0.15em] text-black/65 no-underline hover:bg-black/5 hover:text-black">My account</Link><button onClick={() => { logout(); setMobileOpen(false); }} className="block min-h-11 w-full rounded-sm px-4 py-3 text-left text-xs font-extrabold uppercase tracking-[0.15em] text-black/65 hover:bg-black/5 hover:text-black">Sign out</button></> : <div className="flex flex-col gap-2 px-1 pt-2"><Link href="/login" onClick={() => setMobileOpen(false)} className="no-underline"><Button variant="outline" size="sm" className="w-full rounded-sm border-black/20 text-xs font-extrabold uppercase tracking-[0.13em] text-black/65">Sign in</Button></Link><Link href="/register" onClick={() => setMobileOpen(false)} className="no-underline"><Button size="sm" className="w-full rounded-sm bg-[#111111] text-xs font-extrabold uppercase tracking-[0.13em] text-white hover:bg-[#d7472f]">Apply for membership</Button></Link></div>}
-          </div>
-        )}
-      </div>
+      )}
     </nav>
   );
 }

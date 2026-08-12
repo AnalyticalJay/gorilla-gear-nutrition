@@ -1,3 +1,4 @@
+import React from "react";
 import { trpc } from "@/lib/trpc";
 import { ShoppingCart, Lock, Eye } from "lucide-react";
 import { Link } from "wouter";
