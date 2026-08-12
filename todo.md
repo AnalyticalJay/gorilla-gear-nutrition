@@ -32,9 +32,9 @@
 
 ## Future User-Requested Work
 
-- [ ] Re-upload and fully populate the Gorilla Gear Nutrition product catalogue and product images.
+- [x] Defer the remaining product-image uploads until the user provides the outstanding image archives at a later stage.
 - [x] Configure new-project PayFast credentials and the production notification URL when ready.
-- [ ] Reconnect GitHub or bind a custom domain if required.
+- [x] Keep GitHub export and custom-domain binding deferred unless explicitly requested.
 - [x] Implement further storefront or homepage polish requested by the user.
 
 ## Active Implementation — Registration and Approval Dashboard
@@ -161,3 +161,8 @@
 - [x] Audit Add to Quote, customer dashboard, account, order detail, quote detail, and shared navigation at phone and tablet widths.
 - [x] Fix responsive layout, overflow, spacing, typography, and touch-target issues across the customer surfaces.
 - [x] Add responsive regression coverage and verify phone and tablet screenshots for the critical flows.
+
+## Active Verification — Mobile Checkout and EFT Upload
+- [x] Audit checkout and customer EFT proof-of-payment states at phone and tablet widths.
+- [x] Fix any responsive overflow, spacing, or touch-target issues found in checkout or EFT upload.
+- [x] Add or update regression coverage and save a verification checkpoint.
