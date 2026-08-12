@@ -23,20 +23,27 @@ export type OrderTimelineStep = {
 
 const statusOrder = ["placed", "reviewed", "paid", "dispatched", "delivered"] as const;
 
+export function isOrderDispatched(order: Pick<OrderTrackingInput, "status" | "dispatchedAt">) {
+  return Boolean(order.dispatchedAt) || ["shipped", "completed"].includes(order.status);
+}
+
 export function buildOrderTimeline(order: OrderTrackingInput): OrderTimelineStep[] {
   const placed = true;
   const reviewed = Boolean(order.reviewedAt) || !["pending", "quote_pending"].includes(order.status);
   const paid = Boolean(order.paidAt) || order.paymentStatus === "paid" || ["processing", "shipped", "completed"].includes(order.status);
-  const dispatched = Boolean(order.dispatchedAt) || ["shipped", "completed"].includes(order.status);
+  const dispatched = isOrderDispatched(order);
   const delivered = Boolean(order.deliveredAt) || order.status === "completed";
   const completed = { placed, reviewed, paid, dispatched, delivered };
   const currentIndex = delivered ? 4 : dispatched ? 3 : paid ? 2 : reviewed ? 1 : 0;
 
+  const dispatchDescription = dispatched
+    ? order.trackingNumber ? "Your parcel is with the courier." : "Your order is ready for courier collection."
+    : order.trackingNumber ? "Tracking number assigned. Dispatch is pending." : "Your order is not yet with the courier.";
   const steps: Array<Omit<OrderTimelineStep, "completed" | "active">> = [
     { key: "placed", label: "Order placed", description: "Your quote request has been received.", timestamp: order.createdAt },
     { key: "reviewed", label: "Quote reviewed", description: "Gorilla Gear Nutrition has reviewed your request.", timestamp: order.reviewedAt ?? null },
     { key: "paid", label: "Payment confirmed", description: "Payment has been confirmed and your order is being prepared.", timestamp: order.paidAt ?? null },
-    { key: "dispatched", label: "Order dispatched", description: order.trackingNumber ? "Your parcel is with the courier." : "Your order is ready for courier collection.", timestamp: order.dispatchedAt ?? null },
+    { key: "dispatched", label: "Order dispatched", description: dispatchDescription, timestamp: order.dispatchedAt ?? null },
     { key: "delivered", label: "Delivered", description: "Your parcel has been marked as delivered.", timestamp: order.deliveredAt ?? null },
   ];
 

@@ -166,3 +166,8 @@
 - [x] Audit checkout and customer EFT proof-of-payment states at phone and tablet widths.
 - [x] Fix any responsive overflow, spacing, or touch-target issues found in checkout or EFT upload.
 - [x] Add or update regression coverage and save a verification checkpoint.
+
+## Active Verification — Order #1 Tracking Number
+- [x] Confirm the real tracking number or an explicitly authorized temporary test value.
+- [x] Add the authorized tracking number to Order #1 without changing payment approval state.
+- [x] Verify the customer timeline and responsive tracking display after shipment-state correction.

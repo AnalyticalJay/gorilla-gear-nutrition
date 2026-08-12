@@ -45,6 +45,22 @@ describe("order tracking timeline", () => {
     expect(getOrderStatusTimelineUpdates("completed", existingDispatch, now)).toEqual({ dispatchedAt: existingDispatch, deliveredAt: now });
   });
 
+  it("does not imply courier handoff before dispatch even when a tracking number is assigned", () => {
+    const steps = buildOrderTimeline({
+      createdAt: "2026-08-12T08:00:00.000Z",
+      reviewedAt: "2026-08-12T09:00:00.000Z",
+      paidAt: "2026-08-12T10:00:00.000Z",
+      status: "paid",
+      paymentStatus: "paid",
+      trackingNumber: "TEST-TRACK-001",
+      trackingCarrier: "The Courier Guy (Test)",
+    });
+
+    expect(steps[3]?.completed).toBe(false);
+    expect(steps[3]?.active).toBe(true);
+    expect(steps[3]?.description).toBe("Tracking number assigned. Dispatch is pending.");
+  });
+
   it("builds a Courier Guy tracking URL when no custom URL is supplied", () => {
     expect(getTrackingUrl("The Courier Guy", "TCG 123/456", null)).toBe("https://thecourierguy.co.za/tracking/");
     expect(getTrackingUrl("Other carrier", "ABC123", null)).toBeNull();

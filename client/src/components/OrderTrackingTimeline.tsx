@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckCircle2, ClipboardCheck, CreditCard, PackageCheck, ShoppingBag, Truck } from "lucide-react";
 import { format } from "date-fns";
-import { buildOrderTimeline, getTrackingUrl, type OrderTrackingInput } from "@shared/orderTracking";
+import { buildOrderTimeline, getTrackingUrl, isOrderDispatched, type OrderTrackingInput } from "@shared/orderTracking";
 
 const icons = {
   placed: ShoppingBag,
@@ -13,6 +13,7 @@ const icons = {
 
 export default function OrderTrackingTimeline({ order, compact = false }: { order: OrderTrackingInput; compact?: boolean }) {
   const steps = buildOrderTimeline(order);
+  const isDispatched = isOrderDispatched(order);
   const trackingUrl = getTrackingUrl(order.trackingCarrier, order.trackingNumber, order.trackingUrl);
 
   return (
@@ -28,6 +29,7 @@ export default function OrderTrackingTimeline({ order, compact = false }: { orde
             <p className="text-[10px] font-black uppercase tracking-wider text-[#64748B]">Tracking number</p>
             <p className="mt-1 break-all font-mono text-sm font-bold text-[#7DD3FC]">{order.trackingNumber}</p>
             {order.trackingCarrier && <p className="mt-1 text-[10px] uppercase tracking-wider text-[#94A3B8]">{order.trackingCarrier}</p>}
+            {!isDispatched && <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#FBBF24]">Dispatch pending</p>}
           </div>
         )}
       </div>
@@ -59,7 +61,7 @@ export default function OrderTrackingTimeline({ order, compact = false }: { orde
 
       {order.trackingNotes && <div className="mt-6 rounded-lg border border-[#FBBF24]/20 bg-[#FBBF24]/5 p-3 text-xs leading-5 text-[#FDE68A]"><span className="font-black uppercase tracking-wider">Courier note: </span>{order.trackingNotes}</div>}
 
-      {order.trackingNumber && trackingUrl && (
+      {order.trackingNumber && isDispatched && trackingUrl && (
         <div className="mt-6 flex flex-col gap-3 border-t border-[#1E293B] pt-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs leading-5 text-[#94A3B8]">Use the courier link for the latest parcel scans and delivery events.</p>
           <a href={trackingUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-[#0EA5E9] px-4 text-xs font-black uppercase tracking-wide text-white no-underline transition hover:bg-[#0284C7]">
