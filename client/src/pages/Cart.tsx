@@ -60,9 +60,9 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-20">
-        <div className="container py-8">
-          <h1 className="text-3xl font-black mb-8" >
+      <div className="pt-20 pb-24 sm:pb-8">
+        <div className="container px-4 py-6 sm:py-8">
+          <h1 className="text-2xl font-black mb-6 sm:mb-8 sm:text-3xl" >
             Quote <span style={{ color: "#0EA5E9" }}>Cart</span>
           </h1>
 
@@ -84,10 +84,10 @@ export default function Cart() {
                     key={item.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card rounded-xl p-4 flex items-center gap-4"
+                    className="glass-card rounded-xl p-3 flex flex-wrap items-center gap-3 sm:flex-nowrap sm:gap-4 sm:p-4"
                   >
                     <Link href={`/products/${item.productSlug}`} className="no-underline">
-                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted/30 shrink-0">
+                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted/30 sm:h-20 sm:w-20">
                         {item.primaryImage ? (
                           <img src={item.primaryImage} alt={item.productName} className="w-full h-full object-cover" />
                         ) : (
@@ -97,13 +97,13 @@ export default function Cart() {
                         )}
                       </div>
                     </Link>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1 basis-[calc(100%-4.75rem)] sm:basis-auto">
                       <Link href={`/products/${item.productSlug}`} className="no-underline">
                         <h3 className="font-semibold text-sm hover:text-primary transition-colors truncate">{item.productName}</h3>
                       </Link>
                       <p className="text-primary font-bold mt-1">R{parseFloat(item.productPrice).toFixed(2)}</p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="order-3 flex min-h-11 items-center gap-2 pl-[4.75rem] sm:order-none sm:min-h-0 sm:pl-0">
                       <button
                         onClick={() => {
                           if (item.quantity <= 1) {
@@ -112,25 +112,25 @@ export default function Cart() {
                             upsert.mutate({ productId: item.productId, quantity: item.quantity - 1 });
                           }
                         }}
-                        className="w-7 h-7 rounded-md border border-border flex items-center justify-center hover:bg-accent transition-colors"
+                        className="flex h-11 w-11 items-center justify-center rounded-md border border-border transition-colors hover:bg-accent sm:h-8 sm:w-8"
                       >
                         <Minus className="h-3 w-3" />
                       </button>
                       <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                       <button
                         onClick={() => upsert.mutate({ productId: item.productId, quantity: item.quantity + 1 })}
-                        className="w-7 h-7 rounded-md border border-border flex items-center justify-center hover:bg-accent transition-colors"
+                        className="flex h-11 w-11 items-center justify-center rounded-md border border-border transition-colors hover:bg-accent sm:h-8 sm:w-8"
                         disabled={item.quantity >= item.productStock}
                       >
                         <Plus className="h-3 w-3" />
                       </button>
                     </div>
-                    <div className="text-right shrink-0 w-20">
+                    <div className="order-4 ml-auto w-auto shrink-0 text-right sm:order-none sm:w-20">
                       <p className="font-bold text-sm">R{(parseFloat(item.productPrice) * item.quantity).toFixed(2)}</p>
                     </div>
                     <button
                       onClick={() => remove.mutate({ cartItemId: item.id })}
-                      className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                      className="order-5 flex h-11 w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-destructive sm:order-none sm:h-8 sm:w-8"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -139,7 +139,7 @@ export default function Cart() {
               </div>
 
               {/* Summary */}
-              <div className="glass-card rounded-xl p-6 h-fit sticky top-24">
+              <div className="glass-card h-fit rounded-xl p-4 sm:sticky sm:top-24 sm:p-6">
                 <h2 className="font-bold text-lg mb-4">Quote Summary</h2>
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-sm">

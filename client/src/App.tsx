@@ -36,6 +36,7 @@ function Router() {
 
   return (
     <>
+      <div className={showMobileNav ? "pb-24 md:pb-0" : ""}>
       <Switch>
         {/* Public */}
         <Route path="/" component={Home} />
@@ -136,6 +137,7 @@ function Router() {
         {/* Fallback */}
         <Route component={NotFound} />
       </Switch>
+      </div>
       {showMobileNav && <MobileBottomNav />}
     </>
   );

@@ -58,7 +58,7 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {isApproved && (
-            <Link href="/cart" className="relative flex h-10 w-10 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white hover:border-[#0EA5E9]/50">
+            <Link href="/cart" className="relative flex h-11 w-11 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white hover:border-[#0EA5E9]/50 sm:h-10 sm:w-10">
               <ShoppingCart className="h-4 w-4" />
               {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#E11D48] text-[10px] font-bold text-white">{cartCount}</span>}
             </Link>
@@ -107,7 +107,7 @@ export default function Navbar() {
             </div>
           )}
 
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-10 w-10 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white md:hidden" aria-label="Toggle Menu">
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-11 w-11 items-center justify-center rounded border border-[#1E293B] bg-[#111111] text-white md:hidden sm:h-10 sm:w-10" aria-label="Toggle Menu">
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
@@ -117,12 +117,12 @@ export default function Navbar() {
         <div className="border-b border-[#1E293B] bg-[#0A0A0A] p-4 md:hidden">
           <div className="flex flex-col gap-3">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="py-2 text-sm font-bold uppercase tracking-widest text-[#94A3B8] hover:text-white no-underline">
+              <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-[#94A3B8] hover:text-white no-underline">
                 {link.label}
               </Link>
             ))}
             {isAdmin && (
-              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-white no-underline">
+              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-white no-underline">
                 Admin Dashboard
               </Link>
             )}

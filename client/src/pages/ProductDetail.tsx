@@ -33,7 +33,7 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-[#0A0A0A]">
         <Navbar />
         <div className="pt-24 container">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div className="aspect-square bg-[#111111] rounded-lg border border-[#1E293B] animate-pulse" />
             <div className="space-y-4">
               <div className="h-8 bg-[#111111] rounded animate-pulse w-3/4" />
@@ -69,15 +69,15 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <Navbar />
-      <div className="pt-20">
-        <div className="container py-8">
+      <div className="pt-20 pb-24 sm:pb-8">
+        <div className="container px-4 py-6 sm:py-8">
           {/* Breadcrumb */}
           <Link href="/products" className="inline-flex items-center gap-2 text-sm text-[#64748B] hover:text-[#0EA5E9] mb-8 no-underline transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to Products
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Images */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <div className="relative aspect-square rounded-lg overflow-hidden border border-[#1E293B] bg-[#111111] mb-4">
@@ -113,12 +113,12 @@ export default function ProductDetail() {
                 )}
               </div>
               {images.length > 1 && (
-                <div className="flex gap-2">
+                <div className="flex gap-2 overflow-x-auto pb-1">
                   {images.map((img, i) => (
                     <button
                       key={img.id}
                       onClick={() => setImgIndex(i)}
-                      className="w-16 h-16 rounded border-2 overflow-hidden transition-colors"
+                      className="h-16 w-16 shrink-0 rounded border-2 overflow-hidden transition-colors sm:h-20 sm:w-20"
                       style={{ borderColor: i === imgIndex ? "#0EA5E9" : "#1E293B" }}
                     >
                       <img src={img.imageUrl} alt="" className="w-full h-full object-cover" />
@@ -140,7 +140,7 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              <h1 className="text-3xl font-black uppercase tracking-tight text-white mb-5">
+              <h1 className="text-2xl font-black uppercase tracking-tight text-white mb-5 sm:text-3xl">
                 {product.name}
               </h1>
 
@@ -189,24 +189,24 @@ export default function ProductDetail() {
 
               {/* Add to Quote */}
               {isApproved && product.stockQuantity > 0 && (
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center border border-[#1E293B] rounded overflow-hidden bg-[#111111]">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex items-center self-start border border-[#1E293B] rounded overflow-hidden bg-[#111111]">
                     <button
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="px-3 py-2 hover:bg-[#1E293B] transition-colors text-sm text-white"
+                      className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#1E293B] sm:h-9 sm:w-10"
                     >
                       −
                     </button>
-                    <span className="px-4 py-2 text-sm font-bold text-white border-x border-[#1E293B]">{quantity}</span>
+                    <span className="flex h-11 min-w-12 items-center justify-center border-x border-[#1E293B] px-4 py-2 text-sm font-bold text-white sm:h-9">{quantity}</span>
                     <button
                       onClick={() => setQuantity((q) => Math.min(product.stockQuantity, q + 1))}
-                      className="px-3 py-2 hover:bg-[#1E293B] transition-colors text-sm text-white"
+                      className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#1E293B] sm:h-9 sm:w-10"
                     >
                       +
                     </button>
                   </div>
                   <Button
-                    className="flex-1 text-white font-bold uppercase tracking-wide"
+                    className="min-h-11 w-full text-white font-bold uppercase tracking-wide sm:flex-1"
                     style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
                     onClick={() => addToCart.mutate({ productId: product.id, quantity })}
                     disabled={addToCart.isPending}
@@ -218,7 +218,7 @@ export default function ProductDetail() {
               )}
 
               {!isApproved && (
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <Link href="/register" className="flex-1 no-underline">
                     <Button className="w-full text-white font-bold uppercase tracking-wide"
                       style={{ background: "linear-gradient(135deg, #E11D48, #BE123C)" }}>
@@ -226,7 +226,7 @@ export default function ProductDetail() {
                     </Button>
                   </Link>
                   <Link href="/login" className="no-underline">
-                    <Button variant="outline" className="border-[#1E293B] text-[#94A3B8] hover:text-white hover:border-[#0EA5E9]/40 bg-transparent">
+                    <Button variant="outline" className="min-h-11 w-full border-[#1E293B] bg-transparent text-[#94A3B8] hover:border-[#0EA5E9]/40 hover:text-white sm:w-auto">
                       Login
                     </Button>
                   </Link>

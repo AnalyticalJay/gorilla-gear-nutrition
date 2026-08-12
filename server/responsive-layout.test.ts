@@ -29,4 +29,44 @@ describe("responsive layout contracts", () => {
     expect(adminLayout).toContain("lg:hidden");
     expect(adminLayout).toContain("overflow-x-hidden");
   });
+
+  it("protects quote cart and checkout actions from mobile bottom-nav overlap", () => {
+    const cart = source("client/src/pages/Cart.tsx");
+    const checkout = source("client/src/pages/Checkout.tsx");
+    expect(cart).toContain("pb-24 sm:pb-8");
+    expect(cart).toContain("sm:flex-nowrap");
+    expect(checkout).toContain("pb-24 sm:pb-8");
+    expect(checkout).toContain("flex-wrap items-start justify-between");
+  });
+
+  it("keeps customer dashboard, product detail, and order detail touch-friendly", () => {
+    const account = source("client/src/pages/Account.tsx");
+    const productDetail = source("client/src/pages/ProductDetail.tsx");
+    const orderDetail = source("client/src/pages/OrderDetail.tsx");
+    expect(account).toContain("grid grid-cols-2 gap-2");
+    expect(account).toContain("min-h-11 w-full");
+    expect(productDetail).toContain("flex flex-col gap-3 sm:flex-row");
+    expect(productDetail).toContain("h-11 w-11");
+    expect(orderDetail).toContain("pb-24 sm:py-12 sm:pb-12");
+    expect(orderDetail).toContain("flex flex-col gap-2");
+  });
+
+  it("adds global bottom safe-area space and mobile navigation touch targets", () => {
+    const app = source("client/src/App.tsx");
+    const mobileNav = source("client/src/components/MobileBottomNav.tsx");
+    expect(app).toContain("pb-24 md:pb-0");
+    expect(mobileNav).toContain("min-h-11");
+    expect(mobileNav).toContain("safe-area-inset-bottom");
+  });
+
+  it("uses mobile card layouts for admin quote and product management instead of forcing table overflow", () => {
+    const adminOrders = source("client/src/pages/admin/AdminOrders.tsx");
+    const adminProducts = source("client/src/pages/admin/AdminProducts.tsx");
+    expect(adminOrders).toContain("space-y-3 p-3 md:hidden");
+    expect(adminOrders).toContain("hidden overflow-x-auto md:block");
+    expect(adminOrders).toContain("min-h-10 flex-1");
+    expect(adminProducts).toContain("space-y-3 p-3 md:hidden");
+    expect(adminProducts).toContain("hidden overflow-x-auto md:block");
+    expect(adminProducts).toContain("min-h-10 w-full");
+  });
 });

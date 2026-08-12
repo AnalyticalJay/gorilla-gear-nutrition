@@ -156,3 +156,8 @@
 - [x] Securely configure the supplied PayFast Merchant ID and Merchant Key through project secrets.
 - [x] Configure production notification URL and secret verification for PayFast ITN callbacks.
 - [x] Validate PayFast credential presence and network reachability with Vitest specs.
+
+## Active Implementation — Mobile Optimization Across Customer Surfaces
+- [x] Audit Add to Quote, customer dashboard, account, order detail, quote detail, and shared navigation at phone and tablet widths.
+- [x] Fix responsive layout, overflow, spacing, typography, and touch-target issues across the customer surfaces.
+- [x] Add responsive regression coverage and verify phone and tablet screenshots for the critical flows.

@@ -100,13 +100,13 @@ export default function Account() {
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <Navbar />
-      <div className="pt-20">
+      <div className="pt-20 pb-24 sm:pb-8">
         <div className="container px-4 py-6 sm:py-8">
 
           {/* Header */}
           <div className="mb-8">
             <div className="h-[3px] w-16 mb-4" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
-            <h1 className="text-3xl font-black uppercase tracking-tight text-white">
+            <h1 className="text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
               My <span style={{ color: "#0EA5E9" }}>Account</span>
             </h1>
           </div>
@@ -125,13 +125,13 @@ export default function Account() {
                 </div>
               </div>
 
-              <nav className="space-y-0.5">
+              <nav className="grid grid-cols-2 gap-2 space-y-0.5 sm:block sm:space-y-0.5">
                 {navItems.map((item) => {
                   const active = activeTab === item.id;
                   return (
                     <Link key={item.id} href={`/account/${item.id}`} className="no-underline">
                       <button
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-bold uppercase tracking-wide transition-all ${
+                        className={`min-h-11 w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-bold uppercase tracking-wide transition-all ${
                           active ? "" : "text-[#64748B] hover:text-white hover:bg-white/5"
                         }`}
                         style={active ? {
@@ -149,7 +149,7 @@ export default function Account() {
                 })}
               </nav>
 
-              <div className="mt-4 pt-4 border-t border-[#1E293B]">
+              <div className="mt-4 border-t border-[#1E293B] pt-4 sm:mt-4">
                 <button
                   onClick={logout}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded text-xs font-bold uppercase tracking-wide text-[#64748B] hover:text-[#E11D48] hover:bg-[#E11D48]/5 transition-colors"
@@ -246,9 +246,9 @@ export default function Account() {
                       <div className="space-y-3">
                         {orders.map((order) => (
                           <Link key={order.id} href={`/orders/${order.id}`} className="no-underline block">
-                            <div className="flex items-center gap-3 rounded border border-[#1E293B] bg-[#0A0A0A] p-3 transition-colors hover:border-[#0EA5E9]/30 cursor-pointer sm:gap-4 sm:p-4">
+                            <div className="flex flex-wrap items-center gap-3 rounded border border-[#1E293B] bg-[#0A0A0A] p-3 transition-colors hover:border-[#0EA5E9]/30 cursor-pointer sm:flex-nowrap sm:gap-4 sm:p-4">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
+                                <div className="flex flex-wrap items-center gap-2 mb-1">
                                   <span className="font-bold text-sm text-white">Quote #{order.id}</span>
                                   <OrderStatusBadge status={order.status} />
                                 </div>
@@ -257,7 +257,7 @@ export default function Account() {
                                   {order.paymentMethod ? ` · ${order.paymentMethod.toUpperCase()}` : ""}
                                 </p>
                               </div>
-                              <div className="shrink-0 text-right">
+                              <div className="ml-auto shrink-0 text-right">
                                 <p className="font-black text-white">R{parseFloat(order.totalAmount).toFixed(2)}</p>
                               </div>
                               <ChevronRight className="h-4 w-4 text-[#334155]" />

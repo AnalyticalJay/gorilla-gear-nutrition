@@ -64,8 +64,21 @@ export default function AdminProducts() {
       </div>
 
       <div className="rounded-xl border border-[#1E293B] bg-[#111111] overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="space-y-3 p-3 md:hidden">
+          {productsQuery.isLoading ? <div className="p-4 text-center text-sm text-[#64748B]">Loading products...</div> : products.length === 0 ? <div className="p-4 text-center text-sm text-[#64748B]">No products found.</div> : products.map((product: any) => (
+            <article key={product.id} className="rounded-lg border border-[#1E293B] bg-[#0A0A0A] p-3">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-[#1E293B] bg-[#1A1A1A]"><Package className="h-4 w-4 text-[#0EA5E9]" /></div>
+                <div className="min-w-0 flex-1"><p className="font-bold text-sm text-white">{product.name}</p><p className="truncate text-xs font-mono text-[#64748B]">{product.slug}</p></div>
+                <button onClick={() => updateProduct.mutate({ id: product.id, isActive: !product.isActive })} className="min-h-10 shrink-0 cursor-pointer"><Badge variant={product.isActive ? "default" : "secondary"} className={product.isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/30"}>{product.isActive ? "Active" : "Inactive"}</Badge></button>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-[#1E293B] pt-3 text-xs"><div><span className="block text-[#64748B]">Category</span><span className="text-white">{product.category?.name || "General"}</span></div><div><span className="block text-[#64748B]">Price</span><span className="font-mono font-bold text-[#0EA5E9]">R{parseFloat(product.price).toFixed(2)}</span></div><div><span className="block text-[#64748B]">Stock</span><span className="text-white">{product.stockQuantity}</span></div></div>
+              <div className="mt-3 flex gap-2 border-t border-[#1E293B] pt-3"><Link href={`/admin/products/${product.id}/edit`} className="flex-1 no-underline"><Button variant="outline" className="min-h-10 w-full border-[#1E293B] text-xs font-bold uppercase"><Edit className="mr-1 h-3.5 w-3.5" />Edit</Button></Link><Button variant="outline" className="min-h-10 border-red-500/30 text-xs font-bold uppercase text-red-300 hover:bg-red-500/10" onClick={() => { if (confirm(`Are you sure you want to delete \"${product.name}\"?`)) deleteProduct.mutate({ id: product.id }); }}><Trash2 className="mr-1 h-3.5 w-3.5" />Delete</Button></div>
+            </article>
+          ))}
+        </div>
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[760px] text-left border-collapse">
             <thead>
               <tr className="border-b border-[#1E293B] bg-black/40 text-[11px] font-black uppercase tracking-widest text-[#64748B]">
                 <th className="py-3.5 px-4">Product</th>

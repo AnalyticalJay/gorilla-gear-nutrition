@@ -75,7 +75,7 @@ export default function ProductCard({
       </Link>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
         {product.categoryName && (
           <span className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#0EA5E9" }}>
             {product.categoryName}
@@ -89,16 +89,16 @@ export default function ProductCard({
         </Link>
 
         {/* Price + CTA */}
-        <div className="flex items-center justify-between gap-2 mt-auto">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3">
           {isApproved ? (
             <>
-              <span className="text-lg font-black text-white">
+              <span className="text-base font-black text-white sm:text-lg">
                 {product.price ? `R${parseFloat(product.price).toFixed(2)}` : "—"}
               </span>
               {inStock ? (
                 <Button
                   size="sm"
-                  className="text-white font-bold text-xs uppercase tracking-wide h-8 px-3 flex-shrink-0"
+                  className="min-h-10 flex-1 text-white font-bold text-[0.68rem] uppercase tracking-wide px-3 sm:h-9 sm:min-h-0 sm:flex-none"
                   style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
                   onClick={() => addToCart.mutate({ productId: product.id, quantity: 1 })}
                   disabled={addToCart.isPending}
@@ -110,13 +110,13 @@ export default function ProductCard({
             </>
           ) : (
             <>
-              <div className="flex items-center gap-1.5 text-[#64748B]">
+              <div className="flex min-w-0 items-center gap-1.5 text-[#64748B]">
                 <Lock className="h-3.5 w-3.5" />
                 <span className="text-xs font-medium">Approval required</span>
               </div>
               <Link href="/register" className="no-underline">
                 <Button size="sm" variant="ghost"
-                  className="h-8 px-3 text-xs font-bold uppercase tracking-wide"
+                  className="min-h-10 px-3 text-xs font-bold uppercase tracking-wide sm:h-9 sm:min-h-0"
                   style={{ color: "#0EA5E9" }}>
                   <Eye className="h-3.5 w-3.5 mr-1" />
                   Apply

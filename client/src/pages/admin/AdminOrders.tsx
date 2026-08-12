@@ -59,8 +59,29 @@ export default function AdminOrders() {
       <div className="glass-card rounded-xl overflow-hidden">
         {ordersQuery.isLoading ? <div className="p-6 space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="h-14 bg-accent/20 rounded animate-pulse" />)}</div> : orders.length === 0 ? (
           <div className="p-12 text-center"><ShoppingBag className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-30" /><p className="text-muted-foreground">No quote requests yet</p></div>
-        ) : (
-          <div className="overflow-x-auto">
+        ) : (<> 
+          <div className="space-y-3 p-3 md:hidden">
+            {orders.map((order) => (
+              <article key={order.id} className="rounded-lg border border-border/40 bg-background/40 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <Link href={`/admin/orders/${order.id}`} className="text-sm font-bold text-primary hover:underline no-underline">Quote #{order.id}</Link>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">{order.userFullName ?? "—"}</p>
+                  </div>
+                  <StatusBadge status={order.status} />
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+                  <div><span className="block text-muted-foreground">Total</span><strong className="text-primary">R{parseFloat(order.totalAmount).toFixed(2)}</strong></div>
+                  <div><span className="block text-muted-foreground">Date</span><span>{format(new Date(order.createdAt), "d MMM yyyy")}</span></div>
+                  <div className="col-span-2"><span className="block text-muted-foreground">Payment</span><Badge className={`mt-1 text-xs ${order.paymentStatus === "paid" ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"}`}>{order.paymentMethod ? `${order.paymentMethod} · ` : ""}{order.paymentStatus.replaceAll("_", " ")}</Badge></div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-border/30 pt-3">
+                  {order.status === "quote_pending" ? <><Button size="sm" className="min-h-10 flex-1 bg-green-600 text-white hover:bg-green-700" onClick={() => handleReview(order.id, "quote_approved")} disabled={review.isPending}><Check className="mr-1 h-3.5 w-3.5" />Approve</Button><Button size="sm" variant="outline" className="min-h-10 flex-1 border-red-500/40 text-red-300 hover:bg-red-500/10" onClick={() => handleReview(order.id, "quote_rejected")} disabled={review.isPending}><X className="mr-1 h-3.5 w-3.5" />Reject</Button></> : order.status === "awaiting_payment" && order.paymentMethod === "eft" ? <><Button size="sm" className="min-h-10 flex-1 bg-green-600 text-white hover:bg-green-700" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending}><Check className="mr-1 h-3.5 w-3.5" />Confirm EFT</Button><Link href={`/admin/orders/${order.id}`} className="no-underline"><Button size="sm" variant="ghost" className="min-h-10 px-3"><Eye className="h-4 w-4" /></Button></Link></> : <><Select value={order.status} onValueChange={(val) => updateStatus.mutate({ orderId: order.id, status: val as typeof ORDER_STATUSES[number] })}><SelectTrigger className="h-10 min-w-0 flex-1 bg-input border-border text-xs"><SelectValue /></SelectTrigger><SelectContent>{ORDER_STATUSES.map((s) => <SelectItem key={s} value={s} className="text-xs capitalize">{s.replaceAll("_", " ")}</SelectItem>)}</SelectContent></Select><Link href={`/admin/orders/${order.id}`} className="no-underline"><Button size="sm" variant="ghost" className="min-h-10 px-3"><Eye className="h-4 w-4" /></Button></Link></>}
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[980px]">
               <thead><tr className="border-b border-border/40 text-xs text-muted-foreground"><th className="text-left p-4 font-medium">Quote</th><th className="text-left p-4 font-medium">Customer</th><th className="text-left p-4 font-medium">Total</th><th className="text-left p-4 font-medium">Payment</th><th className="text-left p-4 font-medium">Status</th><th className="text-left p-4 font-medium">Date</th><th className="text-left p-4 font-medium">Actions</th></tr></thead>
               <tbody>{orders.map((order) => (
@@ -78,7 +99,7 @@ export default function AdminOrders() {
               ))}</tbody>
             </table>
           </div>
-        )}
+        </>)}
       </div>
     </div>
   );
