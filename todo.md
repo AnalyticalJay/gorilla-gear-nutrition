@@ -176,4 +176,10 @@
 - [x] Browse the supplied HD Labs links page and inventory injectable product image URLs.
 - [x] Match injectable images strictly to existing HD Labs injectable catalogue products.
 - [x] Upload verified images to managed storage and link them to the correct products.
-- [ ] Verify representative injectable product rendering and save a checkpoint.
+- [x] Verify representative injectable product rendering and save a checkpoint.
+
+## Active Implementation — HD Labs Oral Image Collection
+- [x] Browse the supplied HD Labs oral page and inventory product image URLs.
+- [x] Match oral images strictly to existing HD Labs oral catalogue products by brand and strength.
+- [x] Upload verified oral images to managed storage and link them to the correct products.
+- [ ] Verify representative oral product rendering and save a checkpoint.
