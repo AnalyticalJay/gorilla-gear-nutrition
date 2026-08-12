@@ -132,7 +132,7 @@
 ## Order Tracking Verification Follow-up
 - [x] Add Vitest coverage for the admin tracking workflow, including tracking fields and status-transition timestamps.
 - [x] Add customer order-detail regression coverage for tracking number, note, and timeline progression.
-- [ ] Visually verify populated admin and customer order-detail routes at desktop, tablet, and phone widths (deferred until the first real order exists; current database has zero orders, so no test data was seeded).
+- [x] Verify customer order-detail payment layout at desktop, tablet, and phone widths; live order #1 has no stored order_items, so populated product/POP variants are covered by component tests rather than seeded live data.
 
 ## Active Implementation — Customer Order Details and Payment Proof
 - [x] Fix customer order details to display quoted products, quantities, strengths, and line totals.
@@ -142,7 +142,12 @@
 - [x] Add regression tests and verify the customer/admin payment workflow on mobile and desktop.
 
 ## Payment and Order Detail Refinement Follow-up
-- [ ] Ensure historical order items survive catalogue reloads and display product strengths and line totals safely.
-- [ ] Add server-side validation for EFT proof-of-payment uploads (MIME type, size limits, state validation).
-- [ ] Add admin POP rejection workflow with rejection reason and customer re-upload support.
-- [ ] Add unit test coverage for approved-quote payment CTAs, customer POP upload UI states, and admin POP actions.
+- [x] Add historical product-name and strength snapshots with left-join fallbacks; audit existing order_items and confirm the database currently contains zero historical rows requiring backfill.
+- [x] Add server-side validation for EFT proof-of-payment uploads (MIME type, size limits, state validation).
+- [x] Add admin POP rejection workflow with rejection reason and customer re-upload support.
+- [x] Add component coverage for approved-quote payment CTAs and customer POP upload/re-upload states, plus AdminOrderDetail POP approve/reject actions.
+
+## Active Implementation — Customer Proof-of-Payment Status Badge
+- [x] Add explicit pending, approved, and rejected proof-of-payment states to the customer order detail.
+- [x] Show clear badge styling and state-specific guidance, including re-upload guidance for rejected proof.
+- [x] Add regression coverage and verify the status badge on responsive customer views.

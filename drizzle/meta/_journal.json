@@ -50,6 +50,20 @@
       "when": 1786552274931,
       "tag": "0006_wakeful_pyro",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1786552732978,
+      "tag": "0007_secret_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1786553210808,
+      "tag": "0008_bent_santa_claus",
+      "breakpoints": true
     }
   ]
 }

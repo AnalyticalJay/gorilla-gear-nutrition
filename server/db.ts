@@ -732,11 +732,19 @@ export async function createOrder(data: {
     quoteNotes: data.quoteNotes ?? null,
   });
   const orderId = (orderResult as unknown as { insertId: number }).insertId;
+  const productIds = Array.from(new Set(data.items.map((item) => item.productId)));
+  const productRows = productIds.length > 0
+    ? await db.select({ id: products.id, name: products.name, dosageInfo: products.dosageInfo }).from(products).where(inArray(products.id, productIds))
+    : [];
+  const productById = new Map(productRows.map((product) => [product.id, product]));
 
   for (const item of data.items) {
+    const product = productById.get(item.productId);
     await db.insert(orderItems).values({
       orderId,
       productId: item.productId,
+      productNameSnapshot: product?.name ?? `Product #${item.productId}`,
+      strengthSnapshot: product?.dosageInfo ?? null,
       quantity: item.quantity,
       priceAtPurchase: typeof item.priceAtPurchase === "number" ? (item.priceAtPurchase as number).toFixed(2) : String(item.priceAtPurchase ?? "0"),
     });
@@ -777,7 +785,8 @@ export async function chooseQuotePayment(
   if (!db) throw new Error("Database not available");
   const order = await db.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.userId, userId))).limit(1);
   if (!order[0]) throw new Error("Quote not found");
-  if (order[0].status !== "quote_approved") throw new Error("Quote is not approved for payment");
+  const canChoosePayment = order[0].status === "quote_approved" || (order[0].status === "awaiting_payment" && !order[0].paymentMethod);
+  if (!canChoosePayment) throw new Error("Quote is not approved for payment");
 
   const payfastReference = method === "payfast" ? `AA-${orderId}-${Date.now()}` : null;
   await db.update(orders).set({
@@ -806,18 +815,30 @@ export async function getOrderById(orderId: number) {
   const orderResult = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
   if (!orderResult[0]) return undefined;
 
-  const items = await db
+  const rawItems = await db
     .select({
       id: orderItems.id,
       quantity: orderItems.quantity,
       priceAtPurchase: orderItems.priceAtPurchase,
-      productId: products.id,
+      productId: orderItems.productId,
+      productNameSnapshot: orderItems.productNameSnapshot,
+      strengthSnapshot: orderItems.strengthSnapshot,
       productName: products.name,
+      strength: products.dosageInfo,
       productSlug: products.slug,
     })
     .from(orderItems)
-    .innerJoin(products, eq(orderItems.productId, products.id))
+    .leftJoin(products, eq(orderItems.productId, products.id))
     .where(eq(orderItems.orderId, orderId));
+  const items = rawItems.map((item) => ({
+    id: item.id,
+    quantity: item.quantity,
+    priceAtPurchase: item.priceAtPurchase,
+    productId: item.productId,
+    productName: item.productName ?? item.productNameSnapshot ?? `Product #${item.productId}`,
+    strength: item.strength ?? item.strengthSnapshot ?? null,
+    productSlug: item.productSlug ?? null,
+  }));
 
   const shipping = await db
     .select()
@@ -923,10 +944,17 @@ export async function updateOrderStatus(
 export async function confirmEftPayment(orderId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  const order = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+  if (!order[0]) throw new Error("Order not found");
+  const legacyPendingProof = order[0].proofStatus === "not_submitted" && order[0].paymentStatus === "proof_uploaded" && !!order[0].proofOfPaymentUrl;
+  if (order[0].paymentMethod !== "eft" || (order[0].proofStatus !== "pending" && !legacyPendingProof)) throw new Error("A submitted proof of payment is required before approval");
   await db.update(orders).set({
     paymentStatus: "paid",
     status: "paid",
     paymentMethod: "eft",
+    proofStatus: "approved",
+    proofReviewNote: null,
+    proofReviewedAt: new Date(),
     paidAt: new Date(),
   }).where(eq(orders.id, orderId));
 }
@@ -941,6 +969,27 @@ export async function uploadProofOfPayment(orderId: number, userId: number, url:
     proofOfPaymentUrl: url,
     proofOfPaymentKey: key,
     proofUploadedAt: new Date(),
+    proofStatus: "pending",
+    proofReviewNote: null,
+    proofReviewedAt: null,
+    proofReviewedBy: null,
+  }).where(eq(orders.id, orderId));
+}
+
+export async function rejectProofOfPayment(orderId: number, adminId: number, note: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const order = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+  if (!order[0]) throw new Error("Order not found");
+  const legacyPendingProof = order[0].proofStatus === "not_submitted" && order[0].paymentStatus === "proof_uploaded" && !!order[0].proofOfPaymentUrl;
+  if (order[0].paymentMethod !== "eft" || (order[0].proofStatus !== "pending" && !legacyPendingProof)) throw new Error("A submitted proof of payment is required before rejection");
+  await db.update(orders).set({
+    paymentStatus: "awaiting_eft",
+    status: "awaiting_payment",
+    proofStatus: "rejected",
+    proofReviewNote: note,
+    proofReviewedAt: new Date(),
+    proofReviewedBy: adminId,
   }).where(eq(orders.id, orderId));
 }
 

@@ -47,6 +47,7 @@ import {
   updateOrderTracking,
   updateOrderPayment,
   uploadProofOfPayment,
+  rejectProofOfPayment,
   updateProduct,
   updateUserStatus,
   upsertCartItem,
@@ -523,7 +524,8 @@ export const appRouter = router({
         const quote = await getOrderById(input.orderId);
         if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
         if (quote.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN" });
-        if (quote.status !== "quote_approved") {
+        const canChoosePayment = quote.status === "quote_approved" || (quote.status === "awaiting_payment" && !quote.paymentMethod);
+        if (!canChoosePayment) {
           throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Quote must be approved before payment" });
         }
         const payment = await chooseQuotePayment(input.orderId, ctx.user.id, input.method);
@@ -544,17 +546,35 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    rejectProof: adminProcedure
+      .input(z.object({ orderId: z.number(), note: z.string().trim().min(1).max(2000) }))
+      .mutation(async ({ ctx, input }) => {
+        await rejectProofOfPayment(input.orderId, ctx.user.id, input.note);
+        return { success: true };
+      }),
+
     uploadProof: protectedProcedure
-      .input(z.object({ orderId: z.number(), dataUrl: z.string(), fileName: z.string() }))
+      .input(z.object({
+        orderId: z.number(),
+        dataUrl: z.string().max(11_000_000),
+        fileName: z.string().trim().min(1).max(128),
+      }))
       .mutation(async ({ ctx, input }) => {
         const order = await getOrderById(input.orderId);
         if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
         if (order.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN" });
-
-        const base64Data = input.dataUrl.replace(/^data:.*;base64,/, "");
-        const buffer = Buffer.from(base64Data, "base64");
-        const fileKey = `orders/${input.orderId}/pop_${Date.now()}_${input.fileName}`;
-        const contentType = input.dataUrl.match(/^data:(.*?);/)?.[1] || "application/octet-stream";
+        if (order.paymentMethod !== "eft" || order.status !== "awaiting_payment" || !["awaiting_eft", "proof_uploaded"].includes(order.paymentStatus)) {
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "EFT proof can only be uploaded while the order is awaiting EFT payment" });
+        }
+        const match = input.dataUrl.match(/^data:(image\/(?:png|jpeg|webp)|application\/pdf);base64,([A-Za-z0-9+/=\r\n]+)$/);
+        if (!match) throw new TRPCError({ code: "BAD_REQUEST", message: "Upload a PNG, JPG, WEBP, or PDF proof of payment" });
+        const contentType = match[1];
+        const buffer = Buffer.from(match[2], "base64");
+        if (buffer.length === 0 || buffer.length > 8 * 1024 * 1024) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Proof of payment must be smaller than 8 MB" });
+        }
+        const safeFileName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-128) || "proof-of-payment";
+        const fileKey = `orders/${input.orderId}/pop_${Date.now()}_${safeFileName}`;
 
         const { url, key } = await storagePut(fileKey, buffer, contentType);
         await uploadProofOfPayment(input.orderId, ctx.user.id, url, key);

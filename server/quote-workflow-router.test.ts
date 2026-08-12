@@ -9,6 +9,7 @@ const dbMocks = vi.hoisted(() => ({
   chooseQuotePayment: vi.fn(),
   reviewQuote: vi.fn(),
   confirmEftPayment: vi.fn(),
+  rejectProofOfPayment: vi.fn(),
 }));
 
 vi.mock("./db", async () => ({
@@ -122,6 +123,11 @@ describe("quote workflow router", () => {
     dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-55" });
     const eft = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
     expect(eft).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-55" });
+
+    dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "awaiting_payment", paymentMethod: null });
+    dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-56" });
+    const recovered = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
+    expect(recovered).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-56" });
   });
 
   it("lets an admin confirm an EFT payment and transition the quote to paid", async () => {
@@ -130,5 +136,13 @@ describe("quote workflow router", () => {
     await caller.orders.confirmEft({ orderId: 55 });
 
     expect(dbMocks.confirmEftPayment).toHaveBeenCalledWith(55);
+  });
+
+  it("lets an admin reject a proof with a customer-facing note", async () => {
+    const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
+
+    await caller.orders.rejectProof({ orderId: 55, note: "Please upload a clearer receipt." });
+
+    expect(dbMocks.rejectProofOfPayment).toHaveBeenCalledWith(55, 7, "Please upload a clearer receipt.");
   });
 });

@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,11 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Package, MapPin, CreditCard, Truck, User, ExternalLink, Save } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import QuoteConversation from "@/components/QuoteConversation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getTrackingUrl } from "@shared/orderTracking";
+import { proofStatusMeta, resolveProofStatus } from "@shared/paymentProof";
 
 const ORDER_STATUSES = ["quote_pending", "quote_approved", "quote_rejected", "awaiting_payment", "paid", "processing", "shipped", "completed", "cancelled"];
 
@@ -38,6 +39,7 @@ export default function AdminOrderDetail() {
   const [trackingCarrier, setTrackingCarrier] = useState("The Courier Guy");
   const [trackingUrl, setTrackingUrl] = useState("");
   const [trackingNotes, setTrackingNotes] = useState("");
+  const [proofReviewNote, setProofReviewNote] = useState("");
 
   const orderQuery = trpc.orders.adminDetail.useQuery(
     { orderId: parseInt(orderId ?? "0") },
@@ -56,6 +58,16 @@ export default function AdminOrderDetail() {
   const confirmEft = trpc.orders.confirmEft.useMutation({
     onSuccess: () => {
       toast.success("EFT payment confirmed");
+      utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
+      utils.orders.adminList.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const rejectProof = trpc.orders.rejectProof.useMutation({
+    onSuccess: () => {
+      toast.success("Proof of payment rejected and customer notified in their order view");
+      setProofReviewNote("");
       utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
       utils.orders.adminList.invalidate();
     },
@@ -217,18 +229,30 @@ export default function AdminOrderDetail() {
                 <span className="font-mono text-xs">{order.payfastReference}</span>
               </div>
             )}
-            {order.proofOfPaymentUrl && (
-              <div className="pt-2 border-t border-border/40">
-                <p className="font-bold text-xs mb-1">Proof of Payment (POP):</p>
-                <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline flex items-center gap-1 mb-2">
+            {(order.paymentMethod === "eft" || order.proofOfPaymentUrl) && (
+              <div className="pt-2 border-t border-border/40 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-bold text-xs">Proof of Payment (POP)</p>
+                  <Badge className={`text-xs ${proofStatusMeta[resolveProofStatus(order)].className}`}>{proofStatusMeta[resolveProofStatus(order)].label}</Badge>
+                </div>
+                {order.proofOfPaymentUrl && <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline flex items-center gap-1">
                   <ExternalLink className="h-3 w-3" /> View customer uploaded receipt
-                </a>
+                </a>}
+                {order.proofReviewNote && <p className="rounded border border-red-500/20 bg-red-500/5 p-2 text-xs text-red-200"><strong>Review note:</strong> {order.proofReviewNote}</p>}
               </div>
             )}
-            {(order.status === "awaiting_payment" || order.paymentStatus === "proof_uploaded") && order.paymentMethod === "eft" && (
-              <Button className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white font-bold" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending}>
-                {confirmEft.isPending ? "Verifying..." : "Verify & Confirm EFT Payment"}
-              </Button>
+            {order.paymentMethod === "eft" && order.proofOfPaymentUrl && resolveProofStatus(order) === "pending" && (
+              <div className="mt-3 space-y-2">
+                <Textarea value={proofReviewNote} onChange={(event) => setProofReviewNote(event.target.value)} placeholder="Optional rejection reason for the customer" className="min-h-20 bg-background/50 text-xs" />
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <Button variant="outline" className="border-red-500/40 text-red-300 hover:bg-red-500/10" onClick={() => rejectProof.mutate({ orderId: order.id, note: proofReviewNote.trim() || "Please upload a clearer proof of payment." })} disabled={rejectProof.isPending || confirmEft.isPending}>
+                    {rejectProof.isPending ? "Rejecting..." : "Reject POP"}
+                  </Button>
+                  <Button className="bg-green-600 hover:bg-green-700 text-white font-bold" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending || rejectProof.isPending}>
+                    {confirmEft.isPending ? "Verifying..." : "Approve & Confirm EFT"}
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -245,6 +269,7 @@ export default function AdminOrderDetail() {
             <div key={item.id} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
               <div>
                 <p className="font-medium text-sm">{item.productName}</p>
+                {item.strength && <p className="text-xs text-primary/80 mt-1">{item.strength}</p>}
                 <p className="text-xs text-muted-foreground">
                   Qty: {item.quantity} × R{parseFloat(item.priceAtPurchase).toFixed(2)}
                 </p>

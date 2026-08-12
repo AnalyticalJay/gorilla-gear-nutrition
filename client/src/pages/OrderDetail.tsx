@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import QuoteProgressTracker from "@/components/QuoteProgressTracker";
 import QuoteConversation from "@/components/QuoteConversation";
 import OrderTrackingTimeline from "@/components/OrderTrackingTimeline";
+import { proofStatusMeta, resolveProofStatus } from "@shared/paymentProof";
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
@@ -112,8 +113,10 @@ export default function OrderDetail() {
     return <div className="min-h-screen flex flex-col bg-background"><Navbar /><main className="flex-1 container py-12 text-center"><p className="text-muted-foreground">Quote not found.</p><Link href="/account"><Button className="mt-4 text-white font-bold">Back to Account</Button></Link></main><Footer /></div>;
   }
 
-  const isApprovedForPayment = order.status === "quote_approved";
+  const canSelectPayment = order.status === "quote_approved" || (order.status === "awaiting_payment" && !order.paymentMethod);
   const isEftAwaiting = order.status === "awaiting_payment" && order.paymentMethod === "eft";
+  const proofStatus = resolveProofStatus(order);
+  const proofMeta = proofStatusMeta[proofStatus];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -133,7 +136,7 @@ export default function OrderDetail() {
 
             <div className="glass-card rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4"><Package className="h-4 w-4 text-primary" /><h2 className="font-bold">Products in Quote</h2></div>
-              <div className="space-y-3">{order.items.map((item) => <div key={item.id} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0"><div><p className="font-medium text-sm">{item.productName}</p><p className="text-xs text-muted-foreground">Qty: {item.quantity}</p></div><p className="font-bold text-sm text-primary">R{(parseFloat(item.priceAtPurchase) * item.quantity).toFixed(2)}</p></div>)}</div>
+              <div className="space-y-3">{order.items.length > 0 ? order.items.map((item) => <div key={item.id} className="flex items-start justify-between gap-4 py-3 border-b border-border/20 last:border-0"><div className="min-w-0"><p className="font-medium text-sm">{item.productName}</p>{item.strength && <p className="text-xs text-primary/80 mt-1">{item.strength}</p>}<p className="text-xs text-muted-foreground mt-1">Qty: {item.quantity} × R{parseFloat(item.priceAtPurchase).toFixed(2)}</p></div><p className="shrink-0 font-bold text-sm text-primary">R{(parseFloat(item.priceAtPurchase) * item.quantity).toFixed(2)}</p></div>) : <p className="text-sm text-muted-foreground">Product details are being prepared for this quote.</p>}</div>
             </div>
 
             {order.shipping && <div className="glass-card rounded-xl p-6"><div className="flex items-center gap-2 mb-4"><MapPin className="h-4 w-4 text-primary" /><h2 className="font-bold">Delivery Address</h2></div><div className="text-sm space-y-1"><p className="font-medium">{order.shipping.fullName}</p><p className="text-muted-foreground">{order.shipping.addressLine1}</p>{order.shipping.addressLine2 && <p className="text-muted-foreground">{order.shipping.addressLine2}</p>}<p className="text-muted-foreground">{order.shipping.city}, {order.shipping.postalCode}</p><p className="text-muted-foreground">{order.shipping.country}</p><p className="text-muted-foreground mt-2">{order.shipping.phone}</p></div></div>}
@@ -146,11 +149,22 @@ export default function OrderDetail() {
                 <div className="flex justify-between font-bold text-base border-t border-border/40 pt-2 mt-2"><span>Quote Total</span><span className="text-primary">R{parseFloat(order.totalAmount).toFixed(2)}</span></div>
                 <div className="flex justify-between text-xs mt-2"><span className="text-muted-foreground">Payment Status</span><Badge className={`text-xs ${order.paymentStatus === "paid" ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"}`}>{order.paymentStatus.replaceAll("_", " ")}</Badge></div>
                 {order.paymentMethod && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Payment Method</span><span className="uppercase">{order.paymentMethod}</span></div>}
+                {(order.paymentMethod === "eft" || order.proofOfPaymentUrl) && (
+                  <div className="mt-4 rounded-lg border border-border/40 bg-background/30 p-3 space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Proof of payment</span>
+                      <Badge className={`text-xs ${proofMeta.className}`}>{proofMeta.label}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{proofMeta.description}</p>
+                    {proofStatus === "rejected" && order.proofReviewNote && <p className="rounded border border-red-500/20 bg-red-500/5 p-2 text-xs text-red-200"><strong>Admin note:</strong> {order.proofReviewNote}</p>}
+                    {order.proofOfPaymentUrl && <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="block text-xs text-primary underline">View uploaded receipt</a>}
+                  </div>
+                )}
               </div>
 
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 text-sm text-yellow-200"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-200">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
-              {isApprovedForPayment && <div className="mt-5 grid gap-3 sm:grid-cols-2"><Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button><Button variant="outline" className="min-h-11 font-bold border-[#0EA5E9]/40" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Pay via EFT</Button></div>}
+              {canSelectPayment && <div className="mt-5 grid gap-3 sm:grid-cols-2"><Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button><Button variant="outline" className="min-h-11 font-bold border-[#0EA5E9]/40" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Pay via EFT</Button></div>}
               {isEftAwaiting && (
                 <div className="mt-5 rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 p-4 text-sm space-y-4">
                   <div className="flex items-center gap-2 font-bold text-[#38BDF8]"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div>
@@ -159,19 +173,18 @@ export default function OrderDetail() {
 
                   <div className="border-t border-border/40 pt-4">
                     <h3 className="font-bold mb-2">Upload Proof of Payment (POP)</h3>
-                    {order.proofOfPaymentUrl ? (
+                    {proofStatus === "pending" || proofStatus === "approved" ? (
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-green-400 font-medium">
                           <CheckCircle2 className="h-4 w-4" /> POP uploaded successfully
                         </div>
-                        <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline block">
-                          View uploaded receipt
-                        </a>
-                        <p className="text-xs text-muted-foreground">Your proof of payment is currently awaiting admin verification.</p>
+                        <p className="text-xs text-muted-foreground">{proofMeta.description}</p>
+                        {order.proofOfPaymentUrl && <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline block">View uploaded receipt</a>}
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <p className="text-xs text-muted-foreground">Upload your bank deposit slip or POP screenshot (PDF, PNG, JPG) for instant admin review.</p>
+                        <p className="text-xs text-muted-foreground">{proofStatus === "rejected" ? "Please upload a corrected bank deposit slip or POP screenshot." : "Upload your bank deposit slip or POP screenshot (PDF, PNG, JPG) for admin review."}</p>
+                        {proofStatus === "rejected" && order.proofReviewNote && <p className="rounded border border-red-500/20 bg-red-500/5 p-2 text-xs text-red-200"><strong>Admin note:</strong> {order.proofReviewNote}</p>}
                         <input
                           type="file"
                           accept="image/*,application/pdf"
@@ -185,17 +198,7 @@ export default function OrderDetail() {
                   </div>
                 </div>
               )}
-              {order.paymentStatus === "proof_uploaded" && !isEftAwaiting && (
-                <div className="mt-5 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 text-sm space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-blue-400"><CheckCircle2 className="h-4 w-4" /> Proof of Payment Submitted</div>
-                  <p className="text-muted-foreground text-xs">Your POP has been received and is awaiting admin verification.</p>
-                  {order.proofOfPaymentUrl && (
-                    <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline block">
-                      View uploaded receipt
-                    </a>
-                  )}
-                </div>
-              )}
+
             </div>
 
             {order.quoteNotes && order.status !== "awaiting_payment" && <div className="glass-card rounded-xl p-6"><h2 className="font-bold mb-2">Review Notes</h2><p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.quoteNotes}</p></div>}

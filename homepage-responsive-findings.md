@@ -21,3 +21,11 @@ After the shared navbar update, the phone header uses a compact cart, account ic
 ## Final Full-Page Check
 
 The final 375px full-page capture confirms all homepage sections remain within the viewport: hero, featured products, category tiles, membership process, dark CTA, footer, and persistent bottom navigation. No horizontal overflow, section clipping, or broken responsive columns were observed.
+
+## Proof-of-Payment Badge Verification — 2026-08-12
+
+Desktop full-page verification of `/orders/1` confirmed the route, quote timeline, products section, and Quote & Payment card render without overflow. It also exposed a related state bug: the live order is `awaiting_payment` with no `paymentMethod`, so the customer sees no PayFast/EFT action buttons and no proof-of-payment badge. The payment action guard currently only checks `quote_approved`; it must also allow an `awaiting_payment` order with no selected method to choose PayFast or EFT.
+
+## Proof-of-Payment Badge Verification — Corrected Payment State
+
+After extending the payment guard to support `awaiting_payment` orders without a selected method, the live desktop and 375px phone captures now show both **Pay via PayFast** and **Pay via EFT** actions in the customer Quote & Payment card. The layout remains within the viewport, with the buttons stacking cleanly on phone width. Once EFT is selected, the proof-of-payment badge and upload guidance become available through the same card.
