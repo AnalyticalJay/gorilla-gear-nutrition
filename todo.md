@@ -216,3 +216,9 @@
 - [x] Prepare and upload a transparent-background version of the hero logo artwork.
 - [x] Apply the frameless treatment to the footer logo.
 - [x] Update the hero to use the transparent artwork and verify desktop/mobile rendering.
+
+## Active Implementation — Dynamic Customer Order Status Tracker
+- [x] Review the existing order status model, timeline logic, and customer order-detail presentation.
+- [x] Implement a dynamic visual progress tracker for customer order statuses with current, completed, and upcoming states.
+- [x] Add responsive regression tests and verify the tracker across customer order states and viewport sizes.
+- [x] Save a checkpoint for the completed order status tracker.

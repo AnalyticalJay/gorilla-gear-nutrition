@@ -38,7 +38,11 @@ export default function OrderDetail() {
 
   const orderQuery = trpc.orders.detail.useQuery(
     { orderId: parsedOrderId },
-    { enabled: isAuthenticated && !!orderId }
+    {
+      enabled: isAuthenticated && !!orderId,
+      refetchInterval: 30000,
+      refetchIntervalInBackground: true,
+    },
   );
   const order = orderQuery.data;
 
@@ -123,7 +127,12 @@ export default function OrderDetail() {
           </div>
 
           <div className="grid gap-6">
-            <OrderTrackingTimeline order={order} />
+            <OrderTrackingTimeline
+              order={order}
+              onRefresh={() => void orderQuery.refetch()}
+              isRefreshing={orderQuery.isFetching}
+              lastUpdatedAt={orderQuery.dataUpdatedAt}
+            />
             <QuoteProgressTracker status={order.status} paymentStatus={order.paymentStatus} />
             <QuoteConversation orderId={order.id} comments={order.comments} viewerRole={user?.role === "admin" ? "admin" : "user"} />
 
