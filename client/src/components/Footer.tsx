@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_0.8fr_0.8fr]">
           <div>
             <div className="flex items-center gap-3">
-              <div className="h-12 w-11 overflow-hidden rounded-md bg-white/65 p-1"><img src={logoSrc} alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" /></div>
+              <img src={logoSrc} alt="Gorilla Gear Nutrition logo" className="h-12 w-11 object-contain" />
               <div className="leading-none"><span className="block text-[15px] font-black uppercase tracking-[0.11em]">Gorilla Gear</span><span className="mt-1 block text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#d7472f]">Nutrition</span></div>
             </div>
             <p className="mt-4 max-w-sm text-xs font-medium leading-relaxed text-[#555555]">

@@ -210,4 +210,9 @@
 ## Active Implementation — Hero Media Fill Treatment
 - [x] Remove the visual block/card frame around the hero artwork.
 - [x] Enlarge the uploaded hero image so it fills the media area without incorrect cropping.
-- [ ] Verify desktop and mobile hero rendering and save a checkpoint.
+- [x] Verify desktop and mobile hero rendering and save a checkpoint.
+
+## Active Implementation — Frameless Footer and Transparent Hero Logo
+- [x] Prepare and upload a transparent-background version of the hero logo artwork.
+- [x] Apply the frameless treatment to the footer logo.
+- [x] Update the hero to use the transparent artwork and verify desktop/mobile rendering.
