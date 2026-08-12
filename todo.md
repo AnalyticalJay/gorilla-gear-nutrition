@@ -21,8 +21,8 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Run TypeScript checks and the Vitest suite: 56 tests passed across 13 files.
 - [x] Replace remaining legacy customer-facing brand references on account, quote, approval, login, register, and checkout screens.
 - [x] Re-run validation after the broader customer-facing rebrand.
-- [ ] Perform desktop and mobile browser verification after the broader rebrand.
-- [ ] Save a checkpoint for the completed redesign.
+- [x] Perform desktop and mobile browser verification after the broader rebrand.
+- [x] Save a checkpoint for the completed redesign.
 
 ## Future User-Requested Work
 
@@ -38,8 +38,8 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Implement the responsive admin approval dashboard with status filters, applicant search, detail review, approve/reject actions, notes, loading states, empty states, and error feedback.
 - [x] Preserve server-side authorization and existing tRPC contracts while wiring the React components.
 - [x] Add or update Vitest coverage for registration and approval dashboard behavior.
-- [ ] Run TypeScript checks and Vitest tests, then verify desktop and mobile layouts.
-- [ ] Save a checkpoint for the completed implementation.
+- [x] Run TypeScript checks and Vitest tests, then verify desktop and mobile layouts.
+- [x] Save a checkpoint for the completed implementation.
 - [x] Refine the approval status filters so all options remain visible without horizontal clipping on small screens.
 - [x] Replace the stale Anabolics Africa document title with Gorilla Gear Nutrition.
 
@@ -67,8 +67,8 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Add component test for Products page filter reset and selection.
 - [x] Take mobile screenshot with filter drawer open for visual verification.
 
-- [ ] Add true React component test rendering Products page with filter interactions.
-- [ ] Take mobile screenshot with filter drawer open.
+- [x] Add true React component test rendering Products page with filter interactions.
+- [x] Take mobile screenshot with filter drawer open.
 
 ## Active Implementation — Fix Admin 404 Routing
 - [x] Trace App.tsx routes for admin paths.
@@ -92,4 +92,4 @@ Source-project work is preserved below for reference. Those completed items are 
 
 - [x] Verify authenticated admin products table renders 703 products correctly.
 
-- [ ] Add unit test verifying admin product list query and table rendering in `AdminProducts.tsx`.
+- [x] Add unit test verifying admin product list query and table rendering in `AdminProducts.tsx`.
