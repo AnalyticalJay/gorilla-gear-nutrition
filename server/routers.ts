@@ -44,6 +44,7 @@ import {
   setPrimaryImage,
   updateCategory,
   updateOrderStatus,
+  updateOrderTracking,
   updateOrderPayment,
   updateProduct,
   updateUserStatus,
@@ -572,6 +573,20 @@ export const appRouter = router({
         notes: z.string().optional(),
       }))
       .mutation(({ input }) => updateOrderStatus(input.orderId, input.status, input.notes)),
+    adminUpdateTracking: adminProcedure
+      .input(z.object({
+        orderId: z.number(),
+        trackingNumber: z.string().trim().max(128).nullable().optional(),
+        trackingCarrier: z.string().trim().max(64).nullable().optional(),
+        trackingUrl: z.string().trim().url().max(1024).nullable().optional(),
+        trackingNotes: z.string().trim().max(2000).nullable().optional(),
+      }))
+      .mutation(({ input }) => updateOrderTracking(input.orderId, {
+        trackingNumber: input.trackingNumber || null,
+        trackingCarrier: input.trackingCarrier || null,
+        trackingUrl: input.trackingUrl || null,
+        trackingNotes: input.trackingNotes || null,
+      })),
   }),
 
   // ─── Admin: Users ─────────────────────────────────────────────────────────

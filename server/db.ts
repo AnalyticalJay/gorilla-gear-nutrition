@@ -15,6 +15,7 @@ import {
   users,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
+import { getOrderStatusTimelineUpdates } from "../shared/orderTracking";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -867,6 +868,11 @@ export async function getAllOrders() {
       paymentStatus: orders.paymentStatus,
       paymentMethod: orders.paymentMethod,
       payfastReference: orders.payfastReference,
+      trackingNumber: orders.trackingNumber,
+      trackingCarrier: orders.trackingCarrier,
+      trackingUrl: orders.trackingUrl,
+      dispatchedAt: orders.dispatchedAt,
+      deliveredAt: orders.deliveredAt,
       quoteNotes: orders.quoteNotes,
       rejectionReason: orders.rejectionReason,
       reviewedAt: orders.reviewedAt,
@@ -880,6 +886,20 @@ export async function getAllOrders() {
     .orderBy(orders.createdAt);
 }
 
+export async function updateOrderTracking(
+  orderId: number,
+  data: {
+    trackingNumber?: string | null;
+    trackingCarrier?: string | null;
+    trackingUrl?: string | null;
+    trackingNotes?: string | null;
+  },
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set(data).where(eq(orders.id, orderId));
+}
+
 export async function updateOrderStatus(
   orderId: number,
   status: "pending" | "quote_pending" | "quote_approved" | "quote_rejected" | "awaiting_payment" | "paid" | "processing" | "shipped" | "completed" | "cancelled",
@@ -887,9 +907,16 @@ export async function updateOrderStatus(
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  const current = await db.select({ dispatchedAt: orders.dispatchedAt }).from(orders).where(eq(orders.id, orderId)).limit(1);
+  if (!current[0]) throw new Error("Order not found");
+  const now = new Date();
   await db
     .update(orders)
-    .set({ status, trackingNotes: notes ?? undefined })
+    .set({
+      status,
+      trackingNotes: notes ?? undefined,
+      ...getOrderStatusTimelineUpdates(status, current[0].dispatchedAt, now),
+    })
     .where(eq(orders.id, orderId));
 }
 
@@ -900,6 +927,7 @@ export async function confirmEftPayment(orderId: number) {
     paymentStatus: "paid",
     status: "paid",
     paymentMethod: "eft",
+    paidAt: new Date(),
   }).where(eq(orders.id, orderId));
 }
 
@@ -915,6 +943,7 @@ export async function updateOrderPayment(
       paymentStatus,
       status: paymentStatus === "paid" ? "paid" : "cancelled",
       payfastReference,
+      ...(paymentStatus === "paid" ? { paidAt: new Date() } : {}),
     })
     .where(eq(orders.payfastReference, payfastReference));
 }

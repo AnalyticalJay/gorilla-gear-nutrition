@@ -3,11 +3,14 @@ import { useParams, Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Package, MapPin, CreditCard, Truck, User } from "lucide-react";
+import { ArrowLeft, Package, MapPin, CreditCard, Truck, User, ExternalLink, Save } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuoteConversation from "@/components/QuoteConversation";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { getTrackingUrl } from "@shared/orderTracking";
 
 const ORDER_STATUSES = ["quote_pending", "quote_approved", "quote_rejected", "awaiting_payment", "paid", "processing", "shipped", "completed", "cancelled"];
 
@@ -31,6 +34,10 @@ export default function AdminOrderDetail() {
   const { orderId } = useParams<{ orderId: string }>();
   const utils = trpc.useUtils();
   const [newStatus, setNewStatus] = useState<string>("");
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [trackingCarrier, setTrackingCarrier] = useState("The Courier Guy");
+  const [trackingUrl, setTrackingUrl] = useState("");
+  const [trackingNotes, setTrackingNotes] = useState("");
 
   const orderQuery = trpc.orders.adminDetail.useQuery(
     { orderId: parseInt(orderId ?? "0") },
@@ -38,9 +45,26 @@ export default function AdminOrderDetail() {
   );
   const order = orderQuery.data;
 
+  useEffect(() => {
+    if (!order) return;
+    setTrackingNumber(order.trackingNumber ?? "");
+    setTrackingCarrier(order.trackingCarrier ?? "The Courier Guy");
+    setTrackingUrl(order.trackingUrl ?? "");
+    setTrackingNotes(order.trackingNotes ?? "");
+  }, [order?.id, order?.trackingNumber, order?.trackingCarrier, order?.trackingUrl, order?.trackingNotes]);
+
   const confirmEft = trpc.orders.confirmEft.useMutation({
     onSuccess: () => {
       toast.success("EFT payment confirmed");
+      utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
+      utils.orders.adminList.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const updateTracking = trpc.orders.adminUpdateTracking.useMutation({
+    onSuccess: () => {
+      toast.success("Tracking details saved");
       utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
       utils.orders.adminList.invalidate();
     },
@@ -99,7 +123,8 @@ export default function AdminOrderDetail() {
       </div>
 
       {/* Status Update */}
-      <div className="glass-card rounded-xl p-6">
+      <div className="glass-card rounded-xl p-4 sm:p-6">
+
         <h2 className="font-bold mb-4">Update Order Status</h2>
         <div className="flex gap-3 items-center">
           <Select value={newStatus} onValueChange={setNewStatus}>
@@ -123,6 +148,27 @@ export default function AdminOrderDetail() {
           >
             {updateStatus.isPending ? "Updating..." : "Update Status"}
           </Button>
+        </div>
+      </div>
+
+      {/* Shipment Tracking */}
+      <div className="glass-card rounded-xl p-4 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /><h2 className="font-bold">Shipment Tracking</h2></div>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">Add the courier details customers will see on their order timeline.</p>
+          </div>
+          {trackingNumber && getTrackingUrl(trackingCarrier, trackingNumber, trackingUrl) && <a href={getTrackingUrl(trackingCarrier, trackingNumber, trackingUrl) ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-primary no-underline hover:underline"><ExternalLink className="h-3.5 w-3.5" /> Preview link</a>}
+        </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2"><label htmlFor="tracking-number" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tracking number</label><Input id="tracking-number" value={trackingNumber} onChange={(event) => setTrackingNumber(event.target.value)} placeholder="e.g. TCG123456789" className="bg-background/50" /></div>
+          <div className="space-y-2"><label htmlFor="tracking-carrier" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Carrier</label><Input id="tracking-carrier" value={trackingCarrier} onChange={(event) => setTrackingCarrier(event.target.value)} placeholder="The Courier Guy" className="bg-background/50" /></div>
+          <div className="space-y-2 sm:col-span-2"><label htmlFor="tracking-url" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tracking URL <span className="font-normal normal-case">(optional)</span></label><Input id="tracking-url" value={trackingUrl} onChange={(event) => setTrackingUrl(event.target.value)} placeholder="Leave blank to use the Courier Guy tracking page" className="bg-background/50" /></div>
+          <div className="space-y-2 sm:col-span-2"><label htmlFor="tracking-notes" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Customer tracking note <span className="font-normal normal-case">(optional)</span></label><Textarea id="tracking-notes" value={trackingNotes} onChange={(event) => setTrackingNotes(event.target.value)} placeholder="e.g. Dispatched from Johannesburg depot." className="min-h-20 bg-background/50" /></div>
+        </div>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">Set the order status to <strong className="text-foreground">Shipped</strong> after the parcel has been handed to the courier.</p>
+          <Button className="min-h-10 text-white font-bold" disabled={updateTracking.isPending} onClick={() => updateTracking.mutate({ orderId: order.id, trackingNumber: trackingNumber.trim() || null, trackingCarrier: trackingCarrier.trim() || null, trackingUrl: trackingUrl.trim() || null, trackingNotes: trackingNotes.trim() || null })}><Save className="mr-2 h-4 w-4" />{updateTracking.isPending ? "Saving..." : "Save tracking"}</Button>
         </div>
       </div>
 
@@ -237,12 +283,9 @@ export default function AdminOrderDetail() {
 
       {/* Tracking Notes */}
       {order.trackingNotes && (
-        <div className="glass-card rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Truck className="h-4 w-4 text-primary" />
-            <h2 className="font-bold">Tracking Notes</h2>
-          </div>
-          <p className="text-sm text-muted-foreground">{order.trackingNotes}</p>
+        <div className="glass-card rounded-xl p-4 sm:p-6">
+          <div className="flex items-center gap-2 mb-2"><Truck className="h-4 w-4 text-primary" /><h2 className="font-bold">Tracking Notes</h2></div>
+          <p className="whitespace-pre-wrap text-sm text-muted-foreground">{order.trackingNotes}</p>
         </div>
       )}
     </div>

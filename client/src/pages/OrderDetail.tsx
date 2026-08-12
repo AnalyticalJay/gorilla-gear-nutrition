@@ -1,3 +1,4 @@
+import React from "react";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,6 +11,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import QuoteProgressTracker from "@/components/QuoteProgressTracker";
 import QuoteConversation from "@/components/QuoteConversation";
+import OrderTrackingTimeline from "@/components/OrderTrackingTimeline";
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
@@ -106,6 +108,7 @@ export default function OrderDetail() {
           </div>
 
           <div className="grid gap-6">
+            <OrderTrackingTimeline order={order} />
             <QuoteProgressTracker status={order.status} paymentStatus={order.paymentStatus} />
             <QuoteConversation orderId={order.id} comments={order.comments} viewerRole={user?.role === "admin" ? "admin" : "user"} />
 

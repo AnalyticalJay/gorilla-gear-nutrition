@@ -121,3 +121,15 @@
 - [x] Add real database-backed overview analytics for users, approvals, products, images, and quote activity.
 - [x] Add tests for analytics data and responsive admin overview rendering.
 - [x] Verify the admin dashboard at desktop, tablet, and phone widths and save a checkpoint.
+
+## Active Implementation — Order Tracking Timeline and Courier Integration
+- [x] Inspect the current order lifecycle, admin order detail, customer order pages, and Courier Guy API requirements.
+- [x] Add tracking number and shipment metadata to orders with admin update workflow.
+- [x] Build a responsive customer-facing order tracking timeline from placement through payment and dispatch.
+- [x] Add Courier Guy integration if supported by available API credentials; otherwise provide a reliable external tracking fallback.
+- [x] Add tests and verify admin/customer tracking flows across desktop and mobile.
+
+## Order Tracking Verification Follow-up
+- [x] Add Vitest coverage for the admin tracking workflow, including tracking fields and status-transition timestamps.
+- [x] Add customer order-detail regression coverage for tracking number, note, and timeline progression.
+- [ ] Visually verify populated admin and customer order-detail routes at desktop, tablet, and phone widths (deferred until the first real order exists; current database has zero orders, so no test data was seeded).
