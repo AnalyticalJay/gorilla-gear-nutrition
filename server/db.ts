@@ -931,6 +931,19 @@ export async function confirmEftPayment(orderId: number) {
   }).where(eq(orders.id, orderId));
 }
 
+export async function uploadProofOfPayment(orderId: number, userId: number, url: string, key: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const order = await db.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.userId, userId))).limit(1);
+  if (!order[0]) throw new Error("Order not found");
+  await db.update(orders).set({
+    paymentStatus: "proof_uploaded",
+    proofOfPaymentUrl: url,
+    proofOfPaymentKey: key,
+    proofUploadedAt: new Date(),
+  }).where(eq(orders.id, orderId));
+}
+
 export async function updateOrderPayment(
   payfastReference: string,
   paymentStatus: "paid" | "failed"

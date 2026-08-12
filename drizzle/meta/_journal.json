@@ -43,6 +43,13 @@
       "when": 1786549895421,
       "tag": "0005_daily_hemingway",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1786552274931,
+      "tag": "0006_wakeful_pyro",
+      "breakpoints": true
     }
   ]
 }

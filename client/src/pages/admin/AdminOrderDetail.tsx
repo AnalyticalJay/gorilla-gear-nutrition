@@ -195,7 +195,7 @@ export default function AdminOrderDetail() {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Status</span>
               <Badge className={`text-xs ${order.paymentStatus === "paid" ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"}`}>
-                {order.paymentStatus}
+                {order.paymentStatus.replaceAll("_", " ")}
               </Badge>
             </div>
             <div className="flex justify-between">
@@ -217,7 +217,19 @@ export default function AdminOrderDetail() {
                 <span className="font-mono text-xs">{order.payfastReference}</span>
               </div>
             )}
-            {order.status === "awaiting_payment" && order.paymentMethod === "eft" && <Button className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white font-bold" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending}>{confirmEft.isPending ? "Confirming..." : "Confirm EFT Payment"}</Button>}
+            {order.proofOfPaymentUrl && (
+              <div className="pt-2 border-t border-border/40">
+                <p className="font-bold text-xs mb-1">Proof of Payment (POP):</p>
+                <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline flex items-center gap-1 mb-2">
+                  <ExternalLink className="h-3 w-3" /> View customer uploaded receipt
+                </a>
+              </div>
+            )}
+            {(order.status === "awaiting_payment" || order.paymentStatus === "proof_uploaded") && order.paymentMethod === "eft" && (
+              <Button className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white font-bold" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending}>
+                {confirmEft.isPending ? "Verifying..." : "Verify & Confirm EFT Payment"}
+              </Button>
+            )}
           </div>
         </div>
       </div>

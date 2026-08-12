@@ -46,6 +46,7 @@ import {
   updateOrderStatus,
   updateOrderTracking,
   updateOrderPayment,
+  uploadProofOfPayment,
   updateProduct,
   updateUserStatus,
   upsertCartItem,
@@ -541,6 +542,23 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await confirmEftPayment(input.orderId);
         return { success: true };
+      }),
+
+    uploadProof: protectedProcedure
+      .input(z.object({ orderId: z.number(), dataUrl: z.string(), fileName: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const order = await getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
+        if (order.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN" });
+
+        const base64Data = input.dataUrl.replace(/^data:.*;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        const fileKey = `orders/${input.orderId}/pop_${Date.now()}_${input.fileName}`;
+        const contentType = input.dataUrl.match(/^data:(.*?);/)?.[1] || "application/octet-stream";
+
+        const { url, key } = await storagePut(fileKey, buffer, contentType);
+        await uploadProofOfPayment(input.orderId, ctx.user.id, url, key);
+        return { success: true, url };
       }),
 
     // PayFast ITN webhook (public, verified by signature)

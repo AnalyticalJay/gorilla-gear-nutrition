@@ -17,6 +17,7 @@ vi.mock("@/lib/trpc", () => ({
     orders: {
       detail: { useQuery: mocks.orderQuery },
       choosePayment: { useMutation: () => ({ isPending: false, mutate: mocks.paymentMutate }) },
+      uploadProof: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
     },
   },
 }));

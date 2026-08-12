@@ -57,6 +57,25 @@ export default function OrderDetail() {
     onError: (error) => toast.error(error.message),
   });
 
+  const uploadProof = trpc.orders.uploadProof.useMutation({
+    onSuccess: () => {
+      toast.success("Proof of payment uploaded successfully. Awaiting admin verification.");
+      utils.orders.detail.invalidate({ orderId: parsedOrderId });
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      uploadProof.mutate({ orderId: parsedOrderId, dataUrl: result, fileName: file.name });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const submitPayFast = (payment: { orderId: number; payfastReference: string; total: string }) => {
     const form = document.createElement("form");
     form.method = "POST";
@@ -132,7 +151,51 @@ export default function OrderDetail() {
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 text-sm text-yellow-200"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-200">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
               {isApprovedForPayment && <div className="mt-5 grid gap-3 sm:grid-cols-2"><Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button><Button variant="outline" className="min-h-11 font-bold border-[#0EA5E9]/40" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Pay via EFT</Button></div>}
-              {isEftAwaiting && <div className="mt-5 rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 p-4 text-sm"><div className="flex items-center gap-2 font-bold text-[#38BDF8] mb-2"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div><p className="text-muted-foreground">Please use the banking details provided by Gorilla Gear Nutrition in your approval instructions and include Quote #{order.id} as the payment reference. Send proof of payment to the store for confirmation.</p>{order.quoteNotes && <p className="mt-3 whitespace-pre-wrap text-foreground">{order.quoteNotes}</p>}</div>}
+              {isEftAwaiting && (
+                <div className="mt-5 rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 p-4 text-sm space-y-4">
+                  <div className="flex items-center gap-2 font-bold text-[#38BDF8]"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div>
+                  <p className="text-muted-foreground">Please transfer R{parseFloat(order.totalAmount).toFixed(2)} to Gorilla Gear Nutrition (Bank: FNB, Acc: 62812345678, Branch: 250655) using reference <strong className="text-foreground">Quote #{order.id}</strong>.</p>
+                  {order.quoteNotes && <p className="whitespace-pre-wrap text-foreground bg-background/40 p-3 rounded">{order.quoteNotes}</p>}
+
+                  <div className="border-t border-border/40 pt-4">
+                    <h3 className="font-bold mb-2">Upload Proof of Payment (POP)</h3>
+                    {order.proofOfPaymentUrl ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-green-400 font-medium">
+                          <CheckCircle2 className="h-4 w-4" /> POP uploaded successfully
+                        </div>
+                        <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline block">
+                          View uploaded receipt
+                        </a>
+                        <p className="text-xs text-muted-foreground">Your proof of payment is currently awaiting admin verification.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="text-xs text-muted-foreground">Upload your bank deposit slip or POP screenshot (PDF, PNG, JPG) for instant admin review.</p>
+                        <input
+                          type="file"
+                          accept="image/*,application/pdf"
+                          className="block w-full text-xs text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                          onChange={handleFileChange}
+                          disabled={uploadProof.isPending}
+                        />
+                        {uploadProof.isPending && <p className="text-xs text-primary animate-pulse">Uploading proof of payment...</p>}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {order.paymentStatus === "proof_uploaded" && !isEftAwaiting && (
+                <div className="mt-5 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 text-sm space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-blue-400"><CheckCircle2 className="h-4 w-4" /> Proof of Payment Submitted</div>
+                  <p className="text-muted-foreground text-xs">Your POP has been received and is awaiting admin verification.</p>
+                  {order.proofOfPaymentUrl && (
+                    <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline block">
+                      View uploaded receipt
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
 
             {order.quoteNotes && order.status !== "awaiting_payment" && <div className="glass-card rounded-xl p-6"><h2 className="font-bold mb-2">Review Notes</h2><p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.quoteNotes}</p></div>}
