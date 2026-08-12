@@ -93,3 +93,15 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Verify authenticated admin products table renders 703 products correctly.
 
 - [x] Add unit test verifying admin product list query and table rendering in `AdminProducts.tsx`.
+
+## Active Implementation — Storefront Pagination
+- [ ] Add limit and offset parameters to product list tRPC procedure.
+- [ ] Update Products.tsx with pagination controls (page size 24, previous/next, page numbers).
+- [ ] Reset page to 1 when filters or search change.
+- [ ] Add unit test for pagination query and component behavior.
+
+## Active Implementation — Cooper Pharmaceuticals Image Import
+- [x] Extract uploaded ZIP archives for Cooper Pharmaceuticals.
+- [x] Match extracted images with Cooper products by name/brand.
+- [x] Upload matched images to storage and link in database.
+- [x] Verify image display on storefront and admin product pages.
