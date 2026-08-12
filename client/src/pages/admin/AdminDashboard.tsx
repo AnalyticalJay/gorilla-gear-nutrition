@@ -1,3 +1,4 @@
+import React from "react";
 import { trpc } from "@/lib/trpc";
 import { Users, Package, ShoppingBag, TrendingUp, Clock, CheckCircle, AlertTriangle, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
@@ -59,75 +60,6 @@ export default function AdminDashboard() {
           </motion.div>
         ))}
       </div>
-
-      {/* Recent Pending Users */}
-      <div className="glass-card rounded-xl p-6">
-          <h2 className="font-bold mb-4 flex items-center gap-2">
-          <Clock className="h-4 w-4 text-yellow-400" />
-          Pending Applications
-        </h2>
-        <PendingUsersList />
-      </div>
-    </div>
-  );
-}
-
-function PendingUsersList() {
-  const usersQuery = trpc.admin.users.useQuery();
-  const utils = trpc.useUtils();
-
-  const approve = trpc.admin.approveUser.useMutation({
-    onSuccess: () => {
-      utils.admin.users.invalidate();
-      utils.admin.stats.invalidate();
-    },
-  });
-
-  const reject = trpc.admin.rejectUser.useMutation({
-    onSuccess: () => {
-      utils.admin.users.invalidate();
-      utils.admin.stats.invalidate();
-    },
-  });
-
-  const allUsers = usersQuery.data ?? [];
-  const pending = allUsers.filter((u) => u.status === "pending").slice(0, 5);
-
-  if (usersQuery.isLoading) {
-    return <div className="space-y-2">{[...Array(3)].map((_, i) => <div key={i} className="h-12 bg-accent/20 rounded animate-pulse" />)}</div>;
-  }
-
-  if (pending.length === 0) {
-    return <p className="text-sm text-muted-foreground">No pending approvals.</p>;
-  }
-
-  return (
-    <div className="space-y-2">
-      {pending.map((user) => (
-        <div key={user.id} className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-            <span className="text-black font-bold text-xs">{user.fullName?.charAt(0) ?? "U"}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user.fullName}</p>
-            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <button
-              onClick={() => approve.mutate({ userId: user.id })}
-              className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => reject.mutate({ userId: user.id })}
-              className="text-xs px-2 py-1 rounded bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors"
-            >
-              Reject
-            </button>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

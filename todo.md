@@ -69,3 +69,12 @@ Source-project work is preserved below for reference. Those completed items are 
 
 - [ ] Add true React component test rendering Products page with filter interactions.
 - [ ] Take mobile screenshot with filter drawer open.
+
+## Active Implementation — Fix Admin 404 Routing
+- [x] Trace App.tsx routes for admin paths.
+- [x] Implement admin route definitions in App.tsx.
+- [x] Verify admin dashboard loads successfully.
+
+- [x] Add route/component test asserting `/admin/dashboard` renders successfully.
+
+- [x] Add true route-level integration test rendering App at `/admin/dashboard`.

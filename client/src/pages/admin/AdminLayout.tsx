@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link, useLocation } from "wouter";
 import {
@@ -60,7 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#0A0A0A] flex">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[min(82vw,15rem)] bg-[#090909] border-r border-[#1E293B] flex flex-col overscroll-contain transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[min(82vw,15rem)] bg-[#090909] border-r border-[#1E293B] flex flex-col overscroll-contain overflow-x-hidden transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
@@ -98,73 +99,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     borderLeft: `2px solid ${item.color}`,
                   } : {}}
                 >
-                  <item.icon className="h-4 w-4 flex-shrink-0" />
-                  <span className="flex-1 font-semibold uppercase tracking-wide text-xs">{item.label}</span>
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
                   {item.href === "/admin/users" && pendingUsers > 0 && (
-                    <span aria-label={`${pendingUsers} pending application${pendingUsers === 1 ? "" : "s"}`} className="min-w-5 rounded-full bg-[#E11D48] px-1.5 py-0.5 text-center text-[10px] font-black leading-none text-white">
-                      {pendingUsers > 99 ? "99+" : pendingUsers}
+                    <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E11D48] text-white">
+                      {pendingUsers}
                     </span>
                   )}
                   {item.href === "/admin/orders" && pendingQuotes > 0 && (
-                    <span aria-label={`${pendingQuotes} pending quote${pendingQuotes === 1 ? "" : "s"}`} className="min-w-5 rounded-full bg-[#E11D48] px-1.5 py-0.5 text-center text-[10px] font-black leading-none text-white">
-                      {pendingQuotes > 99 ? "99+" : pendingQuotes}
+                    <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E11D48] text-white">
+                      {pendingQuotes}
                     </span>
                   )}
-                  {active && <ChevronRight className="h-3 w-3" />}
                 </div>
               </Link>
             );
           })}
         </nav>
 
-        {/* User */}
-        <div className="p-4 border-t border-[#1E293B]">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}>
-              {(user as any)?.fullName?.charAt(0)?.toUpperCase() ?? "A"}
+        {/* User footer */}
+        <div className="p-3 border-t border-[#1E293B] bg-[#0A0A0A]">
+          <div className="flex items-center justify-between px-2 py-1.5">
+            <div className="truncate">
+              <p className="text-xs font-bold text-white truncate">{(user as any)?.name || "Admin"}</p>
+              <p className="text-[10px] text-[#64748B] truncate">Administrator</p>
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">{(user as any)?.fullName}</p>
-              <p className="text-[10px] text-[#64748B] truncate">{(user as any)?.email}</p>
-            </div>
+            <button
+              onClick={() => logout()}
+              className="p-2 text-[#64748B] hover:text-[#E11D48] rounded transition-colors"
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            onClick={logout}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded text-xs font-semibold uppercase tracking-wide text-[#64748B] hover:text-[#E11D48] hover:bg-[#E11D48]/5 transition-colors"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Sign Out
-          </button>
         </div>
       </aside>
 
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div aria-label="Close admin navigation" className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col lg:pl-[15rem]">
         {/* Mobile header */}
-        <header className="lg:hidden flex items-center justify-between p-4 border-b border-[#1E293B] bg-[#090909]">
-          <button aria-label="Open admin navigation" onClick={() => setSidebarOpen(true)} className="flex h-11 w-11 items-center justify-center rounded hover:bg-white/5 text-[#94A3B8]">
-            <Menu className="h-5 w-5" />
-          </button>
-            <span className="font-black text-sm uppercase tracking-widest">
-            <span className="text-white">Gorilla Gear </span>
-            <span style={{ color: "#0EA5E9" }}>Nutrition</span>
-          </span>
-          <div className="flex items-center gap-2">
-            {pendingUsers > 0 && <span aria-label={`${pendingUsers} pending application${pendingUsers === 1 ? "" : "s"}`} className="rounded-full bg-[#E11D48] px-2 py-1 text-[10px] font-black text-white">{pendingUsers > 99 ? "99+" : pendingUsers}</span>}
-            {pendingQuotes > 0 && <span aria-label={`${pendingQuotes} pending quote${pendingQuotes === 1 ? "" : "s"}`} className="rounded-full bg-[#E11D48] px-2 py-1 text-[10px] font-black text-white">{pendingQuotes > 99 ? "99+" : pendingQuotes}</span>}
-            <div className="w-8" />
+        <header className="sticky top-0 z-40 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-[#1E293B] h-16 flex items-center justify-between px-4 lg:hidden">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 text-white rounded border border-[#1E293B] bg-[#111111]"
+              aria-label="Toggle Menu"
+            >
+              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+            <span className="font-black tracking-wider text-white text-sm uppercase">Admin Panel</span>
           </div>
+          <Link href="/" className="text-xs font-bold uppercase tracking-widest text-[#0EA5E9] no-underline">
+            View Store
+          </Link>
         </header>
 
-        <main className="flex-1 min-w-0 overflow-x-hidden p-4 sm:p-6">
+        {/* Backdrop for mobile sidebar */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/80 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        <main className="flex-1 p-6 md:p-10 max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>

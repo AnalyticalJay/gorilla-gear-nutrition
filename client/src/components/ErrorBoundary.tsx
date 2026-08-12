@@ -1,6 +1,5 @@
-import { cn } from "@/lib/utils";
+import React, { Component, ReactNode } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
-import { Component, ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
@@ -8,47 +7,48 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  error: Error | null;
+  error?: Error;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+export default class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("[ErrorBoundary] Uncaught error:", error, errorInfo);
+  }
+
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center min-h-screen p-8 bg-background">
-          <div className="flex flex-col items-center w-full max-w-2xl p-8">
-            <AlertTriangle
-              size={48}
-              className="text-destructive mb-6 flex-shrink-0"
-            />
-
-            <h2 className="text-xl mb-4">An unexpected error occurred.</h2>
-
-            <div className="p-4 w-full rounded bg-muted overflow-auto mb-6">
-              <pre className="text-sm text-muted-foreground whitespace-break-spaces">
-                {this.state.error?.stack}
-              </pre>
+        <div className="flex items-center justify-center min-h-screen bg-[#0A0A0A] text-white p-6">
+          <div className="flex flex-col items-center w-full max-w-2xl p-8 rounded-xl border border-[#1E293B] bg-[#111111] text-center shadow-2xl">
+            <div className="h-16 w-16 rounded-full bg-[#E11D48]/10 flex items-center justify-center mb-4 border border-[#E11D48]/30">
+              <AlertTriangle className="h-8 w-8 text-[#E11D48]" />
             </div>
-
+            <h2 className="text-2xl font-black uppercase tracking-tight mb-2">Something went wrong</h2>
+            <p className="text-sm text-[#94A3B8] mb-6 max-w-md">
+              An unexpected error occurred in the Gorilla Gear Nutrition interface.
+            </p>
+            {this.state.error && (
+              <div className="w-full bg-black/60 border border-[#1E293B] rounded-lg p-4 mb-6 text-left overflow-x-auto">
+                <code className="text-xs text-[#E11D48] font-mono">
+                  {this.state.error.message}
+                </code>
+              </div>
+            )}
             <button
               onClick={() => window.location.reload()}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg",
-                "bg-primary text-primary-foreground",
-                "hover:opacity-90 cursor-pointer"
-              )}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg transition hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
             >
-              <RotateCcw size={16} />
-              Reload Page
+              <RotateCcw className="h-4 w-4" /> Reload Application
             </button>
           </div>
         </div>
@@ -58,5 +58,3 @@ class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-export default ErrorBoundary;

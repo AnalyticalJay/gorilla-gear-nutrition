@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -30,112 +31,113 @@ import MobileBottomNav from "./components/MobileBottomNav";
 import { shouldShowMobileNav } from "@shared/mobileNav";
 
 function Router() {
-  return (
-    <Switch>
-      {/* Public */}
-      <Route path="/" component={Home} />
-      <Route path="/register" component={Register} />
-      <Route path="/login" component={Login} />
-      <Route path="/products" component={Products} />
-      <Route path="/products/:slug" component={ProductDetail} />
-
-      {/* Authenticated */}
-      <Route path="/cart" component={Cart} />
-      <Route path="/checkout" component={Checkout} />
-      <Route path="/order-success/:orderId" component={OrderSuccess} />
-      <Route path="/account" component={Account} />
-      <Route path="/account/:tab" component={Account} />
-      <Route path="/approval-pending" component={ApprovalPending} />
-      <Route path="/orders/:orderId" component={OrderDetail} />
-      <Route path="/order-cancelled" component={OrderCancelled} />
-
-      {/* Admin */}
-      <Route path="/admin">
-        {() => (
-          <AdminLayout>
-            <AdminDashboard />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/users">
-        {() => (
-          <AdminLayout>
-            <AdminUsers />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/products">
-        {() => (
-          <AdminLayout>
-            <AdminProducts />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/products/new">
-        {() => (
-          <AdminLayout>
-            <AdminProductEdit />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/products/:id/edit">
-        {(params) => (
-          <AdminLayout>
-            <AdminProductEdit productId={parseInt((params as any).id)} />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/bulk-import">
-        {() => (
-          <AdminLayout>
-            <AdminBulkImport />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/bulk-images">
-        {() => (
-          <AdminLayout>
-            <AdminBulkImages />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/categories">
-        {() => (
-          <AdminLayout>
-            <AdminCategories />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/orders">
-        {() => (
-          <AdminLayout>
-            <AdminOrders />
-          </AdminLayout>
-        )}
-      </Route>
-      <Route path="/admin/orders/:orderId">
-        {() => (
-          <AdminLayout>
-            <AdminOrderDetail />
-          </AdminLayout>
-        )}
-      </Route>
-
-      <Route path="/404" component={NotFound} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-function AppShell() {
   const [location] = useLocation();
   const showMobileNav = shouldShowMobileNav(location);
 
   return (
-    <div className={showMobileNav ? "min-h-screen pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pb-0" : "min-h-screen"}>
-      <Router />
-      <MobileBottomNav />
-    </div>
+    <>
+      <Switch>
+        {/* Public */}
+        <Route path="/" component={Home} />
+        <Route path="/register" component={Register} />
+        <Route path="/login" component={Login} />
+        <Route path="/products" component={Products} />
+        <Route path="/products/:slug" component={ProductDetail} />
+
+        {/* Authenticated */}
+        <Route path="/cart" component={Cart} />
+        <Route path="/checkout" component={Checkout} />
+        <Route path="/order-success/:orderId" component={OrderSuccess} />
+        <Route path="/account" component={Account} />
+        <Route path="/account/:tab" component={Account} />
+        <Route path="/approval-pending" component={ApprovalPending} />
+        <Route path="/orders/:orderId" component={OrderDetail} />
+        <Route path="/order-cancelled" component={OrderCancelled} />
+
+        {/* Admin */}
+        <Route path="/admin">
+          {() => (
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/dashboard">
+          {() => (
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/users">
+          {() => (
+            <AdminLayout>
+              <AdminUsers />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/products">
+          {() => (
+            <AdminLayout>
+              <AdminProducts />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/products/new">
+          {() => (
+            <AdminLayout>
+              <AdminProductEdit />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/products/:id/edit">
+          {(params) => (
+            <AdminLayout>
+              <AdminProductEdit productId={parseInt((params as any).id)} />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/bulk-import">
+          {() => (
+            <AdminLayout>
+              <AdminBulkImport />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/bulk-images">
+          {() => (
+            <AdminLayout>
+              <AdminBulkImages />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/categories">
+          {() => (
+            <AdminLayout>
+              <AdminCategories />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/orders">
+          {() => (
+            <AdminLayout>
+              <AdminOrders />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/orders/:orderId">
+          {() => (
+            <AdminLayout>
+              <AdminOrderDetail />
+            </AdminLayout>
+          )}
+        </Route>
+
+        {/* Fallback */}
+        <Route component={NotFound} />
+      </Switch>
+      {showMobileNav && <MobileBottomNav />}
+    </>
   );
 }
 
@@ -144,8 +146,8 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
-          <Toaster richColors position="top-right" />
-          <AppShell />
+          <Toaster />
+          <Router />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
