@@ -195,3 +195,9 @@
 - [x] Audit Amps images strictly against existing HD Labs catalogue products; no safe HD Labs Amps matches were found.
 - [x] Leave all three Amps images unlinked because no safe matching HD Labs Amps product records exist; no cross-brand uploads were made.
 - [x] Verify the source-page Amps cards, document the no-match result, and save a checkpoint; product-page rendering is deferred until matching HD Labs Amps records exist.
+
+## Active Implementation — HD Labs Amps Product Creation
+- [x] Inspect the three official HD Labs Amps product detail pages for confirmed names, descriptions, strengths, and prices.
+- [x] Create or reconcile Testoviron 250, Sustanon 250, and Deca-Durabolin 100 catalogue records in the correct injectable category.
+- [x] Upload and link the three verified source images to the new HD Labs Amps records.
+- [x] Verify the new Amps product pages on phone and desktop and save a checkpoint.
