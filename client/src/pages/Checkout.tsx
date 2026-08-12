@@ -99,7 +99,7 @@ export default function Checkout() {
               Submit <span style={{ color: "#0EA5E9" }}>Quote Request</span>
             </h1>
             <p className="text-muted-foreground mt-3 max-w-2xl">
-              Submit your selected products and delivery details. Anabolics Africa will review the request and confirm the final quote before payment is enabled.
+              Submit your selected products and delivery details. Gorilla Gear Nutrition will review the request and confirm the final quote before payment is enabled.
             </p>
           </div>
 

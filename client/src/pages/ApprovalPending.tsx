@@ -27,7 +27,7 @@ export default function ApprovalPending() {
                 Application <span style={{ color: "#0EA5E9" }}>Under Review</span>
               </h1>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Thank you for registering with Anabolics Africa. Your application is currently being reviewed by our team.
+                Thank you for registering with Gorilla Gear Nutrition. Your application is currently being reviewed by our team.
                 You will be notified once your account has been approved.
               </p>
               <div className="glass-card rounded-xl p-6 mb-8 text-left space-y-4">

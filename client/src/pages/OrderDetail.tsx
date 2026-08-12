@@ -67,7 +67,7 @@ export default function OrderDetail() {
       notify_url: `${window.location.origin}/api/trpc/orders.payfastItn`,
       m_payment_id: payment.payfastReference,
       amount: parseFloat(payment.total).toFixed(2),
-      item_name: `Anabolics Africa Approved Quote #${payment.orderId}`,
+      item_name: `Gorilla Gear Nutrition Approved Quote #${payment.orderId}`,
       email_address: (user as any)?.email ?? "",
       name_first: ((user as any)?.fullName ?? "").split(" ")[0] ?? "",
       name_last: ((user as any)?.fullName ?? "").split(" ").slice(1).join(" ") || ".",
@@ -129,7 +129,7 @@ export default function OrderDetail() {
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 text-sm text-yellow-200"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-200">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
               {isApprovedForPayment && <div className="mt-5 grid gap-3 sm:grid-cols-2"><Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button><Button variant="outline" className="min-h-11 font-bold border-[#0EA5E9]/40" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Pay via EFT</Button></div>}
-              {isEftAwaiting && <div className="mt-5 rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 p-4 text-sm"><div className="flex items-center gap-2 font-bold text-[#38BDF8] mb-2"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div><p className="text-muted-foreground">Please use the banking details provided by Anabolics Africa in your approval instructions and include Quote #{order.id} as the payment reference. Send proof of payment to the store for confirmation.</p>{order.quoteNotes && <p className="mt-3 whitespace-pre-wrap text-foreground">{order.quoteNotes}</p>}</div>}
+              {isEftAwaiting && <div className="mt-5 rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 p-4 text-sm"><div className="flex items-center gap-2 font-bold text-[#38BDF8] mb-2"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div><p className="text-muted-foreground">Please use the banking details provided by Gorilla Gear Nutrition in your approval instructions and include Quote #{order.id} as the payment reference. Send proof of payment to the store for confirmation.</p>{order.quoteNotes && <p className="mt-3 whitespace-pre-wrap text-foreground">{order.quoteNotes}</p>}</div>}
             </div>
 
             {order.quoteNotes && order.status !== "awaiting_payment" && <div className="glass-card rounded-xl p-6"><h2 className="font-bold mb-2">Review Notes</h2><p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.quoteNotes}</p></div>}

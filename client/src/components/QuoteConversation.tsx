@@ -65,7 +65,7 @@ export default function QuoteConversation({
               <article className={`max-w-[92%] rounded-2xl border px-3.5 py-3 sm:max-w-[78%] ${isMine ? "border-[#0EA5E9]/30 bg-[#0EA5E9]/10" : "border-[#334155]/60 bg-[#111827]/70"}`}>
                 <div className="mb-1.5 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wide">
                   <span className={`font-bold ${comment.authorRole === "admin" ? "text-[#FDA4AF]" : "text-[#7DD3FC]"}`}>
-                    {isMine ? "You" : comment.authorRole === "admin" ? "Anabolics Africa Admin" : comment.authorName}
+                    {isMine ? "You" : comment.authorRole === "admin" ? "Gorilla Gear Nutrition Admin" : comment.authorName}
                   </span>
                   <span className="text-[#64748B]">{format(new Date(comment.createdAt), "d MMM yyyy, HH:mm")}</span>
                 </div>

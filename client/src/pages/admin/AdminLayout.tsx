@@ -20,7 +20,7 @@ import { trpc } from "@/lib/trpc";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true, color: "#0EA5E9" },
-  { href: "/admin/users", label: "Users", icon: Users, color: "#E11D48" },
+  { href: "/admin/users", label: "Applications", icon: Users, color: "#E11D48" },
   { href: "/admin/products", label: "Products", icon: Package, color: "#0EA5E9" },
   { href: "/admin/bulk-import", label: "Bulk Import", icon: Upload, color: "#10B981" },
   { href: "/admin/bulk-images", label: "Bulk Images", icon: FileImage, color: "#E11D48" },
@@ -34,6 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const statsQuery = trpc.admin.stats.useQuery(undefined, { refetchInterval: 30000 });
   const pendingQuotes = statsQuery.data?.pendingQuotes ?? 0;
+  const pendingUsers = statsQuery.data?.pendingUsers ?? 0;
 
   if (!isAuthenticated || (user as any)?.role !== "admin") {
     return (
@@ -63,18 +64,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
-        {/* HD Labs top stripe */}
+        {/* Gorilla Gear top stripe */}
         <div className="h-[3px] w-full flex-shrink-0" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 35%, #0EA5E9 35%, #0EA5E9 100%)" }} />
 
         {/* Logo */}
         <div className="p-5 border-b border-[#1E293B]">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
               <div className="w-9 h-9 rounded flex items-center justify-center overflow-hidden border border-[#1E293B] bg-black">
-                <img src="/manus-storage/anabolics-africa-logo_2013ad4b.png" alt="Anabolics Africa logo" className="h-full w-full object-contain" />
+                <img src="/manus-storage/logo_2d6e0f20.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
               </div>
               <div>
-                <span className="font-black text-white text-sm tracking-widest uppercase">Anabolics</span>
-                <span className="font-black text-sm tracking-widest uppercase ml-1" style={{ color: "#0EA5E9" }}>Africa</span>
+                <span className="font-black text-white text-sm tracking-widest uppercase">Gorilla Gear</span>
+                <span className="font-black text-sm tracking-widest uppercase ml-1" style={{ color: "#0EA5E9" }}>Nutrition</span>
               </div>
           </Link>
         </div>
@@ -99,6 +100,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 >
                   <item.icon className="h-4 w-4 flex-shrink-0" />
                   <span className="flex-1 font-semibold uppercase tracking-wide text-xs">{item.label}</span>
+                  {item.href === "/admin/users" && pendingUsers > 0 && (
+                    <span aria-label={`${pendingUsers} pending application${pendingUsers === 1 ? "" : "s"}`} className="min-w-5 rounded-full bg-[#E11D48] px-1.5 py-0.5 text-center text-[10px] font-black leading-none text-white">
+                      {pendingUsers > 99 ? "99+" : pendingUsers}
+                    </span>
+                  )}
                   {item.href === "/admin/orders" && pendingQuotes > 0 && (
                     <span aria-label={`${pendingQuotes} pending quote${pendingQuotes === 1 ? "" : "s"}`} className="min-w-5 rounded-full bg-[#E11D48] px-1.5 py-0.5 text-center text-[10px] font-black leading-none text-white">
                       {pendingQuotes > 99 ? "99+" : pendingQuotes}
@@ -147,11 +153,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <button aria-label="Open admin navigation" onClick={() => setSidebarOpen(true)} className="flex h-11 w-11 items-center justify-center rounded hover:bg-white/5 text-[#94A3B8]">
             <Menu className="h-5 w-5" />
           </button>
-          <span className="font-black text-sm uppercase tracking-widest">
-            <span className="text-white">Anabolics </span>
-            <span style={{ color: "#0EA5E9" }}>Africa</span>
+            <span className="font-black text-sm uppercase tracking-widest">
+            <span className="text-white">Gorilla Gear </span>
+            <span style={{ color: "#0EA5E9" }}>Nutrition</span>
           </span>
           <div className="flex items-center gap-2">
+            {pendingUsers > 0 && <span aria-label={`${pendingUsers} pending application${pendingUsers === 1 ? "" : "s"}`} className="rounded-full bg-[#E11D48] px-2 py-1 text-[10px] font-black text-white">{pendingUsers > 99 ? "99+" : pendingUsers}</span>}
             {pendingQuotes > 0 && <span aria-label={`${pendingQuotes} pending quote${pendingQuotes === 1 ? "" : "s"}`} className="rounded-full bg-[#E11D48] px-2 py-1 text-[10px] font-black text-white">{pendingQuotes > 99 ? "99+" : pendingQuotes}</span>}
             <div className="w-8" />
           </div>

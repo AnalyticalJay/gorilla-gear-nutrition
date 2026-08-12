@@ -53,11 +53,11 @@ export default function Login() {
         <div className="relative z-10 flex flex-col justify-center p-16">
           <Link href="/" className="flex items-center gap-2.5 mb-16 no-underline">
             <div className="w-10 h-10 rounded flex items-center justify-center overflow-hidden border border-[#1E293B] bg-black">
-              <img src="/manus-storage/anabolics-africa-logo_2013ad4b.png" alt="Anabolics Africa logo" className="h-full w-full object-contain" />
+              <img src="/manus-storage/logo_2d6e0f20.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
             </div>
             <div>
-              <span className="font-black text-white text-base tracking-widest uppercase">Anabolics</span>
-              <span className="font-black text-base tracking-widest uppercase ml-1.5" style={{ color: "#0EA5E9" }}>Africa</span>
+              <span className="font-black text-white text-base tracking-widest uppercase">Gorilla Gear</span>
+              <span className="font-black text-base tracking-widest uppercase ml-1.5" style={{ color: "#E24A32" }}>Nutrition</span>
             </div>
           </Link>
 
@@ -67,13 +67,13 @@ export default function Login() {
             <span style={{ color: "#0EA5E9" }}>Back</span>
           </h2>
           <p className="text-[#64748B] leading-relaxed max-w-xs">
-            Sign in to access your approved account and browse our exclusive catalog of premium HD Labs compounds.
+            Sign in to access your approved account and browse the Gorilla Gear Nutrition member catalogue.
           </p>
 
           {/* Features */}
           <div className="mt-10 space-y-3">
             {[
-              { icon: Shield, text: "Verified HD Labs products" },
+              { icon: Shield, text: "Verified Gorilla Gear range" },
               { icon: Lock, text: "Gated access — approved members only" },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3 text-[#64748B]">
@@ -93,7 +93,7 @@ export default function Login() {
             Back to Home
           </Link>
 
-          {/* HD Labs stripe */}
+          {/* Gorilla Gear accent stripe */}
           <div className="h-[3px] w-16 mb-6" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
 
           <h1 className="text-3xl font-black uppercase tracking-tight text-white mb-2">

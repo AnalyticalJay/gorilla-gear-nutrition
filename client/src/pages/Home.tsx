@@ -1,381 +1,249 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc";
+import {
+  ArrowUpRight,
+  BadgeCheck,
+  Check,
+  ChevronRight,
+  LockKeyhole,
+  Package,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+} from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Shield, Truck, CreditCard, Lock, ChevronRight, Star, Package, FlaskConical, Pill, Syringe } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { motion } from "framer-motion";
+
+const brandAssets = {
+  logo: "/manus-storage/logo_2d6e0f20.png",
+  categories: {
+    peptides: "/manus-storage/peptides_012076bb.jpg",
+    injectables: "/manus-storage/injectable-oils_6ddb2648.jpg",
+    orals: "/manus-storage/orals_8eb932e8.jpg",
+    anabolics: "/manus-storage/oral-anabolics_21b30f67.jpg",
+  },
+};
+
+const categories = [
+  { name: "Peptides", eyebrow: "Precision support", image: brandAssets.categories.peptides },
+  { name: "Injectable oils", eyebrow: "Performance range", image: brandAssets.categories.injectables },
+  { name: "Orals", eyebrow: "Focused formulas", image: brandAssets.categories.orals },
+  { name: "Oral anabolics", eyebrow: "Member catalogue", image: brandAssets.categories.anabolics },
+];
+
+const processSteps = [
+  { number: "01", title: "Apply", description: "Complete the membership application with your details." },
+  { number: "02", title: "Verify", description: "Our team reviews each application before access is granted." },
+  { number: "03", title: "Get approved", description: "Approved members unlock private pricing and ordering." },
+  { number: "04", title: "Request a quote", description: "Build your selection and submit a quote request for review." },
+];
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
   const isPending = (user as any)?.status === "pending";
 
-  // Fetch featured products; fall back to all products if fewer than 4 featured
   const featuredQuery = trpc.products.list.useQuery({ featuredOnly: true });
   const allProductsQuery = trpc.products.list.useQuery(
     {},
-    { enabled: !!(featuredQuery.data && featuredQuery.data.length < 4) }
+    { enabled: !!(featuredQuery.data && featuredQuery.data.length < 4) },
   );
   const displayProducts = featuredQuery.data && featuredQuery.data.length >= 1
     ? featuredQuery.data
     : allProductsQuery.data ?? [];
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-[#f7f5f0] text-[#161616]">
       <Navbar />
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-16">
-        {/* Hex pattern background */}
-        <div className="absolute inset-0 hex-pattern opacity-60" />
-
-        {/* Blue glow top-right */}
-        <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full opacity-10 blur-3xl pointer-events-none"
-          style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)" }} />
-
-        {/* Red glow bottom-left */}
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-8 blur-3xl pointer-events-none"
-          style={{ background: "radial-gradient(circle, #E11D48 0%, transparent 70%)" }} />
-
-        <div className="container relative z-10 py-20 md:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Text */}
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#0EA5E9]/30 bg-[#0EA5E9]/10 mb-6">
-                <Lock className="h-3.5 w-3.5 text-[#0EA5E9]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-[#0EA5E9]">Restricted Access Platform</span>
-              </div>
-
-              {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tight leading-[0.9] mb-6 break-words">
-                <span className="text-white">Unlock Your</span>
-                <br />
-                <span className="text-white">Next </span>
-                <span style={{ color: "#0EA5E9" }}>Phase</span>
-                <br />
-                <span className="text-white">of Performance</span>
-              </h1>
-
-              <p className="text-[#94A3B8] text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
-                Premium pharmaceutical-grade compounds by <strong className="text-white">HD Labs</strong>. Controlled access. Built for serious athletes who demand the highest quality.
-              </p>
-
-              {/* CTA */}
-              {!isAuthenticated ? (
-                <div className="flex flex-wrap gap-3">
-                  <Link href="/register" className="no-underline">
-                    <Button size="lg" className="text-white font-bold uppercase tracking-widest px-8 h-12"
-                      style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}>
-                      Apply for Access
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </Link>
-                  <Link href="/login" className="no-underline">
-                    <Button size="lg" variant="outline"
-                      className="border-[#1E293B] text-[#94A3B8] hover:text-white hover:border-[#0EA5E9]/50 font-bold uppercase tracking-widest px-8 h-12 bg-transparent">
-                      Sign In
-                    </Button>
-                  </Link>
-                </div>
-              ) : isPending ? (
-                <div className="inline-flex items-center gap-3 px-6 py-3 rounded border border-[#E11D48]/30 bg-[#E11D48]/10">
-                  <div className="w-2 h-2 rounded-full bg-[#E11D48] animate-pulse" />
-                  <span className="text-[#E11D48] font-bold uppercase tracking-wide text-sm">Application Pending Review</span>
-                </div>
-              ) : isApproved ? (
-                <Link href="/products" className="no-underline">
-                  <Button size="lg" className="text-white font-bold uppercase tracking-widest px-8 h-12"
-                    style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}>
-                    Browse Products
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </Link>
-              ) : null}
-
-              {/* Trust badges */}
-              <div className="flex flex-wrap gap-6 mt-10 pt-8 border-t border-[#1E293B]">
-                {[
-                  { icon: Shield, label: "Verified Products" },
-                  { icon: CreditCard, label: "Secure Payments" },
-                  { icon: Truck, label: "Discreet Delivery" },
-                ].map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2 text-[#64748B]">
-                    <Icon className="h-4 w-4 text-[#0EA5E9]" />
-                    <span className="text-sm font-medium">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Right: Visual panel */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="hidden lg:flex items-center justify-center"
-            >
-              <div className="relative w-full max-w-md">
-                {/* Main card */}
-                <div className="rounded-xl border border-[#0EA5E9]/20 bg-[#0A0A0A] p-8 relative overflow-hidden"
-                  style={{ boxShadow: "0 0 60px rgba(14,165,233,0.08), 0 0 120px rgba(14,165,233,0.04)" }}>
-                  {/* Top stripe */}
-                  <div className="absolute top-0 left-0 right-0 h-[3px]"
-                    style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 35%, #0EA5E9 35%, #0EA5E9 100%)" }} />
-
-                  <div className="hex-pattern absolute inset-0 opacity-30" />
-
-                  <div className="relative z-10">
-                    {/* HD Labs logo mark */}
-                    <div className="flex items-center gap-3 mb-8">
-                      <div className="w-12 h-12 rounded flex items-center justify-center font-black text-white text-lg"
-                        style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}>
-                        HD
-                      </div>
-                      <div>
-                        <div className="text-white font-black uppercase tracking-widest text-sm">HD Labs</div>
-                        <div className="text-[#64748B] text-xs uppercase tracking-widest">Pharmaceutical Grade</div>
-                      </div>
-                    </div>
-
-                    {/* Category pills */}
-                    <div className="grid grid-cols-3 gap-3 mb-8">
-                      {[
-                        { icon: Syringe, label: "Injectables", color: "#0EA5E9" },
-                        { icon: Pill, label: "Orals", color: "#E11D48" },
-                        { icon: FlaskConical, label: "Peptides", color: "#0EA5E9" },
-                      ].map(({ icon: Icon, label, color }) => (
-                        <div key={label} className="flex flex-col items-center gap-2 p-4 rounded border border-[#1E293B] bg-[#111111]">
-                          <div className="w-8 h-8 rounded flex items-center justify-center"
-                            style={{ background: `${color}15` }}>
-                            <Icon className="h-4 w-4" style={{ color }} />
-                          </div>
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#64748B]">{label}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { value: "100+", label: "Products" },
-                        { value: "ZAR", label: "Currency" },
-                        { value: "Free", label: "PE Delivery" },
-                        { value: "R150", label: "Nationwide" },
-                      ].map(({ value, label }) => (
-                        <div key={label} className="p-3 rounded border border-[#1E293B] bg-[#080808]">
-                          <div className="text-xl font-black text-white">{value}</div>
-                          <div className="text-[10px] font-bold uppercase tracking-widest text-[#64748B]">{label}</div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Access badge */}
-                    <div className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded border border-[#E11D48]/30 bg-[#E11D48]/8">
-                      <Lock className="h-3.5 w-3.5 text-[#E11D48] flex-shrink-0" />
-                      <span className="text-xs font-bold uppercase tracking-widest text-[#E11D48]">Approved Members Only</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating accent dots */}
-                <div className="absolute -top-4 -right-4 w-3 h-3 rounded-full" style={{ background: "#0EA5E9" }} />
-                <div className="absolute -bottom-4 -left-4 w-3 h-3 rounded-full" style={{ background: "#E11D48" }} />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured Products ────────────────────────────────────────────── */}
-      <section className="py-20 border-t border-[#1E293B]">
-        <div className="container">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-0.5" style={{ background: "#E11D48" }} />
-                <span className="text-xs font-bold uppercase tracking-widest text-[#E11D48]">Featured</span>
-              </div>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white">
-                Top <span style={{ color: "#0EA5E9" }}>Compounds</span>
-              </h2>
-            </div>
-            <Link href="/products" className="no-underline">
-              <Button variant="ghost" size="sm"
-                className="text-[#0EA5E9] hover:text-white hover:bg-[#0EA5E9]/10 font-bold uppercase tracking-wide text-xs">
-                View All <ChevronRight className="h-3.5 w-3.5 ml-1" />
-              </Button>
-            </Link>
-          </div>
-
-            {featuredQuery.isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-72 rounded-lg bg-[#111111] animate-pulse border border-[#1E293B]" />
-                ))}
-              </div>
-            ) : displayProducts.length > 0 ? (
+      <main>
+        <section className="relative overflow-hidden border-b border-black/10 bg-[#f7f5f0]">
+          <div className="pointer-events-none absolute -right-28 top-20 h-72 w-72 rounded-full bg-[#d8f36f]/55 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-[#e4a28f]/25 blur-3xl" />
+          <div className="container relative py-14 sm:py-20 lg:py-24">
+            <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className={`grid gap-5 ${
-                  displayProducts.length === 1
-                    ? 'grid-cols-1 max-w-xs'
-                    : displayProducts.length === 2
-                    ? 'grid-cols-1 sm:grid-cols-2 max-w-xl'
-                    : displayProducts.length === 3
-                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-                    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-                }`}
               >
-                {displayProducts.map((product: any) => (
-                  <ProductCard key={product.id} product={product} isApproved={isApproved} />
-                ))}
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-black/15 bg-white/65 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-black/65">
+                  <span className="h-2 w-2 rounded-full bg-[#d7472f]" />
+                  Premium performance nutrition
+                </div>
+                <h1 className="max-w-3xl text-[clamp(3.2rem,8vw,6.8rem)] font-black uppercase leading-[0.86] tracking-[-0.075em] text-[#101010]">
+                  Fuel your
+                  <span className="block text-[#d7472f]">potential.</span>
+                  <span className="mt-2 block text-[0.68em] tracking-[-0.055em]">Built to perform.</span>
+                </h1>
+                <p className="mt-7 max-w-xl text-base leading-7 text-black/62 sm:text-lg">
+                  Gorilla Gear Nutrition is a private South African catalogue for serious athletes and dedicated fitness enthusiasts. Apply for access to browse the range and request a tailored quote.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  {!isAuthenticated ? (
+                    <>
+                      <Link href="/register" className="no-underline">
+                        <Button size="lg" className="h-12 w-full rounded-sm bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f] sm:w-auto">
+                          Apply for membership
+                          <ArrowUpRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Link href="/products" className="no-underline">
+                        <Button size="lg" variant="outline" className="h-12 w-full rounded-sm border-black/25 bg-transparent px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-[#111111] hover:border-black hover:bg-white sm:w-auto">
+                          Browse products
+                        </Button>
+                      </Link>
+                    </>
+                  ) : isPending ? (
+                    <div className="inline-flex items-center gap-3 rounded-sm border border-[#d7472f]/30 bg-[#d7472f]/8 px-5 py-3 text-xs font-extrabold uppercase tracking-[0.13em] text-[#b33c28]">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-[#d7472f]" />
+                      Application pending review
+                    </div>
+                  ) : isApproved ? (
+                    <Link href="/products" className="no-underline">
+                      <Button size="lg" className="h-12 rounded-sm bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f]">
+                        Enter member catalogue
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  ) : null}
+                </div>
+                <div className="mt-10 grid max-w-xl grid-cols-2 gap-x-6 gap-y-4 border-t border-black/15 pt-6 sm:grid-cols-4">
+                  {[
+                    { icon: ShieldCheck, label: "Verified range" },
+                    { icon: LockKeyhole, label: "Private access" },
+                    { icon: Truck, label: "Fast delivery" },
+                    { icon: BadgeCheck, label: "Member support" },
+                  ].map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-black/56">
+                      <Icon className="h-4 w-4 shrink-0 text-[#d7472f]" />
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="relative mx-auto w-full max-w-md"
+              >
+                <div className="absolute -right-3 top-8 h-16 w-3 bg-[#d7472f] sm:-right-6 sm:h-24 sm:w-4" />
+                <div className="absolute -bottom-3 left-8 h-3 w-28 bg-[#111111] sm:-bottom-6 sm:left-12 sm:h-4 sm:w-40" />
+                <div className="relative flex min-h-[380px] items-center justify-center overflow-hidden rounded-[2rem] border border-black/10 bg-white/75 px-10 py-10 shadow-[0_24px_70px_rgba(0,0,0,0.12)] sm:min-h-[500px] sm:px-16">
+                  <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(215,71,47,0.16) 0, transparent 27%), radial-gradient(circle at 80% 75%, rgba(216,243,111,0.48) 0, transparent 30%)" }} />
+                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition" className="relative z-10 max-h-[360px] w-full object-contain mix-blend-multiply drop-shadow-[0_20px_22px_rgba(0,0,0,0.18)] sm:max-h-[450px]" />
+                  <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between border-t border-black/10 pt-4 text-[9px] font-extrabold uppercase tracking-[0.18em] text-black/45">
+                    <span>Gorilla Gear Nutrition</span>
+                    <span>South Africa</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#111111] py-5 text-white">
+          <div className="container flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/55">Controlled access. Clear process. Serious standards.</p>
+            <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#d8f36f]"><Sparkles className="h-4 w-4" /> Adults 18+ only</div>
+          </div>
+        </section>
+
+        <section className="border-b border-black/10 bg-white py-20 sm:py-24">
+          <div className="container">
+            <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+              <div>
+                <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">Member catalogue</p>
+                <h2 className="max-w-2xl text-4xl font-black uppercase leading-[0.92] tracking-[-0.05em] text-[#111111] sm:text-5xl">Explore the <span className="text-[#d7472f]">range.</span></h2>
+              </div>
+              <Link href="/products" className="group inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#111111] no-underline">
+                View all products <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+            {featuredQuery.isLoading ? (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {[...Array(4)].map((_, i) => <div key={i} className="h-72 animate-pulse rounded-2xl bg-[#ece9e2]" />)}
+              </div>
+            ) : displayProducts.length > 0 ? (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {displayProducts.slice(0, 4).map((product: any) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}
               </motion.div>
             ) : (
-              <div className="text-center py-16 text-[#64748B]">
-                <Package className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">No products yet.</p>
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/15 bg-[#f7f5f0] px-6 py-16 text-center">
+                <Package className="mb-4 h-10 w-10 text-[#d7472f]" />
+                <h3 className="text-xl font-black uppercase tracking-[-0.03em]">The new range is on its way</h3>
+                <p className="mt-2 max-w-md text-sm leading-6 text-black/55">Product data and catalogue imagery can be re-uploaded from the admin panel when you are ready to load the Gorilla Gear Nutrition range.</p>
+                <Link href="/products" className="mt-6 no-underline"><Button variant="outline" className="rounded-sm border-black/25 text-xs font-extrabold uppercase tracking-[0.15em]">Open catalogue <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
               </div>
             )}
-        </div>
-      </section>
-
-      {/* ── Features Grid ────────────────────────────────────────────────── */}
-      <section className="py-20 border-t border-[#1E293B]">
-        <div className="container">
-          <div className="text-center mb-14">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <div className="w-8 h-0.5" style={{ background: "#E11D48" }} />
-              <span className="text-xs font-bold uppercase tracking-widest text-[#E11D48]">Why Anabolics Africa</span>
-              <div className="w-8 h-0.5" style={{ background: "#0EA5E9" }} />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white">
-              Built for <span style={{ color: "#0EA5E9" }}>Serious</span> Athletes
-            </h2>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              {
-                icon: Shield,
-                color: "#0EA5E9",
-                title: "Pharmaceutical Grade",
-                desc: "Every compound is sourced directly from HD Labs — tested, verified, and manufactured to the highest pharmaceutical standards.",
-              },
-              {
-                icon: Lock,
-                color: "#E11D48",
-                title: "Gated Access",
-                desc: "Not open to the public. Every account is manually reviewed and approved before gaining access to pricing and purchasing.",
-              },
-              {
-                icon: Truck,
-                color: "#0EA5E9",
-                title: "Discreet Delivery",
-                desc: "Free delivery to Port Elizabeth. Flat R150 nationwide. All orders shipped in plain, unmarked packaging.",
-              },
-              {
-                icon: CreditCard,
-                color: "#E11D48",
-                title: "Secure Payments",
-                desc: "Approved quotes can be settled securely by EFT or PayFast in South African Rand.",
-              },
-              {
-                icon: Star,
-                color: "#0EA5E9",
-                title: "HD Labs Exclusive",
-                desc: "Authorised distributor of HD Labs products. Authentic compounds with full batch verification available.",
-              },
-              {
-                icon: Package,
-                color: "#E11D48",
-                title: "100+ Products",
-                desc: "Injectables, orals, peptides, ancillaries and PCT — everything you need in one controlled-access platform.",
-              },
-            ].map(({ icon: Icon, color, title, desc }, i) => (
-              <motion.div
-                key={title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="p-6 rounded-lg border border-[#1E293B] bg-[#111111] hover:border-[#0EA5E9]/30 transition-colors"
-              >
-                <div className="w-10 h-10 rounded flex items-center justify-center mb-4"
-                  style={{ background: `${color}15`, border: `1px solid ${color}30` }}>
-                  <Icon className="h-5 w-5" style={{ color }} />
-                </div>
-                <h3 className="text-white font-bold uppercase tracking-wide text-sm mb-2">{title}</h3>
-                <p className="text-[#64748B] text-sm leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Delivery Info Banner ─────────────────────────────────────────── */}
-      <section className="py-12 border-t border-[#1E293B]">
-        <div className="container">
-          <div className="grid md:grid-cols-2 gap-5">
-            <div className="flex items-center gap-5 p-6 rounded-lg border border-[#0EA5E9]/20 bg-[#0EA5E9]/5">
-              <div className="w-12 h-12 rounded flex items-center justify-center flex-shrink-0"
-                style={{ background: "#0EA5E915", border: "1px solid #0EA5E930" }}>
-                <Truck className="h-6 w-6" style={{ color: "#0EA5E9" }} />
-              </div>
-              <div>
-                <div className="text-white font-black uppercase tracking-wide text-sm mb-1">Free Delivery — Port Elizabeth</div>
-                <div className="text-[#64748B] text-sm">All orders within Port Elizabeth ship free, no minimum order required.</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-5 p-6 rounded-lg border border-[#E11D48]/20 bg-[#E11D48]/5">
-              <div className="w-12 h-12 rounded flex items-center justify-center flex-shrink-0"
-                style={{ background: "#E11D4815", border: "1px solid #E11D4830" }}>
-                <Truck className="h-6 w-6" style={{ color: "#E11D48" }} />
-              </div>
-              <div>
-                <div className="text-white font-black uppercase tracking-wide text-sm mb-1">R150 Flat Rate — Nationwide</div>
-                <div className="text-[#64748B] text-sm">Flat R150 delivery fee for all other South African locations.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA Banner ───────────────────────────────────────────────────── */}
-      {!isAuthenticated && (
-        <section className="py-16 border-t border-[#1E293B]">
+        <section className="border-b border-black/10 bg-[#f7f5f0] py-20 sm:py-24">
           <div className="container">
-            <div className="relative rounded-xl overflow-hidden p-10 md:p-16 text-center"
-              style={{ background: "linear-gradient(135deg, #080808 0%, #0d1a2e 50%, #080808 100%)", border: "1px solid rgba(14,165,233,0.15)" }}>
-              <div className="absolute inset-0 hex-pattern opacity-40" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[200px] rounded-full opacity-15 blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(ellipse, #0EA5E9 0%, transparent 70%)" }} />
-
-              <div className="relative z-10">
-                <div className="h-[3px] w-16 mx-auto mb-6"
-                  style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
-                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white mb-4">
-                  Ready to <span style={{ color: "#0EA5E9" }}>Elevate</span>?
-                </h2>
-                <p className="text-[#94A3B8] text-lg mb-8 max-w-xl mx-auto">
-                  Apply for access today. Approvals are reviewed within 24 hours.
-                </p>
-                <Link href="/register" className="no-underline">
-                  <Button size="lg" className="text-white font-bold uppercase tracking-widest px-10 h-12"
-                    style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}>
-                    Apply Now
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
+            <div className="mb-10 max-w-xl">
+              <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">Browse by category</p>
+              <h2 className="text-4xl font-black uppercase leading-[0.92] tracking-[-0.05em] text-[#111111] sm:text-5xl">Find your <span className="text-[#d7472f]">focus.</span></h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {categories.map((category, index) => (
+                <Link key={category.name} href="/products" className="group relative min-h-[260px] overflow-hidden rounded-2xl bg-[#111111] no-underline">
+                  <img src={category.image} alt={category.name} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-500 group-hover:scale-105 group-hover:opacity-85" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                    <div className="mb-2 flex items-center justify-between text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#d8f36f]"><span>0{index + 1}</span><ArrowUpRight className="h-4 w-4" /></div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/65">{category.eyebrow}</p>
+                    <h3 className="mt-1 text-2xl font-black uppercase leading-none tracking-[-0.04em]">{category.name}</h3>
+                  </div>
                 </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-black/10 bg-white py-20 sm:py-24">
+          <div className="container">
+            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+              <div>
+                <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">How it works</p>
+                <h2 className="text-4xl font-black uppercase leading-[0.92] tracking-[-0.05em] text-[#111111] sm:text-5xl">Access is <span className="text-[#d7472f]">earned.</span></h2>
+                <p className="mt-6 max-w-md text-base leading-7 text-black/58">Gorilla Gear Nutrition is a gated platform. We keep the catalogue private so approved members can shop with a clear, supported process.</p>
+                <Link href="/register" className="mt-8 inline-flex no-underline"><Button className="rounded-sm bg-[#111111] text-xs font-extrabold uppercase tracking-[0.15em] text-white hover:bg-[#d7472f]">Start your application <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {processSteps.map((step) => (
+                  <div key={step.number} className="rounded-2xl border border-black/10 bg-[#f7f5f0] p-6">
+                    <div className="mb-10 flex items-start justify-between"><span className="text-4xl font-black tracking-[-0.06em] text-[#d7472f]">{step.number}</span><Check className="h-5 w-5 text-black/30" /></div>
+                    <h3 className="text-lg font-black uppercase tracking-[-0.03em]">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-black/55">{step.description}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
-      )}
+
+        <section className="bg-[#111111] py-16 text-white sm:py-20">
+          <div className="container">
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#191919] px-6 py-14 text-center sm:px-10">
+              <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-[#d8f36f]/15 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#d7472f]/20 blur-3xl" />
+              <div className="relative">
+                <p className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d8f36f]">Your next phase starts here</p>
+                <h2 className="mx-auto max-w-3xl text-4xl font-black uppercase leading-[0.9] tracking-[-0.055em] sm:text-6xl">Ready to fuel your <span className="text-[#d7472f]">potential?</span></h2>
+                <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-white/60">Apply for membership, get verified, and access the Gorilla Gear Nutrition catalogue built for dedicated performance.</p>
+                {!isAuthenticated && <Link href="/register" className="mt-8 inline-flex no-underline"><Button size="lg" className="h-12 rounded-sm bg-[#d7472f] px-8 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#ef6447]">Get started today <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>}
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <Footer />
     </div>

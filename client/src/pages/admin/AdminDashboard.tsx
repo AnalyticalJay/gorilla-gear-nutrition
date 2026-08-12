@@ -20,9 +20,9 @@ export default function AdminDashboard() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-black" >
-          Anabolics Africa <span style={{ color: "#0EA5E9" }}>Dashboard</span>
+          Gorilla Gear <span style={{ color: "#0EA5E9" }}>Dashboard</span>
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">Overview of the Anabolics Africa platform</p>
+        <p className="text-muted-foreground text-sm mt-1">Overview of the Gorilla Gear Nutrition platform</p>
       </div>
 
       {(stats?.pendingQuotes ?? 0) > 0 && stats && (
@@ -62,9 +62,9 @@ export default function AdminDashboard() {
 
       {/* Recent Pending Users */}
       <div className="glass-card rounded-xl p-6">
-        <h2 className="font-bold mb-4 flex items-center gap-2">
+          <h2 className="font-bold mb-4 flex items-center gap-2">
           <Clock className="h-4 w-4 text-yellow-400" />
-          Pending Approvals
+          Pending Applications
         </h2>
         <PendingUsersList />
       </div>
