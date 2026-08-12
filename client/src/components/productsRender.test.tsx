@@ -16,18 +16,24 @@ vi.mock("@/lib/trpc", () => ({
       },
     },
     products: {
-      list: {
+      listPage: {
         useQuery: () => ({
-          data: [
-            {
-              id: 1,
-              name: "Ouroboros Labs - Retatrutide 30mg",
-              slug: "ouroboros-labs-retatrutide-30mg-1",
-              description: "Retatrutide 30mg vial",
-              price: 1500,
-            },
-          ],
+          data: {
+            items: [
+              {
+                id: 1,
+                name: "Ouroboros Labs - Retatrutide 30mg",
+                slug: "ouroboros-labs-retatrutide-30mg-1",
+                description: "Retatrutide 30mg vial",
+                price: 1500,
+              },
+            ],
+            total: 1,
+            limit: 24,
+            offset: 0,
+          },
           isLoading: false,
+          isFetching: false,
         }),
       },
     },

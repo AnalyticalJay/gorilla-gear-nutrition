@@ -5,11 +5,11 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, Lock, X, RotateCcw, ChevronDown, Tag, DollarSign } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Search, SlidersHorizontal, Lock, X, RotateCcw, ChevronDown, Tag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { BrandFilter, AVAILABLE_BRANDS, matchesBrand, matchesPriceRange } from "@/lib/productFilters";
+import { BrandFilter, AVAILABLE_BRANDS } from "@/lib/productFilters";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Products() {
@@ -20,23 +20,32 @@ export default function Products() {
   const [selectedBrand, setSelectedBrand] = useState<BrandFilter>("all");
   const [maxPrice, setMaxPrice] = useState<number>(0); // 0 means any price
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 24;
 
   const categoriesQuery = trpc.categories.list.useQuery();
-  const productsQuery = trpc.products.list.useQuery({
+  const productsQuery = trpc.products.listPage.useQuery({
     categoryId: selectedCategory,
     search: search || undefined,
+    brand: selectedBrand === "all" ? undefined : selectedBrand,
+    maxPrice: maxPrice > 0 ? maxPrice : undefined,
+    limit: PAGE_SIZE,
+    offset: (page - 1) * PAGE_SIZE,
   });
 
-  const products = productsQuery.data ?? [];
+  const products = productsQuery.data?.items ?? [];
+  const totalProducts = productsQuery.data?.total ?? 0;
   const categories = categoriesQuery.data ?? [];
+  const totalPages = Math.max(Math.ceil(totalProducts / PAGE_SIZE), 1);
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+    const end = Math.min(totalPages, start + 4);
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  }, [page, totalPages]);
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      if (!matchesBrand(product, selectedBrand)) return false;
-      if (!matchesPriceRange(product, maxPrice)) return false;
-      return true;
-    });
-  }, [products, selectedBrand, maxPrice]);
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   const activeFilterCount = Number(Boolean(search)) + Number(selectedCategory !== undefined) + Number(selectedBrand !== "all") + Number(maxPrice > 0);
   const selectedCategoryName = categories.find((category) => category.id === selectedCategory)?.name;
@@ -46,6 +55,7 @@ export default function Products() {
     setSelectedCategory(undefined);
     setSelectedBrand("all");
     setMaxPrice(0);
+    setPage(1);
   };
 
   const filterPanel = (
@@ -68,7 +78,10 @@ export default function Products() {
             id="product-search"
             placeholder="Name, compound, or dosage"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             className="border-[#1E293B] bg-[#0A0A0A] pl-9 text-white placeholder:text-[#475569] focus:border-[#0EA5E9]/60"
           />
         </div>
@@ -86,7 +99,10 @@ export default function Products() {
             return (
               <button
                 key={brand}
-                onClick={() => setSelectedBrand(brand)}
+                onClick={() => {
+                  setSelectedBrand(brand);
+                  setPage(1);
+                }}
                 className={`flex min-h-10 w-full items-center justify-between rounded border px-3 py-2 text-left text-xs font-bold transition-colors ${active ? "border-[#0EA5E9]/60 bg-[#0EA5E9]/10 text-white" : "border-[#1E293B] text-[#64748B] hover:border-[#0EA5E9]/40 hover:text-white"}`}
               >
                 <span className="truncate">{label}</span>
@@ -104,7 +120,10 @@ export default function Products() {
         </div>
         <div className="max-h-60 space-y-1 overflow-y-auto pr-1">
           <button
-            onClick={() => setSelectedCategory(undefined)}
+            onClick={() => {
+              setSelectedCategory(undefined);
+              setPage(1);
+            }}
             className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCategory === undefined ? "bg-[#E11D48]/10 text-[#E11D48]" : "text-[#64748B] hover:bg-white/5 hover:text-white"}`}
           >
             <span>All categories</span>
@@ -115,7 +134,10 @@ export default function Products() {
             return (
               <button
                 key={category.id}
-                onClick={() => setSelectedCategory(active ? undefined : category.id)}
+                onClick={() => {
+                  setSelectedCategory(active ? undefined : category.id);
+                  setPage(1);
+                }}
                 className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${active ? "bg-[#E11D48]/10 text-[#E11D48]" : "text-[#64748B] hover:bg-white/5 hover:text-white"}`}
               >
                 <span className="truncate">{category.name}</span>
@@ -142,7 +164,10 @@ export default function Products() {
             return (
               <button
                 key={tier.value}
-                onClick={() => setMaxPrice(tier.value)}
+                onClick={() => {
+                  setMaxPrice(tier.value);
+                  setPage(1);
+                }}
                 className={`flex min-h-10 w-full items-center justify-between rounded border px-3 py-2 text-left text-xs font-bold transition-colors ${active ? "border-[#0EA5E9]/60 bg-[#0EA5E9]/10 text-white" : "border-[#1E293B] text-[#64748B] hover:border-[#0EA5E9]/40 hover:text-white"}`}
               >
                 <span>{tier.label}</span>
@@ -168,7 +193,7 @@ export default function Products() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
               <div className="mb-5 h-[3px] w-16" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
               <h1 className="mb-2 text-4xl font-black uppercase tracking-tight text-white">Product <span style={{ color: "#0EA5E9" }}>Catalog</span></h1>
-              <p className="text-sm text-[#64748B]">{isApproved ? `${filteredProducts.length} premium products available` : "Prices hidden — get approved to view pricing and purchase"}</p>
+              <p className="text-sm text-[#64748B]">{isApproved ? `${totalProducts} premium products available` : "Prices hidden — get approved to view pricing and purchase"}</p>
             </motion.div>
           </div>
         </div>
@@ -187,7 +212,7 @@ export default function Products() {
             <button onClick={() => setMobileFiltersOpen(true)} className="inline-flex min-h-11 items-center gap-2 rounded border border-[#1E293B] bg-[#111111] px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:border-[#0EA5E9]/50">
               <SlidersHorizontal className="h-4 w-4 text-[#0EA5E9]" /> Filters {activeFilterCount > 0 && <span className="rounded-full bg-[#E11D48] px-2 py-0.5 text-[10px]">{activeFilterCount}</span>}
             </button>
-            <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B]">{filteredProducts.length} results</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B]">{totalProducts} results</span>
           </div>
 
           {mobileFiltersOpen && (
@@ -210,17 +235,64 @@ export default function Products() {
                   {maxPrice > 0 && <span className="rounded-full border border-[#0EA5E9]/30 bg-[#0EA5E9]/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">Under R{maxPrice}</span>}
                   {activeFilterCount === 0 && <span className="text-xs font-semibold uppercase tracking-widest text-[#64748B]">Browse the full catalog</span>}
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B]">{filteredProducts.length} results</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B]">{totalProducts} results</span>
               </div>
 
               {productsQuery.isLoading ? (
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {[...Array(8)].map((_, i) => <div key={i} className="h-72 animate-pulse rounded-lg border border-[#1E293B] bg-[#111111]" />)}
                 </div>
-              ) : filteredProducts.length > 0 ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredProducts.map((product) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}
-                </motion.div>
+              ) : products.length > 0 ? (
+                <>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    {products.map((product) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}
+                  </motion.div>
+                  {totalPages > 1 && (
+                    <nav aria-label="Product catalogue pagination" className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[#1E293B] pt-6 sm:flex-row">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B]">
+                        Page {page} of {totalPages}
+                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          aria-label="Previous page"
+                          disabled={page === 1 || productsQuery.isFetching}
+                          onClick={() => setPage((current) => Math.max(1, current - 1))}
+                          className="h-10 border-[#1E293B] px-3 text-[#94A3B8] hover:border-[#0EA5E9]/50 hover:text-white"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                          <span className="sr-only sm:not-sr-only sm:ml-1">Previous</span>
+                        </Button>
+                        {pageNumbers.map((pageNumber) => (
+                          <Button
+                            key={pageNumber}
+                            variant="outline"
+                            size="sm"
+                            aria-label={`Go to page ${pageNumber}`}
+                            aria-current={pageNumber === page ? "page" : undefined}
+                            disabled={productsQuery.isFetching}
+                            onClick={() => setPage(pageNumber)}
+                            className={`h-10 min-w-10 border-[#1E293B] px-3 ${pageNumber === page ? "border-[#0EA5E9] bg-[#0EA5E9]/15 text-white" : "text-[#94A3B8] hover:border-[#0EA5E9]/50 hover:text-white"}`}
+                          >
+                            {pageNumber}
+                          </Button>
+                        ))}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          aria-label="Next page"
+                          disabled={page === totalPages || productsQuery.isFetching}
+                          onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                          className="h-10 border-[#1E293B] px-3 text-[#94A3B8] hover:border-[#0EA5E9]/50 hover:text-white"
+                        >
+                          <span className="sr-only sm:not-sr-only sm:mr-1">Next</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </nav>
+                  )}
+                </>
               ) : (
                 <div className="py-24 text-center text-[#64748B]">
                   <Search className="mx-auto mb-4 h-12 w-12 opacity-20" />

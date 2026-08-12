@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, count, desc, eq, inArray, like, lte, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -246,6 +246,99 @@ export async function getProducts(opts?: {
   }
 
   return filtered.map((r) => ({ ...r, primaryImage: imageMap.get(r.id) ?? null }));
+}
+
+export async function getProductsPage(opts: {
+  categoryId?: number;
+  search?: string;
+  featuredOnly?: boolean;
+  activeOnly?: boolean;
+  brand?: string;
+  maxPrice?: number;
+  limit?: number;
+  offset?: number;
+}) {
+  const db = await getDb();
+  const limit = Math.min(Math.max(opts.limit ?? 24, 1), 48);
+  const offset = Math.max(opts.offset ?? 0, 0);
+  if (!db) return { items: [], total: 0, limit, offset };
+
+  const conditions = [
+    opts.activeOnly !== false ? eq(products.isActive, true) : undefined,
+    opts.categoryId ? eq(products.categoryId, opts.categoryId) : undefined,
+    opts.featuredOnly ? eq(products.isFeatured, true) : undefined,
+    opts.search
+      ? or(
+          like(products.name, `%${opts.search}%`),
+          like(products.description, `%${opts.search}%`),
+        )
+      : undefined,
+    opts.maxPrice && opts.maxPrice > 0 ? lte(products.price, opts.maxPrice.toFixed(2)) : undefined,
+  ];
+
+  const brandPatterns: Record<string, string[]> = {
+    "Ouroboros Labs": ["OL -%", "%ouroboros%"],
+    "Keifei Pharmaceuticals": ["Keifei%"],
+    "UPA Labs": ["UPA -%", "%UPA Labs%"],
+    Genesis: ["GEN -%", "%Genesis%"],
+    Biolab: ["BIO -%", "%Biolab%"],
+    Mactropin: ["MAC -%", "%Mactropin%"],
+    "SP Laboratories": ["SP -%", "%SP Laboratories%"],
+    "HD Labs": ["HD -%", "%HD Labs%"],
+    "BP Pharma": ["BP -%", "%BP Pharma%"],
+  };
+  const selectedBrandPatterns = opts.brand ? brandPatterns[opts.brand] : undefined;
+  if (selectedBrandPatterns) {
+    conditions.push(or(...selectedBrandPatterns.map((pattern) => like(products.name, pattern))));
+  }
+
+  const whereClause = and(...conditions);
+  const [totalRows, rows] = await Promise.all([
+    db
+      .select({ count: count() })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .where(whereClause),
+    db
+      .select({
+        id: products.id,
+        name: products.name,
+        slug: products.slug,
+        description: products.description,
+        dosageInfo: products.dosageInfo,
+        categoryId: products.categoryId,
+        price: products.price,
+        stockQuantity: products.stockQuantity,
+        isActive: products.isActive,
+        isFeatured: products.isFeatured,
+        createdAt: products.createdAt,
+        categoryName: categories.name,
+      })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .where(whereClause)
+      .orderBy(products.createdAt)
+      .limit(limit)
+      .offset(offset),
+  ]);
+
+  const productIds = rows.map((row) => row.id);
+  if (productIds.length === 0) {
+    return { items: [], total: Number(totalRows[0]?.count ?? 0), limit, offset };
+  }
+
+  const images = await db
+    .select()
+    .from(productImages)
+    .where(and(inArray(productImages.productId, productIds), eq(productImages.isPrimary, true)));
+  const imageMap = new Map(images.map((image) => [image.productId, image.imageUrl]));
+
+  return {
+    items: rows.map((row) => ({ ...row, primaryImage: imageMap.get(row.id) ?? null })),
+    total: Number(totalRows[0]?.count ?? 0),
+    limit,
+    offset,
+  };
 }
 
 export async function getProductBySlug(slug: string) {

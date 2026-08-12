@@ -1,6 +1,12 @@
 # Gorilla Gear Nutrition — Project TODO
 
-Source-project work is preserved below for reference. Those completed items are not active tasks for this independent copy unless explicitly requested.
+## Active Implementation — New Brand Image Archives & Pagination
+- [x] Extract Noventra, IPharma, Pharmacom, and NOVA Labs ZIP archives.
+- [x] Build strict brand-matched image importer script for Noventra, IPharma, Pharmacom, and NOVA Labs.
+- [x] Upload matched images to S3 storage and link strictly to matching products by brand + name.
+- [x] Implement server-side pagination (limit/offset) in tRPC product router.
+- [x] Update storefront UI with pagination controls and reset on filter change.
+- [x] Run test suite and verify UI rendering.
 
 ## Source Project History
 
@@ -26,7 +32,7 @@ Source-project work is preserved below for reference. Those completed items are 
 
 ## Future User-Requested Work
 
-- [ ] Re-upload and populate the Gorilla Gear Nutrition product catalogue and product images.
+- [ ] Re-upload and fully populate the Gorilla Gear Nutrition product catalogue and product images.
 - [ ] Configure new-project PayFast credentials and the production notification URL when ready.
 - [ ] Reconnect GitHub or bind a custom domain if required.
 - [ ] Implement further storefront or homepage polish requested by the user.
@@ -57,16 +63,12 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Implement filter sidebar for brand, category, price range, and search.
 - [x] Add mobile filter drawer support.
 - [x] Verify filter logic and test storefront layouts.
-
 - [x] Add unit test coverage for price-range filtering and filter reset behavior.
 - [x] Visually verify storefront filter sidebar and mobile filter drawer via screenshot.
-
 - [x] Add unit test coverage for filter state reset behavior.
 - [x] Take screenshots of the products catalogue and mobile filter drawer for visual verification.
-
 - [x] Add component test for Products page filter reset and selection.
 - [x] Take mobile screenshot with filter drawer open for visual verification.
-
 - [x] Add true React component test rendering Products page with filter interactions.
 - [x] Take mobile screenshot with filter drawer open.
 
@@ -74,34 +76,33 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Trace App.tsx routes for admin paths.
 - [x] Implement admin route definitions in App.tsx.
 - [x] Verify admin dashboard loads successfully.
-
 - [x] Add route/component test asserting `/admin/dashboard` renders successfully.
-
 - [x] Add true route-level integration test rendering App at `/admin/dashboard`.
 
 ## Active Implementation — CSV Catalogue Import
 - [x] Inspect uploaded CSV structure.
 - [x] Parse and import CSV products into database.
 - [x] Verify storefront and admin product lists reflect CSV data.
-
 - [x] Visually verify storefront and admin product lists reflect the newly imported CSV inventory via browser screenshot.
-
 - [x] Visually verify admin products page via screenshot.
-
 - [x] Capture screenshot of `/admin/products` to verify imported CSV rows in the admin management table.
-
 - [x] Verify authenticated admin products table renders 703 products correctly.
-
 - [x] Add unit test verifying admin product list query and table rendering in `AdminProducts.tsx`.
 
 ## Active Implementation — Storefront Pagination
-- [ ] Add limit and offset parameters to product list tRPC procedure.
-- [ ] Update Products.tsx with pagination controls (page size 24, previous/next, page numbers).
-- [ ] Reset page to 1 when filters or search change.
-- [ ] Add unit test for pagination query and component behavior.
+- [x] Add limit and offset parameters to product list tRPC procedure.
+- [x] Update Products.tsx with pagination controls (page size 24, previous/next, page numbers).
+- [x] Reset page to 1 when filters or search change.
+- [x] Add unit test for pagination query and component behavior.
 
 ## Active Implementation — Cooper Pharmaceuticals Image Import
 - [x] Extract uploaded ZIP archives for Cooper Pharmaceuticals.
 - [x] Match extracted images with Cooper products by name/brand.
 - [x] Upload matched images to storage and link in database.
 - [x] Verify image display on storefront and admin product pages.
+
+## New Brand Import Audit
+- [x] Confirm six remaining NOVA archive files have no safe exact NOVA product record and leave them unlinked rather than cross-branding or guessing.
+- [x] Disambiguate NOVA Clenbuterol 40 to the 100-tablet product using the package image and remove the incorrect 50-tablet link.
+- [x] Remove duplicate re-import image rows and make the importer idempotent for future reruns.
+- [x] Re-run the strict matcher with zero ambiguous associations; retain the six documented no-match records for catalog follow-up.

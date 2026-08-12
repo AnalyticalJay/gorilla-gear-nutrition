@@ -32,6 +32,7 @@ import {
   getProductBySlug,
   getProductImages,
   getProducts,
+  getProductsPage,
   getProductsForImageMatching,
   getProductImageMatchKeys,
   normalizeProductImageKey,
@@ -189,6 +190,28 @@ export const appRouter = router({
           ...p,
           price: isApproved ? p.price : null,
         }));
+      }),
+
+    listPage: publicProcedure
+      .input(z.object({
+        categoryId: z.number().optional(),
+        search: z.string().optional(),
+        featuredOnly: z.boolean().optional(),
+        brand: z.string().optional(),
+        maxPrice: z.number().nonnegative().optional(),
+        limit: z.number().int().min(1).max(48).default(24),
+        offset: z.number().int().min(0).default(0),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        const page = await getProductsPage({ ...input, activeOnly: true });
+        const isApproved = ctx.user && (ctx.user as any).status === "approved";
+        return {
+          ...page,
+          items: page.items.map((product) => ({
+            ...product,
+            price: isApproved ? product.price : null,
+          })),
+        };
       }),
 
     listAdmin: adminProcedure
