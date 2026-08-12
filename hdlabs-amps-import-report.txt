@@ -1,0 +1,14 @@
+HD Labs Amps Image Audit
+========================
+
+Source page: https://take.app/hdlabsinternational/c/cm8pre95g0009ky039zx1oxe7
+Source cards: 3
+Safe HD catalogue matches: 0
+Images uploaded or linked: 0
+
+Source cards reviewed:
+1. Testoviron 250 — no exact HD Labs Amps catalogue record. The closest catalogue record is Pharma - Testoviron – Bayer, which is a different brand/product identity and was not used.
+2. Sustanon 250 — no exact HD Labs Amps catalogue record. Existing Sustanon records belong to Keifei, Cooper, or OT and were not used.
+3. Deca-Durabolin 100 — no exact HD Labs Amps catalogue record. Existing Deca records belong to other brands or have different product identities/strengths and were not used.
+
+The catalogue currently contains HD Labs injectable oils such as HD - Duraject 100, HD - Sustaject 325, and HD - Testaject 250, but these do not safely represent the source products Testoviron 250, Sustanon 250, and Deca-Durabolin 100. No cross-brand or guessed associations were made. The source images remain available for later import if the three corresponding HD Labs Amps products are added to the catalogue.

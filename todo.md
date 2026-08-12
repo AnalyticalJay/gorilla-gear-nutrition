@@ -188,4 +188,10 @@
 - [x] Browse the supplied HD Labs SARMS page and inventory product image URLs.
 - [x] Match SARMS images strictly to existing HD Labs SARMS catalogue products by brand and strength.
 - [x] Confirm all seven verified SARMS images are already present in managed storage and linked to the correct products without duplicate uploads.
-- [ ] Verify representative SARMS product rendering and save a checkpoint.
+- [x] Verify representative SARMS product rendering and save a checkpoint.
+
+## Active Implementation — HD Labs Amps Image Collection
+- [x] Browse the supplied HD Labs Amps page and inventory product image URLs.
+- [x] Audit Amps images strictly against existing HD Labs catalogue products; no safe HD Labs Amps matches were found.
+- [x] Leave all three Amps images unlinked because no safe matching HD Labs Amps product records exist; no cross-brand uploads were made.
+- [x] Verify the source-page Amps cards, document the no-match result, and save a checkpoint; product-page rendering is deferred until matching HD Labs Amps records exist.
