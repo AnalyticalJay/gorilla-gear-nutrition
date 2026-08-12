@@ -1,9 +1,9 @@
+import React, { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Edit, Trash2, Package } from "lucide-react";
-import { useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -13,8 +13,23 @@ export default function AdminProducts() {
 
   const productsQuery = trpc.products.list.useQuery({ search: search || undefined });
   const deleteProduct = trpc.products.delete.useMutation({
-    onSuccess: () => { utils.products.list.invalidate(); toast.success("Product deleted"); },
-    onError: (e) => toast.error(e.message),
+    onSuccess: () => {
+      utils.products.list.invalidate();
+      toast.success("Product deleted successfully");
+    },
+    onError: (err) => {
+      toast.error(`Failed to delete product: ${err.message}`);
+    },
+  });
+
+  const updateProduct = trpc.products.update.useMutation({
+    onSuccess: () => {
+      utils.products.list.invalidate();
+      toast.success("Product status updated");
+    },
+    onError: (err: any) => {
+      toast.error(`Failed to update status: ${err.message}`);
+    },
   });
 
   const products = productsQuery.data ?? [];
@@ -23,113 +38,113 @@ export default function AdminProducts() {
     <div>
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black" >
-            Product <span style={{ color: "#0EA5E9" }}>Management</span>
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">{products.length} products in catalog</p>
+          <h1 className="text-2xl font-black uppercase tracking-tight text-white">Product Management</h1>
+          <p className="text-sm text-[#64748B]">Manage catalogue items, pricing, and stock levels</p>
         </div>
-        <Link href="/admin/products/new">
-          <Button className="min-h-11 w-full text-white font-semibold sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
+        <Link href="/admin/products/new" className="no-underline">
+          <Button
+            className="text-xs font-black uppercase tracking-wider text-white shadow-lg transition hover:opacity-90"
+            style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
+          >
+            <Plus className="h-4 w-4 mr-2" /> Add Product
           </Button>
         </Link>
       </div>
 
-      <div className="relative mb-6 w-full max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-input border-border" />
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+          <Input
+            placeholder="Search products by name, compound, or brand..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 bg-[#111111] border-[#1E293B] text-white placeholder:text-[#64748B]"
+          />
+        </div>
       </div>
 
-      <div className="glass-card rounded-xl overflow-hidden">
-        {productsQuery.isLoading ? (
-          <div className="p-6 space-y-3">
-            {[...Array(5)].map((_, i) => <div key={i} className="h-14 bg-accent/20 rounded animate-pulse" />)}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="p-12 text-center">
-            <Package className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-30" />
-            <p className="text-muted-foreground mb-4">No products yet</p>
-            <Link href="/admin/products/new">
-              <Button size="sm" className="text-white font-semibold">Add First Product</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px]">
-              <thead>
-                <tr className="border-b border-border/40 text-xs text-muted-foreground">
-                  <th className="text-left p-4 font-medium">Product</th>
-                  <th className="text-left p-4 font-medium">Category</th>
-                  <th className="text-left p-4 font-medium">Price</th>
-                  <th className="text-left p-4 font-medium">Stock</th>
-                  <th className="text-left p-4 font-medium">Status</th>
-                  <th className="text-left p-4 font-medium">Actions</th>
+      <div className="rounded-xl border border-[#1E293B] bg-[#111111] overflow-hidden shadow-xl">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-[#1E293B] bg-black/40 text-[11px] font-black uppercase tracking-widest text-[#64748B]">
+                <th className="py-3.5 px-4">Product</th>
+                <th className="py-3.5 px-4">Category</th>
+                <th className="py-3.5 px-4">Price</th>
+                <th className="py-3.5 px-4">Stock</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1E293B] text-sm">
+              {productsQuery.isLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-[#64748B]">Loading products...</td>
                 </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id} className="border-b border-border/20 hover:bg-accent/10 transition-colors">
-                    <td className="p-4">
+              ) : products.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-[#64748B]">No products found.</td>
+                </tr>
+              ) : (
+                products.map((product: any) => (
+                  <tr key={product.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="py-3.5 px-4 font-medium text-white">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-muted/30 shrink-0">
-                          {product.primaryImage ? (
-                            <img src={product.primaryImage} alt={product.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-xs text-muted-foreground">AC</span>
-                            </div>
-                          )}
+                        <div className="h-9 w-9 rounded bg-[#1A1A1A] border border-[#1E293B] flex items-center justify-center shrink-0">
+                          <Package className="h-4 w-4 text-[#0EA5E9]" />
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">{product.name}</p>
-                          <p className="text-xs text-muted-foreground">{product.slug}</p>
+                        <div>
+                          <p className="font-bold text-white text-sm">{product.name}</p>
+                          <p className="text-xs text-[#64748B] font-mono">{product.slug}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-sm text-muted-foreground">{product.categoryName ?? "—"}</td>
-                    <td className="p-4 text-sm font-medium text-primary">
-                      {product.price ? `R${parseFloat(product.price).toFixed(2)}` : "—"}
+                    <td className="py-3.5 px-4 text-[#94A3B8]">
+                      {product.category?.name || "General"}
                     </td>
-                    <td className="p-4">
-                      <span className={`text-sm ${product.stockQuantity === 0 ? "text-destructive" : "text-green-400"}`}>
-                        {product.stockQuantity}
-                      </span>
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#0EA5E9]">
+                      R{parseFloat(product.price).toFixed(2)}
                     </td>
-                    <td className="p-4">
-                      {product.isActive ? (
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">Active</Badge>
-                      ) : (
-                        <Badge className="bg-muted text-muted-foreground text-xs">Inactive</Badge>
-                      )}
+                    <td className="py-3.5 px-4 text-white">
+                      {product.stockQuantity}
                     </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
+                    <td className="py-3.5 px-4">
+                      <button
+                        onClick={() => updateProduct.mutate({ id: product.id, isActive: !product.isActive })}
+                        className="inline-flex cursor-pointer"
+                      >
+                        <Badge variant={product.isActive ? "default" : "secondary"} className={product.isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/30"}>
+                          {product.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </button>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
                         <Link href={`/admin/products/${product.id}/edit`}>
-                          <button className="flex min-h-10 items-center gap-1 rounded bg-accent px-3 py-2 text-xs hover:bg-accent/80 transition-colors">
-                            <Edit className="h-3 w-3" />
-                            Edit
-                          </button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#64748B] hover:text-white hover:bg-white/5">
+                            <Edit className="h-4 w-4" />
+                          </Button>
                         </Link>
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-[#64748B] hover:text-[#E11D48] hover:bg-[#E11D48]/10"
                           onClick={() => {
-                            if (confirm(`Delete "${product.name}"?`)) {
+                            if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
                               deleteProduct.mutate({ id: product.id });
                             }
                           }}
-                          className="flex min-h-10 items-center gap-1 rounded bg-destructive/20 px-3 py-2 text-xs text-destructive hover:bg-destructive/30 transition-colors"
                         >
-                          <Trash2 className="h-3 w-3" />
-                          Delete
-                        </button>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

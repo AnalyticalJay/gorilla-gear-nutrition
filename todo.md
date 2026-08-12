@@ -80,6 +80,16 @@ Source-project work is preserved below for reference. Those completed items are 
 - [x] Add true route-level integration test rendering App at `/admin/dashboard`.
 
 ## Active Implementation — CSV Catalogue Import
-- [ ] Inspect uploaded CSV structure.
-- [ ] Parse and import CSV products into database.
-- [ ] Verify storefront and admin product lists reflect CSV data.
+- [x] Inspect uploaded CSV structure.
+- [x] Parse and import CSV products into database.
+- [x] Verify storefront and admin product lists reflect CSV data.
+
+- [x] Visually verify storefront and admin product lists reflect the newly imported CSV inventory via browser screenshot.
+
+- [x] Visually verify admin products page via screenshot.
+
+- [x] Capture screenshot of `/admin/products` to verify imported CSV rows in the admin management table.
+
+- [x] Verify authenticated admin products table renders 703 products correctly.
+
+- [ ] Add unit test verifying admin product list query and table rendering in `AdminProducts.tsx`.
