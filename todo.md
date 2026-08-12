@@ -182,4 +182,10 @@
 - [x] Browse the supplied HD Labs oral page and inventory product image URLs.
 - [x] Match oral images strictly to existing HD Labs oral catalogue products by brand and strength.
 - [x] Upload verified oral images to managed storage and link them to the correct products.
-- [ ] Verify representative oral product rendering and save a checkpoint.
+- [x] Verify representative oral product rendering and save a checkpoint.
+
+## Active Implementation — HD Labs SARMS Image Collection
+- [x] Browse the supplied HD Labs SARMS page and inventory product image URLs.
+- [x] Match SARMS images strictly to existing HD Labs SARMS catalogue products by brand and strength.
+- [x] Confirm all seven verified SARMS images are already present in managed storage and linked to the correct products without duplicate uploads.
+- [ ] Verify representative SARMS product rendering and save a checkpoint.

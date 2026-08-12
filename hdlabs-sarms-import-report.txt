@@ -1,0 +1,19 @@
+HD Labs SARMS Image Audit
+==========================
+
+Source page: https://take.app/hdlabsinternational/c/cm8rp768q0002ky03yk17ea2i
+Source cards: 7
+New image uploads required: 0
+New database links required: 0
+
+The seven source cards were matched strictly to existing HD Labs SARMS catalogue records and their managed-storage image links:
+
+1. Anabolicum (LGD-4033) -> HD - LGD-4033 (Anabolicum), 50 Tablets 5mg
+2. Andarine (S4) -> HD - Anderine, 50 Tablets 12.5mg
+3. Cardarine (GW-501516) -> HD - GW-501516 (Cardarine), 50 Tablets 5mg
+4. Nutrobal (MK-677) -> HD - MK-677 (Nutrobol), 50 Tablets 10mg
+5. Ostarine (MK-2866) -> HD - Ostarine (MK 2866), 50 Tablets 12mg
+6. Stenabolic (SR-9009) -> HD - SR9009 (Stenabolic), 50 Tablets 10mg
+7. Testolone (RAD-140) -> HD - RAD-140 (Testolone), 50 Tablets 5mg
+
+All seven are brand-scoped to category SARMS. The source images were already imported and linked during the verified HD Labs oral/SARMS import, so the idempotent audit made no duplicate rows or uploads. Representative pages were verified on phone and desktop. No cross-brand or guessed associations were made.
