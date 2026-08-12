@@ -1,4 +1,4 @@
-import { and, count, desc, eq, inArray, like, lte, or } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, like, lte, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -150,6 +150,119 @@ export async function updateUserStatus(
     .update(userApprovals)
     .set({ status, approvedBy: adminId, adminNotes: notes ?? null, reviewedAt: new Date() })
     .where(eq(userApprovals.userId, userId));
+}
+
+// ─── Admin Analytics ──────────────────────────────────────────────────────────
+
+export async function getAdminAnalytics() {
+  const empty = {
+    generatedAt: new Date().toISOString(),
+    users: { total: 0, pending: 0, approved: 0, rejected: 0, newLast30Days: 0 },
+    products: { total: 0, active: 0, withImages: 0, missingImages: 0, imageCoveragePercent: 0, categories: 0 },
+    quotes: { total: 0, pending: 0, approved: 0, rejected: 0, awaitingPayment: 0 },
+    orders: { total: 0, paid: 0, processing: 0, shipped: 0, completed: 0, cancelled: 0, revenue: "0.00", averagePaidOrderValue: "0.00" },
+    recentUsers: [] as Array<{ id: number; fullName: string; status: string; createdAt: Date }>,
+    recentOrders: [] as Array<{ id: number; userFullName: string; status: string; paymentStatus: string; totalAmount: string; createdAt: Date }>,
+  };
+
+  const db = await getDb();
+  if (!db) return empty;
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const [
+    userStatusRows,
+    newUserRows,
+    totalProductRows,
+    activeProductRows,
+    imageProductRows,
+    categoryRows,
+    orderStatusRows,
+    paidOrderRows,
+    recentUsers,
+    recentOrders,
+  ] = await Promise.all([
+    db.select({ status: users.status, count: count() }).from(users).groupBy(users.status),
+    db.select({ count: count() }).from(users).where(gte(users.createdAt, thirtyDaysAgo)),
+    db.select({ count: count() }).from(products),
+    db.select({ count: count() }).from(products).where(eq(products.isActive, true)),
+    db
+      .select({ count: sql<number>`count(distinct ${productImages.productId})` })
+      .from(productImages)
+      .innerJoin(products, eq(productImages.productId, products.id))
+      .where(eq(products.isActive, true)),
+    db.select({ count: count() }).from(categories).where(eq(categories.isActive, true)),
+    db.select({ status: orders.status, count: count() }).from(orders).groupBy(orders.status),
+    db
+      .select({ count: count(), revenue: sql<string>`coalesce(sum(${orders.totalAmount}), 0)` })
+      .from(orders)
+      .where(eq(orders.paymentStatus, "paid")),
+    db
+      .select({ id: users.id, fullName: users.fullName, status: users.status, createdAt: users.createdAt })
+      .from(users)
+      .orderBy(desc(users.createdAt))
+      .limit(5),
+    db
+      .select({
+        id: orders.id,
+        userFullName: users.fullName,
+        status: orders.status,
+        paymentStatus: orders.paymentStatus,
+        totalAmount: orders.totalAmount,
+        createdAt: orders.createdAt,
+      })
+      .from(orders)
+      .innerJoin(users, eq(orders.userId, users.id))
+      .orderBy(desc(orders.createdAt))
+      .limit(5),
+  ]);
+
+  const userCount = (status: string) => Number(userStatusRows.find((row) => row.status === status)?.count ?? 0);
+  const orderCount = (status: string) => Number(orderStatusRows.find((row) => row.status === status)?.count ?? 0);
+  const totalProducts = Number(totalProductRows[0]?.count ?? 0);
+  const activeProducts = Number(activeProductRows[0]?.count ?? 0);
+  const productsWithImages = Number(imageProductRows[0]?.count ?? 0);
+  const paidOrders = Number(paidOrderRows[0]?.count ?? 0);
+  const revenue = Number(paidOrderRows[0]?.revenue ?? 0);
+  const orderStatuses = orderStatusRows.reduce((total, row) => total + Number(row.count), 0);
+  const totalOrders = Math.max(orderStatuses, 0);
+
+  return {
+    generatedAt: new Date().toISOString(),
+    users: {
+      total: userStatusRows.reduce((total, row) => total + Number(row.count), 0),
+      pending: userCount("pending"),
+      approved: userCount("approved"),
+      rejected: userCount("rejected"),
+      newLast30Days: Number(newUserRows[0]?.count ?? 0),
+    },
+    products: {
+      total: totalProducts,
+      active: activeProducts,
+      withImages: productsWithImages,
+      missingImages: Math.max(activeProducts - productsWithImages, 0),
+      imageCoveragePercent: activeProducts === 0 ? 0 : Math.round((productsWithImages / activeProducts) * 1000) / 10,
+      categories: Number(categoryRows[0]?.count ?? 0),
+    },
+    quotes: {
+      total: orderCount("quote_pending") + orderCount("quote_approved") + orderCount("quote_rejected"),
+      pending: orderCount("quote_pending"),
+      approved: orderCount("quote_approved"),
+      rejected: orderCount("quote_rejected"),
+      awaitingPayment: orderCount("awaiting_payment"),
+    },
+    orders: {
+      total: totalOrders,
+      paid: paidOrders,
+      processing: orderCount("processing"),
+      shipped: orderCount("shipped"),
+      completed: orderCount("completed"),
+      cancelled: orderCount("cancelled"),
+      revenue: revenue.toFixed(2),
+      averagePaidOrderValue: paidOrders === 0 ? "0.00" : (revenue / paidOrders).toFixed(2),
+    },
+    recentUsers,
+    recentOrders,
+  };
 }
 
 // ─── Categories ───────────────────────────────────────────────────────────────

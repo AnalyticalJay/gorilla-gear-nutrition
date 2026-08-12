@@ -35,7 +35,7 @@
 - [ ] Re-upload and fully populate the Gorilla Gear Nutrition product catalogue and product images.
 - [ ] Configure new-project PayFast credentials and the production notification URL when ready.
 - [ ] Reconnect GitHub or bind a custom domain if required.
-- [ ] Implement further storefront or homepage polish requested by the user.
+- [x] Implement further storefront or homepage polish requested by the user.
 
 ## Active Implementation — Registration and Approval Dashboard
 
@@ -115,3 +115,9 @@
 - [x] Refine the homepage visual hierarchy, spacing, CTA presentation, and responsive behavior.
 - [x] Verify the homepage at desktop, tablet, and phone widths and address any overflow or clipping.
 - [x] Add or update homepage component tests for the polished responsive structure.
+
+## Active Implementation — Admin Dashboard Analytics and Responsive UX
+- [x] Refine the admin dashboard overview layout, hierarchy, navigation, and responsive behavior.
+- [x] Add real database-backed overview analytics for users, approvals, products, images, and quote activity.
+- [x] Add tests for analytics data and responsive admin overview rendering.
+- [x] Verify the admin dashboard at desktop, tablet, and phone widths and save a checkpoint.

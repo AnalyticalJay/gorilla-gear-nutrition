@@ -20,6 +20,7 @@ import {
   deleteCategory,
   deleteProduct,
   deleteProductImage,
+  getAdminAnalytics,
   getAllCategories,
   getAllOrders,
   getAllUsers,
@@ -594,6 +595,8 @@ export const appRouter = router({
     rejectUser: adminProcedure
       .input(z.object({ userId: z.number(), notes: z.string().optional() }))
       .mutation(({ ctx, input }) => updateUserStatus(input.userId, "rejected", ctx.user.id, input.notes)),
+
+    analytics: adminProcedure.query(() => getAdminAnalytics()),
 
     stats: adminProcedure.query(async () => {
       const db = await getDb();
