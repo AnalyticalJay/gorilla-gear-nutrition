@@ -132,17 +132,13 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="relative mx-auto w-full max-w-md"
+                className="relative mx-auto w-full max-w-lg"
               >
                 <div className="absolute -right-3 top-8 h-16 w-3 bg-[#d7472f] sm:-right-6 sm:h-24 sm:w-4" />
                 <div className="absolute -bottom-3 left-8 h-3 w-28 bg-[#111111] sm:-bottom-6 sm:left-12 sm:h-4 sm:w-40" />
-                <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-[1.5rem] border border-black/10 bg-white/75 px-6 py-8 shadow-[0_24px_70px_rgba(0,0,0,0.12)] sm:min-h-[500px] sm:rounded-[2rem] sm:px-16 sm:py-10">
+                <div className="relative flex aspect-square w-full items-center justify-center">
                   <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(215,71,47,0.16) 0, transparent 27%), radial-gradient(circle at 80% 75%, rgba(216,243,111,0.48) 0, transparent 30%)" }} />
-                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition illustrated gorilla logo" className="relative z-10 max-h-[280px] w-full object-contain mix-blend-multiply drop-shadow-[0_20px_22px_rgba(0,0,0,0.18)] sm:max-h-[460px]" />
-                  <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 border-t border-black/10 pt-4 text-[9px] font-extrabold uppercase tracking-[0.18em] text-black/45">
-                    <span>Gorilla Gear Nutrition</span>
-                    <span>South Africa</span>
-                  </div>
+                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition illustrated gorilla logo" className="relative z-10 h-full w-full object-contain mix-blend-multiply drop-shadow-[0_20px_22px_rgba(0,0,0,0.18)]" />
                 </div>
               </motion.div>
             </div>

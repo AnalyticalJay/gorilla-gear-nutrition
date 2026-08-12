@@ -205,4 +205,9 @@
 ## Active Implementation — Homepage Hero Logo Replacement
 - [x] Upload the supplied Gorilla Gear Nutrition hero artwork to managed storage.
 - [x] Replace the current hero logo image and tune responsive sizing without cropping the artwork incorrectly.
-- [ ] Verify the updated hero on desktop and mobile and save a checkpoint.
+- [x] Verify the updated hero on desktop and mobile and save a checkpoint.
+
+## Active Implementation — Hero Media Fill Treatment
+- [x] Remove the visual block/card frame around the hero artwork.
+- [x] Enlarge the uploaded hero image so it fills the media area without incorrect cropping.
+- [ ] Verify desktop and mobile hero rendering and save a checkpoint.
