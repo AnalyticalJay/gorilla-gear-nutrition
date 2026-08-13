@@ -1,0 +1,1 @@
+export const NATIONWIDE_SHIPPING_FEE_ZAR = 140;

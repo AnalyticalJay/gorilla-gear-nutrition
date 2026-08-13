@@ -6,7 +6,7 @@ export type OrderTrackingEventInput = {
   location?: string | null;
   externalEventId?: string | null;
   source?: string;
-  occurredAt: Date | string;
+  occurredAt: Date;
 };
 
 export type OrderTrackingInput = {

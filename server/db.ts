@@ -17,6 +17,7 @@ import {
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import { getOrderStatusTimelineUpdates } from "../shared/orderTracking";
+import { NATIONWIDE_SHIPPING_FEE_ZAR } from "../shared/shipping";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -691,13 +692,8 @@ export async function clearCart(userId: number) {
 
 // ─── Delivery ─────────────────────────────────────────────────────────────────
 
-export function calculateDelivery(city: string): { type: "free" | "flat_rate"; fee: number } {
-  const normalized = city.trim().toLowerCase();
-  const freeLocations = ["port elizabeth", "gqeberha", "pe"];
-  if (freeLocations.some((loc) => normalized.includes(loc))) {
-    return { type: "free", fee: 0 };
-  }
-  return { type: "flat_rate", fee: 150 };
+export function calculateDelivery(_city: string): { type: "flat_rate"; fee: number } {
+  return { type: "flat_rate", fee: NATIONWIDE_SHIPPING_FEE_ZAR };
 }
 
 // ─── Orders ───────────────────────────────────────────────────────────────────

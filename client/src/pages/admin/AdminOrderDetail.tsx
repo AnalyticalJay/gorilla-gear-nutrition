@@ -8,9 +8,12 @@ import { ArrowLeft, Package, MapPin, CreditCard, Truck, User, ExternalLink, Save
 import { format } from "date-fns";
 import { toast } from "sonner";
 import QuoteConversation from "@/components/QuoteConversation";
+import MockCourierSimulator from "@/components/MockCourierSimulator";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getTrackingUrl } from "@shared/orderTracking";
+import { getTrackingUrl, type OrderTrackingEventInput } from "@shared/orderTracking";
+import OrderTrackingTimeline from "@/components/OrderTrackingTimeline";
+import type { MockCourierScenario } from "@shared/mockCourierEvents";
 import { proofStatusMeta, resolveProofStatus } from "@shared/paymentProof";
 
 const ORDER_STATUSES = ["quote_pending", "quote_approved", "quote_rejected", "awaiting_payment", "paid", "processing", "shipped", "completed", "cancelled"];
@@ -40,6 +43,7 @@ export default function AdminOrderDetail() {
   const [trackingUrl, setTrackingUrl] = useState("");
   const [trackingNotes, setTrackingNotes] = useState("");
   const [proofReviewNote, setProofReviewNote] = useState("");
+  const [mockPreview, setMockPreview] = useState<{ scenario: MockCourierScenario; events: OrderTrackingEventInput[] } | null>(null);
 
   const orderQuery = trpc.orders.adminDetail.useQuery(
     { orderId: parseInt(orderId ?? "0") },
@@ -114,6 +118,20 @@ export default function AdminOrderDetail() {
     );
   }
 
+  const mockPreviewOrder = mockPreview
+    ? {
+        ...order,
+        status: mockPreview.scenario === "delivered" ? "completed" : "shipped",
+        trackingNumber: trackingNumber.trim() || "MOCK-TCG-001",
+        trackingCarrier: "Mock Courier Preview",
+        trackingUrl: null,
+        trackingNotes: "Browser-only mock courier preview. This note is not saved to the order.",
+        dispatchedAt: mockPreview.events[mockPreview.events.length - 1]?.occurredAt ?? order.dispatchedAt,
+        deliveredAt: mockPreview.scenario === "delivered" ? mockPreview.events[0]?.occurredAt ?? order.deliveredAt : null,
+        trackingEvents: mockPreview.events,
+      }
+    : null;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -183,6 +201,24 @@ export default function AdminOrderDetail() {
           <Button className="min-h-10 text-white font-bold" disabled={updateTracking.isPending} onClick={() => updateTracking.mutate({ orderId: order.id, trackingNumber: trackingNumber.trim() || null, trackingCarrier: trackingCarrier.trim() || null, trackingUrl: trackingUrl.trim() || null, trackingNotes: trackingNotes.trim() || null })}><Save className="mr-2 h-4 w-4" />{updateTracking.isPending ? "Saving..." : "Save tracking"}</Button>
         </div>
       </div>
+
+      {/* Mock Courier Scenario Simulator */}
+      <MockCourierSimulator
+        activeScenario={mockPreview?.scenario ?? null}
+        onPreview={(scenario, events) => setMockPreview({ scenario, events })}
+        onClear={() => setMockPreview(null)}
+      />
+      {mockPreviewOrder && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FBBF24]">Mock customer view</p>
+              <p className="text-xs text-muted-foreground">This preview uses generated events only. No order status, tracking number, or scan event has been saved.</p>
+            </div>
+          </div>
+          <OrderTrackingTimeline order={mockPreviewOrder} />
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Customer Info */}

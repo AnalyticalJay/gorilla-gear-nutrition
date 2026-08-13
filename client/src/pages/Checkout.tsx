@@ -10,6 +10,7 @@ import { ArrowLeft, Lock, MessageSquare, Send, Truck } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import { NATIONWIDE_SHIPPING_FEE_ZAR } from "@shared/shipping";
 
 type FormData = {
   fullName: string;
@@ -45,7 +46,7 @@ export default function Checkout() {
   );
   const delivery = deliveryQuery.data;
   const subtotal = items.reduce((sum, item) => sum + parseFloat(item.productPrice) * item.quantity, 0);
-  const deliveryFee = delivery?.fee ?? 150;
+  const deliveryFee = delivery?.fee ?? NATIONWIDE_SHIPPING_FEE_ZAR;
   const estimatedTotal = subtotal + deliveryFee;
 
   const submitQuote = trpc.orders.submitQuote.useMutation({
@@ -165,13 +166,11 @@ export default function Checkout() {
                     <Truck className="h-5 w-5 text-primary shrink-0" />
                     <div>
                       <p className="text-sm font-medium">
-                        {delivery?.type === "free" ? "Free Delivery" : `Estimated Delivery — R${deliveryFee.toFixed(2)}`}
+                        Nationwide Delivery — R{deliveryFee.toFixed(2)}
                       </p>
-                      <p className="text-xs text-muted-foreground">Final delivery cost is confirmed with your quote.</p>
+                      <p className="text-xs text-muted-foreground">A flat R140 delivery fee applies nationwide across South Africa.</p>
                     </div>
-                    {delivery?.type === "free" && (
-                      <span className="text-xs font-semibold text-green-400 bg-green-400/10 px-2 py-1 rounded sm:ml-auto">FREE</span>
-                    )}
+                    <span className="text-xs font-semibold text-[#0EA5E9] bg-[#0EA5E9]/10 px-2 py-1 rounded sm:ml-auto">NATIONWIDE RATE</span>
                   </div>
                 )}
               </div>
@@ -188,7 +187,7 @@ export default function Checkout() {
                 </div>
                 <div className="border-t border-border pt-3 space-y-2 mb-4">
                   <div className="flex justify-between text-sm"><span className="text-muted-foreground">Estimated subtotal</span><span>R{subtotal.toFixed(2)}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Estimated delivery</span><span>{delivery?.type === "free" ? <span className="text-green-400">FREE</span> : `R${deliveryFee.toFixed(2)}`}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Nationwide delivery</span><span>R{deliveryFee.toFixed(2)}</span></div>
                 </div>
                 <div className="border-t border-border pt-3 mb-5">
                   <div className="flex justify-between font-bold text-lg"><span>Estimated total</span><span className="text-primary">R{estimatedTotal.toFixed(2)}</span></div>

@@ -71,30 +71,11 @@ describe("auth.logout", () => {
 // ─── Delivery tests ───────────────────────────────────────────────────────────
 
 describe("delivery.calculate", () => {
-  it("returns free delivery for Port Elizabeth", async () => {
+  it.each(["Port Elizabeth", "Gqeberha", "Johannesburg", "Durban", "Cape Town"])("returns the R140 nationwide flat rate for %s", async (city) => {
     const caller = appRouter.createCaller(makeCtx({ user: makeUser() }));
-    const result = await caller.delivery.calculate({ city: "Port Elizabeth" });
-    expect(result.fee).toBe(0);
-    expect(result.type).toBe("free");
-  });
-
-  it("returns free delivery for PE (case-insensitive)", async () => {
-    const caller = appRouter.createCaller(makeCtx({ user: makeUser() }));
-    const result = await caller.delivery.calculate({ city: "port elizabeth" });
-    expect(result.fee).toBe(0);
-  });
-
-  it("returns R150 flat rate for Johannesburg", async () => {
-    const caller = appRouter.createCaller(makeCtx({ user: makeUser() }));
-    const result = await caller.delivery.calculate({ city: "Johannesburg" });
-    expect(result.fee).toBe(150);
+    const result = await caller.delivery.calculate({ city });
+    expect(result.fee).toBe(140);
     expect(result.type).toBe("flat_rate");
-  });
-
-  it("returns R150 for Durban", async () => {
-    const caller = appRouter.createCaller(makeCtx({ user: makeUser() }));
-    const result = await caller.delivery.calculate({ city: "Durban" });
-    expect(result.fee).toBe(150);
   });
 
   it("requires authentication", async () => {

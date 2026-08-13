@@ -79,13 +79,14 @@ describe("quote workflow router", () => {
       notes: "Please confirm availability.",
     });
 
-    expect(result).toMatchObject({ quoteId: 55, status: "quote_pending", deliveryFee: "0.00" });
+    expect(result).toMatchObject({ quoteId: 55, status: "quote_pending", deliveryFee: "140.00", total: "340.00" });
     expect(dbMocks.createOrder).toHaveBeenCalledWith(expect.objectContaining({
       userId: 7,
       status: "quote_pending",
       quoteNotes: "Please confirm availability.",
-      totalAmount: "200.00",
-      deliveryFee: "0.00",
+      totalAmount: "340.00",
+      deliveryFee: "140.00",
+      deliveryType: "flat_rate",
     }));
     expect(dbMocks.clearCart).toHaveBeenCalledWith(7);
   });

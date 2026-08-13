@@ -230,3 +230,15 @@
 - [x] Add regression coverage, verify responsive states, and save a checkpoint.
 - [x] Verify the configured courier secret is available server-side without exposing its value.
 - [x] Confirmed the official courier endpoint and authentication contract are not publicly exposed in the available documentation; live requests remain disabled until The Courier Guy provides those details.
+
+## Active Implementation — Mock Courier Timeline Preview
+- [x] Inspect current courier timeline and admin/customer access patterns for a safe preview entry point.
+- [x] Implement deterministic mock courier scan scenarios with explicit mock labeling and no production-data writes.
+- [x] Add preview controls and responsive regression coverage for the mock timeline states.
+- [x] Save a checkpoint for the mock courier preview flow.
+
+## Active Implementation — Nationwide Shipping Rate
+- [x] Inspect the current shipping-rule schema, calculation helpers, and admin shipping configuration.
+- [x] Create or update the nationwide South Africa flat-rate rule to R140.
+- [x] Verify R140 is applied consistently in customer quote/checkout and admin order displays.
+- [x] Add regression coverage and save a checkpoint.
