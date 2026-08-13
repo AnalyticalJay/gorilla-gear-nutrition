@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   orderQuery: vi.fn(),
   invalidate: vi.fn(),
   paymentMutate: vi.fn(),
+  trackingMutate: vi.fn(),
 }));
 
 vi.mock("@/lib/trpc", () => ({
@@ -18,6 +19,7 @@ vi.mock("@/lib/trpc", () => ({
       detail: { useQuery: mocks.orderQuery },
       choosePayment: { useMutation: () => ({ isPending: false, mutate: mocks.paymentMutate }) },
       uploadProof: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
+      refreshTracking: { useMutation: () => ({ isPending: false, mutate: mocks.trackingMutate, mutateAsync: vi.fn().mockResolvedValue({ configured: false, synced: 0, events: [] }) }) },
     },
   },
 }));

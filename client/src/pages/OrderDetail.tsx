@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -45,6 +46,36 @@ export default function OrderDetail() {
     },
   );
   const order = orderQuery.data;
+
+  const refreshTracking = trpc.orders.refreshTracking.useMutation({
+    onSuccess: (data) => {
+      utils.orders.detail.invalidate({ orderId: parsedOrderId });
+      if (data.configured && data.synced > 0) {
+        toast.success(`${data.synced} courier scan${data.synced === 1 ? "" : "s"} received.`);
+      } else if (!data.configured && data.message) {
+        toast.info(data.message);
+      }
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  useEffect(() => {
+    const canSync = Boolean(order?.trackingNumber && ["shipped", "completed"].includes(order.status));
+    if (!canSync) return;
+    const interval = window.setInterval(() => {
+      refreshTracking.mutate({ orderId: parsedOrderId });
+    }, 60_000);
+    return () => window.clearInterval(interval);
+  }, [order?.trackingNumber, order?.status, parsedOrderId]);
+
+  const handleTrackingRefresh = async () => {
+    if (!order?.trackingNumber) {
+      await orderQuery.refetch();
+      return;
+    }
+    await refreshTracking.mutateAsync({ orderId: parsedOrderId });
+    await orderQuery.refetch();
+  };
 
   const choosePayment = trpc.orders.choosePayment.useMutation({
     onSuccess: (data) => {
@@ -129,8 +160,8 @@ export default function OrderDetail() {
           <div className="grid gap-6">
             <OrderTrackingTimeline
               order={order}
-              onRefresh={() => void orderQuery.refetch()}
-              isRefreshing={orderQuery.isFetching}
+              onRefresh={() => void handleTrackingRefresh()}
+              isRefreshing={orderQuery.isFetching || refreshTracking.isPending}
               lastUpdatedAt={orderQuery.dataUpdatedAt}
             />
             <QuoteProgressTracker status={order.status} paymentStatus={order.paymentStatus} />

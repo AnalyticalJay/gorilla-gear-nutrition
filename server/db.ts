@@ -7,6 +7,7 @@ import {
   InsertUser,
   orderComments,
   orderItems,
+  orderTrackingEvents,
   orders,
   productImages,
   products,
@@ -809,6 +810,61 @@ export async function getUserOrders(userId: number) {
     .orderBy(orders.createdAt);
 }
 
+export async function getOrderTrackingEvents(orderId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(orderTrackingEvents)
+    .where(eq(orderTrackingEvents.orderId, orderId))
+    .orderBy(desc(orderTrackingEvents.occurredAt), desc(orderTrackingEvents.id));
+}
+
+export async function saveOrderTrackingEvents(orderId: number, events: Array<{
+  eventCode: string;
+  statusLabel: string;
+  description?: string | null;
+  location?: string | null;
+  externalEventId?: string | null;
+  source?: string;
+  occurredAt: Date;
+}>) {
+  const db = await getDb();
+  if (!db || events.length === 0) return 0;
+
+  const existing = await db
+    .select({
+      eventCode: orderTrackingEvents.eventCode,
+      occurredAt: orderTrackingEvents.occurredAt,
+      location: orderTrackingEvents.location,
+      externalEventId: orderTrackingEvents.externalEventId,
+    })
+    .from(orderTrackingEvents)
+    .where(eq(orderTrackingEvents.orderId, orderId));
+  const eventKey = (event: { eventCode: string; occurredAt: Date; location?: string | null; externalEventId?: string | null }) =>
+    event.externalEventId || `${event.eventCode}|${event.occurredAt.toISOString()}|${event.location ?? ""}`;
+  const knownKeys = new Set(existing.map((event) => eventKey(event)));
+  const newEvents = events.filter((event) => {
+    const key = eventKey(event);
+    if (knownKeys.has(key)) return false;
+    knownKeys.add(key);
+    return true;
+  });
+  if (newEvents.length === 0) return 0;
+
+  await db.insert(orderTrackingEvents).values(newEvents.map((event) => ({
+    orderId,
+    eventCode: event.eventCode.slice(0, 64),
+    statusLabel: event.statusLabel.slice(0, 128),
+    description: event.description ?? null,
+    location: event.location?.slice(0, 255) ?? null,
+    externalEventId: event.externalEventId?.slice(0, 191) ?? null,
+    source: (event.source ?? "courier_api").slice(0, 32),
+    occurredAt: event.occurredAt,
+  })));
+  return newEvents.length;
+}
+
 export async function getOrderById(orderId: number) {
   const db = await getDb();
   if (!db) return undefined;
@@ -847,7 +903,8 @@ export async function getOrderById(orderId: number) {
     .limit(1);
 
   const comments = await getOrderComments(orderId);
-  return { ...orderResult[0], items, shipping: shipping[0] ?? null, comments };
+  const trackingEvents = await getOrderTrackingEvents(orderId);
+  return { ...orderResult[0], items, shipping: shipping[0] ?? null, comments, trackingEvents };
 }
 
 export async function getOrderComments(orderId: number) {

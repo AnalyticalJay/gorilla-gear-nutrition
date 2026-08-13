@@ -222,3 +222,11 @@
 - [x] Implement a dynamic visual progress tracker for customer order statuses with current, completed, and upcoming states.
 - [x] Add responsive regression tests and verify the tracker across customer order states and viewport sizes.
 - [x] Save a checkpoint for the completed order status tracker.
+
+## Active Implementation — Courier Scan Integration and Dashboard Status Summary
+- [x] Confirm the supported courier API/webhook assumptions and current tracking data flow.
+- [x] Implement a credential-gated courier scan synchronization layer with safe fallback when credentials are absent.
+- [x] Add a customer dashboard order-status summary card linking to detailed tracking.
+- [ ] Add regression coverage, verify responsive states, and save a checkpoint.
+- [x] Verify the configured courier secret is available server-side without exposing its value.
+- [ ] Obtain or confirm the official courier tracking endpoint and authentication format before making live requests.

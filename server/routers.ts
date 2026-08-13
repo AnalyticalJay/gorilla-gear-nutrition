@@ -31,6 +31,7 @@ import {
   getOrderById,
   getOrderByPayFastReference,
   getOrderComments,
+  getOrderTrackingEvents,
   getProductById,
   getProductBySlug,
   getProductImages,
@@ -44,6 +45,7 @@ import {
   removeCartItem,
   reviewQuote,
   setPrimaryImage,
+  saveOrderTrackingEvents,
   updateCategory,
   updateOrderStatus,
   updateOrderTracking,
@@ -59,6 +61,7 @@ import { orders, users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { ENV } from "./_core/env";
 import { countPendingQuotes } from "../shared/adminStats";
+import { syncCourierTracking } from "./courierTracking";
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
@@ -495,6 +498,32 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         return order;
+      }),
+
+    refreshTracking: protectedProcedure
+      .input(z.object({ orderId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const order = await getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
+        if (order.userId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "You cannot refresh this order tracking" });
+        }
+        if (!order.trackingNumber) {
+          return { configured: false, synced: 0, events: order.trackingEvents, message: "A tracking number is required before courier scans can be retrieved." };
+        }
+        try {
+          const result = await syncCourierTracking(order.trackingNumber);
+          if (result.events.length > 0) {
+            await saveOrderTrackingEvents(input.orderId, result.events);
+          }
+          return {
+            ...result,
+            events: await getOrderTrackingEvents(input.orderId),
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Courier tracking is temporarily unavailable";
+          throw new TRPCError({ code: "BAD_GATEWAY", message });
+        }
       }),
 
     listComments: protectedProcedure

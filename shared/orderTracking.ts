@@ -1,3 +1,14 @@
+export type OrderTrackingEventInput = {
+  id?: number;
+  eventCode: string;
+  statusLabel: string;
+  description?: string | null;
+  location?: string | null;
+  externalEventId?: string | null;
+  source?: string;
+  occurredAt: Date | string;
+};
+
 export type OrderTrackingInput = {
   createdAt: Date | string;
   reviewedAt?: Date | string | null;
@@ -10,6 +21,7 @@ export type OrderTrackingInput = {
   trackingCarrier?: string | null;
   trackingUrl?: string | null;
   trackingNotes?: string | null;
+  trackingEvents?: OrderTrackingEventInput[];
 };
 
 export type OrderTimelineStep = {

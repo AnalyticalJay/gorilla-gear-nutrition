@@ -36,6 +36,7 @@ export default function OrderTrackingTimeline({
   lastUpdatedAt,
 }: OrderTrackingTimelineProps) {
   const steps = buildOrderTimeline(order);
+  const trackingEvents = order.trackingEvents ?? [];
   const isDispatched = isOrderDispatched(order);
   const trackingUrl = getTrackingUrl(order.trackingCarrier, order.trackingNumber, order.trackingUrl);
   const completedSteps = steps.filter((step) => step.completed).length;
@@ -143,6 +144,32 @@ export default function OrderTrackingTimeline({
           })}
         </ol>
       </div>
+
+      {trackingEvents.length > 0 ? (
+        <div className="mt-6 rounded-xl border border-[#0EA5E9]/20 bg-[#0EA5E9]/5 p-4" aria-label="Courier scan history">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7DD3FC]">Live carrier activity</p>
+              <p className="mt-1 text-xs leading-5 text-[#94A3B8]">Latest scans received from your courier feed.</p>
+            </div>
+            <span className="rounded-full border border-[#0EA5E9]/25 bg-[#0EA5E9]/10 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-[#7DD3FC]">{trackingEvents.length} scan{trackingEvents.length === 1 ? "" : "s"}</span>
+          </div>
+          <ol className="mt-4 space-y-3">
+            {trackingEvents.slice(0, 6).map((event, index) => (
+              <li key={event.id ?? `${event.eventCode}-${event.occurredAt}-${index}`} className="border-l border-[#0EA5E9]/35 pl-3">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+                  <p className="text-sm font-black text-white">{event.statusLabel}</p>
+                  <time className="shrink-0 text-[10px] uppercase tracking-wider text-[#64748B]" dateTime={new Date(event.occurredAt).toISOString()}>{format(new Date(event.occurredAt), "d MMM yyyy, HH:mm")}</time>
+                </div>
+                {event.description && <p className="mt-1 text-xs leading-5 text-[#94A3B8]">{event.description}</p>}
+                {event.location && <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#64748B]">{event.location}</p>}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : order.trackingNumber && isDispatched ? (
+        <p className="mt-6 rounded-lg border border-[#334155] bg-[#0B0B0B] p-3 text-xs leading-5 text-[#64748B]">Live courier scans will appear here once the carrier feed is configured and returns an event.</p>
+      ) : null}
 
       {order.trackingNotes && <div className="mt-6 rounded-lg border border-[#FBBF24]/20 bg-[#FBBF24]/5 p-3 text-xs leading-5 text-[#FDE68A]"><span className="font-black uppercase tracking-wider">Courier note: </span>{order.trackingNotes}</div>}
 

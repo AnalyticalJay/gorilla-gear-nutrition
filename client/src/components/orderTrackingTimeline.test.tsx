@@ -79,6 +79,40 @@ describe("OrderTrackingTimeline", () => {
     expect(screen.getAllByText(currentLabel).length).toBeGreaterThan(0);
   });
 
+  it("renders normalized live courier scan events below the lifecycle milestones", () => {
+    render(
+      <OrderTrackingTimeline
+        order={{
+          createdAt: new Date("2026-08-12T08:00:00.000Z"),
+          reviewedAt: new Date("2026-08-12T09:00:00.000Z"),
+          paidAt: new Date("2026-08-12T10:00:00.000Z"),
+          dispatchedAt: new Date("2026-08-12T11:00:00.000Z"),
+          deliveredAt: null,
+          status: "shipped",
+          paymentStatus: "paid",
+          trackingNumber: "TCG123456789",
+          trackingCarrier: "The Courier Guy",
+          trackingUrl: null,
+          trackingNotes: null,
+          trackingEvents: [{
+            id: 9,
+            eventCode: "OUT_FOR_DELIVERY",
+            statusLabel: "Out for delivery",
+            description: "Courier vehicle departed the depot.",
+            location: "Gqeberha depot",
+            source: "courier_api",
+            occurredAt: new Date("2026-08-13T10:00:00.000Z"),
+          }],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Live carrier activity")).toBeTruthy();
+    expect(screen.getByText("Out for delivery")).toBeTruthy();
+    expect(screen.getByText("Courier vehicle departed the depot.")).toBeTruthy();
+    expect(screen.getByText("Gqeberha depot")).toBeTruthy();
+  });
+
   it("shows dynamic progress, the current milestone, and a manual refresh control", () => {
     const onRefresh = vi.fn();
     render(

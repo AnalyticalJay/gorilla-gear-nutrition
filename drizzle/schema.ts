@@ -137,6 +137,22 @@ export const orders = mysqlTable("orders", {
 
 export type Order = typeof orders.$inferSelect;
 
+// ─── Courier Tracking Events ───────────────────────────────────────────────────
+export const orderTrackingEvents = mysqlTable("order_tracking_events", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull().references(() => orders.id),
+  eventCode: varchar("eventCode", { length: 64 }).notNull(),
+  statusLabel: varchar("statusLabel", { length: 128 }).notNull(),
+  description: text("description"),
+  location: varchar("location", { length: 255 }),
+  externalEventId: varchar("externalEventId", { length: 191 }),
+  source: varchar("source", { length: 32 }).default("courier_api").notNull(),
+  occurredAt: timestamp("occurredAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OrderTrackingEvent = typeof orderTrackingEvents.$inferSelect;
+
 // ─── Order Items ──────────────────────────────────────────────────────────────
 export const orderItems = mysqlTable("order_items", {
   id: int("id").autoincrement().primaryKey(),

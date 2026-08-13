@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import OrderStatusSummaryCard from "@/components/OrderStatusSummaryCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -161,7 +162,9 @@ export default function Account() {
             </div>
 
             {/* Content */}
-            <div className="min-w-0 lg:col-span-3">
+            <div className="min-w-0 space-y-6 lg:col-span-3">
+              <OrderStatusSummaryCard orders={orders} isLoading={ordersQuery.isLoading} />
+
               {activeTab === "profile" && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
                   {/* Status card */}
