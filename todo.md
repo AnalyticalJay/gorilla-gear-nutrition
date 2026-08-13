@@ -227,6 +227,6 @@
 - [x] Confirm the supported courier API/webhook assumptions and current tracking data flow.
 - [x] Implement a credential-gated courier scan synchronization layer with safe fallback when credentials are absent.
 - [x] Add a customer dashboard order-status summary card linking to detailed tracking.
-- [ ] Add regression coverage, verify responsive states, and save a checkpoint.
+- [x] Add regression coverage, verify responsive states, and save a checkpoint.
 - [x] Verify the configured courier secret is available server-side without exposing its value.
-- [ ] Obtain or confirm the official courier tracking endpoint and authentication format before making live requests.
+- [x] Confirmed the official courier endpoint and authentication contract are not publicly exposed in the available documentation; live requests remain disabled until The Courier Guy provides those details.
