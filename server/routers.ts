@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
+import { sendQuoteConfirmationEmail } from "./email";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
@@ -473,9 +474,23 @@ export const appRouter = router({
 
         await clearCart(ctx.user.id);
         await notifyOwner({
-          title: "New Quote Request",
-          content: `Quote #${quoteId} submitted by ${ctx.user.fullName} (${ctx.user.email}) for review.`,
+          title: "New Quote Request (Nationwide R140 Flat Rate)",
+          content: `Quote #${quoteId} submitted by ${ctx.user.fullName} (${ctx.user.email}). Subtotal: R${subtotal.toFixed(2)}, Nationwide Delivery: R${delivery.fee.toFixed(2)}, Total: R${total.toFixed(2)}. Review required.`,
         }).catch(() => {});
+
+        await sendQuoteConfirmationEmail({
+          quoteId,
+          customerName: ctx.user.fullName,
+          customerEmail: ctx.user.email,
+          items: cartRows.map((item) => ({
+            productName: item.productName,
+            quantity: item.quantity,
+            lineTotal: parseFloat(item.productPrice) * item.quantity,
+          })),
+          subtotal,
+          deliveryFee: delivery.fee,
+          total,
+        }).catch((error) => console.warn("[Email] Quote confirmation failed:", error));
 
         return { quoteId, total: total.toFixed(2), deliveryFee: delivery.fee.toFixed(2), status: "quote_pending" as const };
       }),

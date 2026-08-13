@@ -21,6 +21,11 @@ vi.mock("./_core/notification", () => ({
   notifyOwner: vi.fn().mockResolvedValue(true),
 }));
 
+vi.mock("./email", () => ({
+  sendQuoteConfirmationEmail: vi.fn().mockResolvedValue(true),
+}));
+
+import { sendQuoteConfirmationEmail } from "./email";
 import { appRouter } from "./routers";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
@@ -61,7 +66,7 @@ describe("quote workflow router", () => {
 
   it("submits the approved user's quote cart as a quote_pending order and clears the cart", async () => {
     dbMocks.getCartItems.mockResolvedValue([
-      { productId: 11, quantity: 2, productPrice: "100.00", productStock: 5 },
+      { productId: 11, productName: "Test Product", quantity: 2, productPrice: "100.00", productStock: 5 },
     ]);
     dbMocks.createOrder.mockResolvedValue(55);
     dbMocks.clearCart.mockResolvedValue(undefined);
@@ -89,6 +94,14 @@ describe("quote workflow router", () => {
       deliveryType: "flat_rate",
     }));
     expect(dbMocks.clearCart).toHaveBeenCalledWith(7);
+    expect(sendQuoteConfirmationEmail).toHaveBeenCalledWith(expect.objectContaining({
+      quoteId: 55,
+      customerEmail: "member@example.com",
+      subtotal: 200,
+      deliveryFee: 140,
+      total: 340,
+      items: [{ productName: "Test Product", quantity: 2, lineTotal: 200 }],
+    }));
   });
 
   it("allows an admin to approve or reject a quote with review notes", async () => {

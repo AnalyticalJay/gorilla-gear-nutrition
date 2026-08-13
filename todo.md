@@ -242,3 +242,20 @@
 - [x] Create or update the nationwide South Africa flat-rate rule to R140.
 - [x] Verify R140 is applied consistently in customer quote/checkout and admin order displays.
 - [x] Add regression coverage and save a checkpoint.
+
+## Active Implementation — Live Courier Endpoint and Quote Email Delivery Confirmation
+- [x] Verify the official Courier Guy documentation; the public pages do not expose the live endpoint contract, so no unverified host is used.
+- [x] Keep live courier synchronization credential-gated with the official tracking fallback until The Courier Guy supplies the endpoint contract.
+- [x] Add the nationwide R140 delivery-rate confirmation to customer quote email content.
+- [x] Add regression coverage and verify the fallback/email states.
+
+## Active Verification — Synced R140 Checkout and Quote Email Confirmation
+- [x] Inspect the synced shipping calculator and quote-notification implementation.
+- [x] Verify the R140 nationwide fee in checkout and the delivery breakdown in quote notifications.
+- [x] Run regression tests and verify desktop/mobile checkout rendering.
+
+## Active Implementation — SMTP Quote Confirmations
+- [x] Configure server-side SMTP for orders@gorillagear.co.za using the provider’s certificate-matching host, authenticated port 587, and STARTTLS.
+- [x] Collect and validate the SMTP mailbox password securely without storing or exposing it in source code.
+- [x] Send customer quote confirmation emails containing subtotal, R140 nationwide delivery, total, quote number, and order link.
+- [x] Add SMTP/template tests, verify credential-safe behavior, and save a checkpoint.
