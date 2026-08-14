@@ -335,3 +335,8 @@
 - [x] Build a public Coaching enquiry/application form with protected admin review access.
 - [x] Replace the temporary navbar mark with the approved logo lockup and enhance all three collection blocks.
 - [x] Add regression coverage, verify desktop/mobile states, and save a checkpoint.
+
+## Active Implementation — Hero Refinement
+- [x] Refine the hero background visual with an original dark gym composition aligned to the supplied reference.
+- [x] Reduce headline scale slightly while preserving responsive hierarchy and readability.
+- [x] Verify desktop/mobile hero composition, run regression coverage, and save a checkpoint.

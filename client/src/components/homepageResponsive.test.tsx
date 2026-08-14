@@ -55,7 +55,7 @@ describe("Homepage responsive structure", () => {
     expect(screen.queryByText(/anabolics/i)).toBeNull();
 
     const heroHeading = screen.getByText("Discipline").closest("h1");
-    expect(heroHeading?.className).toContain("text-[clamp(3.25rem,13vw,7.8rem)]");
+    expect(heroHeading?.className).toContain("text-[clamp(3rem,10.5vw,6.65rem)]");
     expect(container.querySelector("#collections")).toBeTruthy();
   });
 

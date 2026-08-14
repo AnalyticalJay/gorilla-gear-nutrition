@@ -18,7 +18,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const artwork = {
-  hero: "/manus-storage/ggn-premium-hero_611e23a0.jpg",
+  hero: "/manus-storage/ggn-hero-refined-dark-gym_b32e2670.jpg",
   supplements: "/manus-storage/ggn-collection-supplements-v2_e5318894.jpg",
   clothing: "/manus-storage/ggn-collection-clothing-v2_1a6bf8d6.jpg",
   coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
@@ -68,8 +68,10 @@ export default function Home() {
 
       <main>
         <section className="relative isolate overflow-hidden border-b border-white/10 bg-[#070707] pt-[5.9rem]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_77%_23%,rgba(201,154,61,0.18),transparent_24%),radial-gradient(circle_at_18%_88%,rgba(255,255,255,0.06),transparent_28%)]" />
-          <div className="container relative grid min-h-[calc(100svh-5.9rem)] items-center gap-8 py-12 sm:py-16 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10 lg:py-20">
+          <img src={artwork.hero} alt="Private strength gym with premium performance equipment" className="absolute inset-0 h-full w-full object-cover object-[68%_center]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#070707_0%,#070707_30%,rgba(7,7,7,0.86)_45%,rgba(7,7,7,0.28)_71%,rgba(7,7,7,0.58)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_20%,rgba(201,154,61,0.18),transparent_27%),linear-gradient(0deg,rgba(7,7,7,0.62)_0%,transparent_42%)]" />
+          <div className="container relative flex min-h-[calc(100svh-5.9rem)] items-center py-14 sm:py-16 lg:min-h-[720px] lg:py-20">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
@@ -77,7 +79,7 @@ export default function Home() {
               className="relative z-10 max-w-xl"
             >
               <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#c99a3d] sm:text-xs">Premium supplements. Elite coaching. Real results.</p>
-              <h1 className="text-[clamp(3.25rem,13vw,7.8rem)] font-black uppercase leading-[0.79] tracking-[-0.075em] text-white">
+              <h1 className="text-[clamp(3rem,10.5vw,6.65rem)] font-black uppercase leading-[0.82] tracking-[-0.07em] text-white">
                 Discipline
                 <span className="block">fuels</span>
                 <span className="block text-[#c99a3d]">greatness</span>
@@ -115,21 +117,8 @@ export default function Home() {
                 ) : null}
               </div>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.66, delay: 0.08 }}
-              className="relative min-h-[370px] overflow-hidden border border-white/10 bg-[#121212] sm:min-h-[510px] lg:min-h-[620px]"
-            >
-              <img src={artwork.hero} alt="Premium Gorilla Gear supplement and training gear collection" className="absolute inset-0 h-full w-full object-cover object-[70%_center]" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#070707]/85 via-[#070707]/15 to-transparent lg:hidden" />
-              <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between border-t border-white/20 pt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-white/70">
-                <span>Built to perform</span>
-                <span className="text-[#c99a3d]">GGN / 01</span>
-              </div>
-            </motion.div>
           </div>
+          <div className="absolute bottom-5 right-5 hidden items-center gap-6 border-t border-white/25 pt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/75 sm:flex lg:right-10 lg:bottom-8"><span>Built to perform</span><span className="text-[#c99a3d]">GGN / 01</span></div>
         </section>
 
         <section className="border-b border-white/10 bg-[#0d0d0d] py-7">
