@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, inArray, like, lte, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -159,6 +159,45 @@ export async function updateUserRole(userId: number, role: "user" | "admin") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(users).set({ role }).where(eq(users.id, userId));
+}
+
+export async function setPasswordResetToken(userId: number, tokenHash: string, expiresAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(users).set({ resetTokenHash: tokenHash, resetTokenExpiresAt: expiresAt }).where(eq(users.id, userId));
+}
+
+export async function getUserByPasswordResetTokenHash(tokenHash: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.resetTokenHash, tokenHash), gt(users.resetTokenExpiresAt, new Date())))
+    .limit(1);
+  return result[0];
+}
+
+export async function clearPasswordResetToken(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(users).set({ resetTokenHash: null, resetTokenExpiresAt: null }).where(eq(users.id, userId));
+}
+
+export async function updatePasswordHash(userId: number, passwordHash: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(users).set({ passwordHash, loginMethod: "email" }).where(eq(users.id, userId));
+}
+
+export async function consumePasswordResetToken(tokenHash: string, passwordHash: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db
+    .update(users)
+    .set({ passwordHash, loginMethod: "email", resetTokenHash: null, resetTokenExpiresAt: null })
+    .where(and(eq(users.resetTokenHash, tokenHash), gt(users.resetTokenExpiresAt, new Date())));
+  return Number((result as unknown as { affectedRows?: number }).affectedRows ?? 0) > 0;
 }
 
 // ─── Admin Analytics ──────────────────────────────────────────────────────────

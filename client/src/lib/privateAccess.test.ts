@@ -62,8 +62,8 @@ describe("registration validation", () => {
     email: "aisha@example.com",
     phone: "+27 82 111 1111",
     city: "Gqeberha",
-    password: "secure-pass",
-    confirmPassword: "secure-pass",
+    password: "secure-passphrase-that-is-32-chars!",
+    confirmPassword: "secure-passphrase-that-is-32-chars!",
     isOver18: true,
   };
 
@@ -85,7 +85,7 @@ describe("registration validation", () => {
       email: "aisha@example.com",
       phone: "+27 82 111 1111",
       city: "Gqeberha",
-      password: "secure-pass",
+      password: "secure-passphrase-that-is-32-chars!",
       isOver18: true,
     });
   });

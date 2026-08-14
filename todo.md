@@ -290,3 +290,10 @@
 - [x] Verify SMTP configuration and run a credential-safe handshake test without sending email.
 - [x] Assess password-reset token, email-template, and delivery-readiness gaps.
 - [x] Document findings and save a readiness checkpoint if changes are made.
+
+## Active Implementation — Self-Service Password Reset
+- [x] Add `resetTokenHash` and `resetTokenExpiresAt` columns to the users table schema and run migration.
+- [x] Implement `auth.forgotPassword` and `auth.resetPassword` tRPC procedures with secure random tokens, expiry, and rate-limiting/generic responses.
+- [x] Create email transport support for sending password reset links with secure token URLs.
+- [x] Build responsive forgot-password and reset-password frontend screens and link them from the login page.
+- [x] Add regression tests, verify desktop/mobile rendering, and save a checkpoint.

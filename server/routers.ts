@@ -1,9 +1,10 @@
 import { TRPCError } from "@trpc/server";
+import { createHash, randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
-import { sendQuoteConfirmationEmail } from "./email";
+import { sendPasswordResetEmail, sendQuoteConfirmationEmail } from "./email";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
@@ -43,6 +44,8 @@ import {
   normalizeProductImageKey,
   getUserByEmail,
   getUserById,
+  consumePasswordResetToken,
+  setPasswordResetToken,
   removeCartItem,
   reviewQuote,
   setPrimaryImage,
@@ -74,6 +77,10 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   return next({ ctx });
 });
 
+const passwordResetRequestTimes = new Map<string, number>();
+const PASSWORD_RESET_COOLDOWN_MS = 60_000;
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
+
 const approvedProcedure = protectedProcedure.use(({ ctx, next }) => {
   if ((ctx.user as any).status !== "approved") {
     throw new TRPCError({ code: "FORBIDDEN", message: "Account not yet approved" });
@@ -102,7 +109,7 @@ export const appRouter = router({
           email: z.string().email(),
           phone: z.string().min(7),
           city: z.string().min(2),
-          password: z.string().min(8),
+          password: z.string().min(32, "Password must be at least 32 characters"),
           isOver18: z.boolean().refine((v) => v === true, { message: "You must be 18+" }),
         })
       )
@@ -150,6 +157,56 @@ export const appRouter = router({
         ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
 
         return { success: true, user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role, status: user.status } };
+      }),
+
+    forgotPassword: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const normalizedEmail = input.email.trim().toLowerCase();
+        const now = Date.now();
+        const lastRequestedAt = passwordResetRequestTimes.get(normalizedEmail) ?? 0;
+        if (now - lastRequestedAt < PASSWORD_RESET_COOLDOWN_MS) {
+          return { success: true } as const;
+        }
+        passwordResetRequestTimes.set(normalizedEmail, now);
+
+        const user = await getUserByEmail(normalizedEmail);
+        if (user?.isActive && user.passwordHash) {
+          const resetToken = randomBytes(32).toString("hex");
+          const tokenHash = createHash("sha256").update(resetToken).digest("hex");
+          await setPasswordResetToken(user.id, tokenHash, new Date(now + PASSWORD_RESET_TTL_MS));
+          try {
+            const sent = await sendPasswordResetEmail({
+              customerName: user.fullName,
+              customerEmail: user.email,
+              resetToken,
+            });
+            if (!sent) {
+              await consumePasswordResetToken(tokenHash, user.passwordHash);
+            }
+          } catch (error) {
+            console.error("[Auth] Password reset email failed", error);
+            await consumePasswordResetToken(tokenHash, user.passwordHash);
+          }
+        }
+
+        // Always return the same response to avoid revealing whether an email is registered.
+        return { success: true } as const;
+      }),
+
+    resetPassword: publicProcedure
+      .input(z.object({
+        token: z.string().regex(/^[a-f0-9]{64}$/i, "Invalid reset token"),
+        newPassword: z.string().min(32, "Password must be at least 32 characters"),
+      }))
+      .mutation(async ({ input }) => {
+        const tokenHash = createHash("sha256").update(input.token).digest("hex");
+        const passwordHash = await bcrypt.hash(input.newPassword, 12);
+        const consumed = await consumePasswordResetToken(tokenHash, passwordHash);
+        if (!consumed) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "This reset link is invalid or has expired" });
+        }
+        return { success: true } as const;
       }),
 
     logout: publicProcedure.mutation(({ ctx }) => {

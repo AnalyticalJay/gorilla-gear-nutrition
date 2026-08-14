@@ -113,8 +113,8 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText("Email Address"), "aisha@example.com");
     await user.type(screen.getByLabelText("Phone"), "+27 82 111 1111");
     await user.type(screen.getByLabelText("City"), "Gqeberha");
-    await user.type(screen.getByLabelText("Password"), "secure-pass");
-    await user.type(screen.getByLabelText("Confirm Password"), "secure-pass");
+    await user.type(screen.getByLabelText("Password"), "secure-passphrase-that-is-32-chars!");
+    await user.type(screen.getByLabelText("Confirm Password"), "secure-passphrase-that-is-32-chars!");
     await user.click(screen.getByLabelText(/18 years of age or older/i));
     await user.click(screen.getByRole("button", { name: /submit application/i }));
 
@@ -123,7 +123,7 @@ describe("RegistrationForm", () => {
       email: "aisha@example.com",
       phone: "+27 82 111 1111",
       city: "Gqeberha",
-      password: "secure-pass",
+      password: "secure-passphrase-that-is-32-chars!",
       isOver18: true,
     });
   });

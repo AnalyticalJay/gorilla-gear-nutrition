@@ -20,6 +20,8 @@ export const users = mysqlTable("users", {
   phone: varchar("phone", { length: 32 }),
   city: varchar("city", { length: 128 }),
   passwordHash: varchar("passwordHash", { length: 255 }),
+  resetTokenHash: varchar("resetTokenHash", { length: 128 }),
+  resetTokenExpiresAt: timestamp("resetTokenExpiresAt"),
   loginMethod: varchar("loginMethod", { length: 64 }).default("email"),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),

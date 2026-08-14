@@ -6,7 +6,7 @@ export const registrationSchema = z
     email: z.string().trim().email("Enter a valid email address"),
     phone: z.string().trim().min(7, "Phone number is required"),
     city: z.string().trim().min(2, "City is required"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(32, "Password must be at least 32 characters"),
     confirmPassword: z.string().min(1, "Confirm your password"),
     isOver18: z.boolean().refine((value) => value, "You must be 18 or older"),
   })

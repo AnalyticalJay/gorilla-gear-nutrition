@@ -17,6 +17,12 @@ export type QuoteConfirmationInput = {
   total: number;
 };
 
+export type PasswordResetEmailInput = {
+  customerName: string;
+  customerEmail: string;
+  resetToken: string;
+};
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => {
     const entities: Record<string, string> = {
@@ -36,6 +42,43 @@ function formatZar(value: number): string {
 
 export function isSmtpConfigured(): boolean {
   return Boolean(ENV.smtpHost && ENV.smtpPort && ENV.smtpUser && ENV.smtpPassword && ENV.smtpFrom);
+}
+
+function createSmtpTransport() {
+  return nodemailer.createTransport({
+    host: ENV.smtpHost,
+    port: ENV.smtpPort,
+    secure: ENV.smtpSecure,
+    requireTLS: !ENV.smtpSecure,
+    auth: {
+      user: ENV.smtpUser,
+      pass: ENV.smtpPassword,
+    },
+  });
+}
+
+export function buildPasswordResetEmail(input: PasswordResetEmailInput) {
+  const safeName = escapeHtml(input.customerName);
+  const resetUrl = `https://gorillagear.co.za/reset-password?token=${encodeURIComponent(input.resetToken)}`;
+  const safeResetUrl = escapeHtml(resetUrl);
+
+  return {
+    from: ENV.smtpFrom,
+    to: input.customerEmail,
+    replyTo: ENV.smtpFrom,
+    subject: "Reset your Gorilla Gear Nutrition password",
+    text: `Hi ${input.customerName},\n\nWe received a request to reset your Gorilla Gear Nutrition password. Use the secure link below within 60 minutes:\n\n${resetUrl}\n\nIf you did not request this, you can safely ignore this email. Your password will not change.\n\nRegards,\nGorilla Gear Nutrition`,
+    html: `<!doctype html><html><body style="margin:0;background:#f5f5f0;font-family:Arial,sans-serif;color:#111827;"><div style="max-width:620px;margin:0 auto;padding:32px 18px;"><div style="background:#111827;color:#fff;padding:22px 24px;"><div style="font-size:12px;letter-spacing:2px;font-weight:700;color:#ef654a;">GORILLA GEAR NUTRITION</div><h1 style="margin:10px 0 0;font-size:24px;">Reset your password</h1></div><div style="background:#fff;padding:26px 24px;"><p style="font-size:16px;">Hi ${safeName},</p><p>We received a request to reset your Gorilla Gear Nutrition password. This secure link expires in 60 minutes and can only be used once.</p><p><a href="${safeResetUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:13px 18px;font-weight:700;">Reset password</a></p><p style="font-size:13px;color:#6b7280;">If you did not request this, you can safely ignore this email. Your password will not change.</p></div><div style="padding:18px 24px;font-size:12px;color:#6b7280;">Gorilla Gear Nutrition · South Africa</div></div></body></html>`,
+  };
+}
+
+export async function sendPasswordResetEmail(input: PasswordResetEmailInput): Promise<boolean> {
+  if (!isSmtpConfigured()) {
+    console.warn("[Email] Password reset skipped because SMTP is not configured");
+    return false;
+  }
+  await createSmtpTransport().sendMail(buildPasswordResetEmail(input));
+  return true;
 }
 
 export function buildQuoteConfirmationEmail(input: QuoteConfirmationInput) {
@@ -65,17 +108,6 @@ export async function sendQuoteConfirmationEmail(input: QuoteConfirmationInput):
     return false;
   }
 
-  const transporter = nodemailer.createTransport({
-    host: ENV.smtpHost,
-    port: ENV.smtpPort,
-    secure: ENV.smtpSecure,
-    requireTLS: !ENV.smtpSecure,
-    auth: {
-      user: ENV.smtpUser,
-      pass: ENV.smtpPassword,
-    },
-  });
-
-  await transporter.sendMail(buildQuoteConfirmationEmail(input));
+  await createSmtpTransport().sendMail(buildQuoteConfirmationEmail(input));
   return true;
 }
