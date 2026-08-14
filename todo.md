@@ -345,3 +345,9 @@
 - [x] Define concise approved-membership benefits without referencing private products publicly.
 - [x] Add a premium responsive benefits strip beneath the hero calls to action.
 - [x] Add regression coverage, verify desktop/mobile balance, and save a checkpoint.
+
+## Active Implementation — Mobile Homepage and Hero Refresh
+- [x] Review mobile homepage spacing, touch targets, image crops, and content hierarchy.
+- [x] Generate a replacement original hero visual without an unlabelled product bottle.
+- [x] Apply mobile-first homepage refinements and the new hero visual.
+- [x] Verify phone, tablet, and desktop layouts, run regression coverage, and save a checkpoint.

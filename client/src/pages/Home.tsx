@@ -18,7 +18,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const artwork = {
-  hero: "/manus-storage/ggn-hero-refined-dark-gym_b32e2670.jpg",
+  hero: "/manus-storage/ggn-hero-athlete-dark-gym_4c49d887.jpg",
   supplements: "/manus-storage/ggn-collection-supplements-v2_e5318894.jpg",
   clothing: "/manus-storage/ggn-collection-clothing-v2_1a6bf8d6.jpg",
   coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
@@ -69,32 +69,32 @@ export default function Home() {
   const isApproved = (user as any)?.status === "approved";
 
   return (
-    <div className="min-h-screen bg-[#070707] text-white selection:bg-[#c99a3d] selection:text-black">
+    <div className="min-h-screen bg-[#070707] pb-[calc(5.35rem+env(safe-area-inset-bottom))] text-white selection:bg-[#c99a3d] selection:text-black lg:pb-0">
       <Navbar />
 
       <main>
         <section className="relative isolate overflow-hidden border-b border-white/10 bg-[#070707] pt-[5.9rem]">
-          <img src={artwork.hero} alt="Private strength gym with premium performance equipment" className="absolute inset-0 h-full w-full object-cover object-[68%_center]" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#070707_0%,#070707_30%,rgba(7,7,7,0.86)_45%,rgba(7,7,7,0.28)_71%,rgba(7,7,7,0.58)_100%)]" />
+          <img src={artwork.hero} alt="Athlete training in a private strength gym" className="absolute inset-0 h-full w-full object-cover object-[61%_center] sm:object-[68%_center]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#070707_0%,#070707_36%,rgba(7,7,7,0.9)_62%,rgba(7,7,7,0.48)_100%)] sm:bg-[linear-gradient(90deg,#070707_0%,#070707_30%,rgba(7,7,7,0.86)_45%,rgba(7,7,7,0.28)_71%,rgba(7,7,7,0.58)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_20%,rgba(201,154,61,0.18),transparent_27%),linear-gradient(0deg,rgba(7,7,7,0.62)_0%,transparent_42%)]" />
-          <div className="container relative flex min-h-[calc(100svh-5.9rem)] items-center py-14 sm:py-16 lg:min-h-[720px] lg:py-20">
+          <div className="container relative flex min-h-[calc(100svh-5.9rem)] items-center py-10 sm:py-16 lg:min-h-[720px] lg:py-20">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.52 }}
               className="relative z-10 max-w-xl"
             >
-              <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#c99a3d] sm:text-xs">Premium supplements. Elite coaching. Real results.</p>
-              <h1 className="text-[clamp(3rem,10.5vw,6.65rem)] font-black uppercase leading-[0.82] tracking-[-0.07em] text-white">
+              <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.24em] text-[#c99a3d] sm:mb-5 sm:text-xs sm:tracking-[0.3em]">Premium supplements. Elite coaching. Real results.</p>
+              <h1 className="text-[clamp(2.7rem,10.5vw,6.65rem)] font-black uppercase leading-[0.82] tracking-[-0.07em] text-white sm:text-[clamp(3rem,10.5vw,6.65rem)]">
                 Discipline
                 <span className="block">fuels</span>
                 <span className="block text-[#c99a3d]">greatness</span>
               </h1>
-              <div className="mt-6 h-px w-12 bg-[#c99a3d]" />
-              <p className="mt-6 max-w-md text-[15px] leading-6 text-white/72 sm:text-base sm:leading-7">
+              <div className="mt-5 h-px w-10 bg-[#c99a3d] sm:mt-6 sm:w-12" />
+              <p className="mt-5 max-w-md text-sm leading-6 text-white/78 sm:mt-6 sm:text-base sm:leading-7">
                 Premium supplements, performance apparel and elite coaching. Built for those who demand more.
               </p>
-              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              <div className="mt-6 grid gap-2.5 sm:mt-8 sm:grid-cols-3 sm:gap-3">
                 <a href="#collections" className="no-underline">
                   <Button className="h-12 w-full rounded-none bg-[#c99a3d] px-4 text-[10px] font-black uppercase tracking-[0.12em] text-black hover:bg-[#e0b35a]">
                     Shop supplements
@@ -111,7 +111,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-              <div className="mt-5">
+              <div className="mt-4 sm:mt-5">
                 {isApproved ? (
                   <Link href="/products" className="group inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#c99a3d] no-underline">
                     Enter member catalogue <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -122,11 +122,11 @@ export default function Home() {
                   </Link>
                 ) : null}
               </div>
-              <div className="mt-7 grid max-w-[38rem] gap-3 border-y border-white/15 py-4 sm:grid-cols-3 sm:gap-0">
+              <div className="mt-6 grid max-w-[38rem] grid-cols-3 gap-0 border-y border-white/15 py-3.5 sm:mt-7 sm:py-4">
                 {membershipBenefits.map(({ icon: Icon, title, copy }, index) => (
-                  <div key={title} className={`flex items-start gap-2.5 ${index > 0 ? "sm:border-l sm:border-white/15 sm:pl-4" : ""} ${index < membershipBenefits.length - 1 ? "sm:pr-4" : ""}`}>
-                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#c99a3d]" strokeWidth={1.5} />
-                    <div><p className="text-[9px] font-black uppercase tracking-[0.14em] text-white">{title}</p><p className="mt-1 text-[11px] leading-4 text-white/55">{copy}</p></div>
+                  <div key={title} className={`min-w-0 px-2 first:pl-0 last:pr-0 ${index > 0 ? "border-l border-white/15 sm:pl-4" : ""} ${index < membershipBenefits.length - 1 ? "sm:pr-4" : ""}`}>
+                    <Icon className="mb-1 h-3.5 w-3.5 text-[#c99a3d] sm:mb-0.5 sm:h-4 sm:w-4" strokeWidth={1.5} />
+                    <div><p className="text-[8px] font-black uppercase leading-3 tracking-[0.1em] text-white sm:text-[9px] sm:tracking-[0.14em]">{title}</p><p className="mt-1 text-[10px] leading-3.5 text-white/60 sm:text-[11px] sm:leading-4">{copy}</p></div>
                   </div>
                 ))}
               </div>
@@ -135,8 +135,8 @@ export default function Home() {
           <div className="absolute bottom-5 right-5 hidden items-center gap-6 border-t border-white/25 pt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/75 sm:flex lg:right-10 lg:bottom-8"><span>Built to perform</span><span className="text-[#c99a3d]">GGN / 01</span></div>
         </section>
 
-        <section className="border-b border-white/10 bg-[#0d0d0d] py-7">
-          <div className="container grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+        <section className="border-b border-white/10 bg-[#0d0d0d] py-6 sm:py-7">
+          <div className="container grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
             {pillars.map(({ icon: Icon, title, copy }, index) => (
               <div key={title} className={`flex items-center gap-4 ${index > 0 ? "lg:border-l lg:border-white/10 lg:pl-8" : ""} ${index < pillars.length - 1 ? "lg:pr-8" : ""}`}>
                 <Icon className="h-8 w-8 shrink-0 text-[#c99a3d]" strokeWidth={1.4} />
@@ -151,22 +151,22 @@ export default function Home() {
 
         <section id="collections" className="scroll-mt-24 bg-[#080808] py-16 sm:py-20 lg:py-24">
           <div className="container">
-            <div className="mb-9 text-center sm:mb-12">
+            <div className="mb-8 text-center sm:mb-12">
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#c99a3d]">The Gorilla Gear edit</p>
-              <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.055em] text-white sm:text-5xl">Shop our collections</h2>
+              <h2 className="mt-3 text-3xl font-black uppercase leading-none tracking-[-0.055em] text-white sm:text-5xl">Shop our collections</h2>
               <div className="mx-auto mt-4 h-px w-10 bg-[#c99a3d]" />
             </div>
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-3 md:gap-5">
               {collections.map((collection, index) => (
-                <a key={collection.title} href={collection.href} className="group relative block min-h-[480px] overflow-hidden border border-white/10 bg-[#111111] no-underline transition-all duration-300 hover:-translate-y-1 hover:border-[#c99a3d]/60 sm:min-h-[540px]">
+                <a key={collection.title} href={collection.href} className="group relative block min-h-[390px] overflow-hidden border border-white/10 bg-[#111111] no-underline transition-all duration-300 hover:-translate-y-1 hover:border-[#c99a3d]/60 sm:min-h-[540px]">
                   <img src={collection.image} alt={collection.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.15)_0%,rgba(0,0,0,0.28)_33%,rgba(0,0,0,0.94)_100%)]" />
                   <div className="absolute left-5 right-5 top-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">Collection 0{index + 1}</span><span className="h-px w-8 bg-white/35" /></div>
-                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7">
+                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
                     <p className="text-[10px] font-black uppercase tracking-[0.19em] text-[#c99a3d]">{collection.eyebrow}</p>
-                    <h3 className="mt-3 text-3xl font-black uppercase leading-none tracking-[-0.055em] text-white">{collection.title}</h3>
-                    <p className="mt-3 max-w-xs text-sm leading-6 text-white/64">{collection.description}</p>
-                    <span className="mt-6 inline-flex items-center gap-2 border-b border-[#c99a3d] pb-2 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-colors group-hover:text-[#c99a3d]">
+                    <h3 className="mt-3 text-2xl font-black uppercase leading-none tracking-[-0.055em] text-white sm:text-3xl">{collection.title}</h3>
+                    <p className="mt-2 max-w-xs text-sm leading-5 text-white/64 sm:mt-3 sm:leading-6">{collection.description}</p>
+                    <span className="mt-5 inline-flex items-center gap-2 border-b border-[#c99a3d] pb-2 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-colors group-hover:text-[#c99a3d] sm:mt-6">
                       {collection.action} <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
@@ -176,18 +176,18 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="coaching" className="scroll-mt-24 border-y border-white/10 bg-[#0e0e0e] py-16 sm:py-20">
-          <div className="container grid items-stretch gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="relative min-h-[340px] overflow-hidden border border-white/10 bg-[#151515] sm:min-h-[420px]">
+        <section id="coaching" className="scroll-mt-24 border-y border-white/10 bg-[#0e0e0e] py-12 sm:py-20">
+          <div className="container grid items-stretch gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:gap-5">
+            <div className="relative min-h-[300px] overflow-hidden border border-white/10 bg-[#151515] sm:min-h-[420px]">
               <img src={artwork.coaching} alt="Elite strength coaching in a premium training environment" className="absolute inset-0 h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/22 to-transparent" />
-              <div className="absolute bottom-7 left-7 max-w-xs sm:bottom-10 sm:left-10">
+              <div className="absolute bottom-6 left-6 max-w-xs sm:bottom-10 sm:left-10">
                 <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#c99a3d]">Coaching built for progress</p>
                 <h2 className="mt-3 text-3xl font-black uppercase leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl">Built in the gym. Backed by discipline.</h2>
                 <Link href="/coaching" className="mt-6 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#c99a3d] no-underline">Start coaching application <ArrowUpRight className="h-4 w-4" /></Link>
               </div>
             </div>
-            <div id="membership" className="scroll-mt-24 flex flex-col justify-center bg-[#c99a3d] p-8 text-black sm:p-12">
+            <div id="membership" className="scroll-mt-24 flex flex-col justify-center bg-[#c99a3d] p-6 text-black sm:p-12">
               <Users className="h-11 w-11" strokeWidth={1.4} />
               <p className="mt-8 text-[10px] font-black uppercase tracking-[0.24em] text-black/62">Private member access</p>
               <h2 className="mt-3 text-4xl font-black uppercase leading-[0.88] tracking-[-0.055em]">Become a member</h2>
@@ -201,15 +201,15 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-[#080808] py-8">
-          <div className="container grid gap-5 text-center sm:grid-cols-2 lg:grid-cols-4 lg:text-left">
+        <section className="bg-[#080808] py-7 sm:py-8">
+          <div className="container grid grid-cols-2 gap-x-4 gap-y-6 text-left sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: Truck, label: "Fast shipping", copy: "Nationwide delivery" },
               { icon: ShieldCheck, label: "Secure payments", copy: "Protected checkout" },
               { icon: PackageCheck, label: "Quality guarantee", copy: "Curated performance range" },
               { icon: LockKeyhole, label: "Member support", copy: "Here when you need us" },
             ].map(({ icon: Icon, label, copy }) => (
-              <div key={label} className="flex items-center justify-center gap-3 lg:justify-start">
+              <div key={label} className="flex items-center gap-3">
                 <Icon className="h-5 w-5 text-[#c99a3d]" strokeWidth={1.5} />
                 <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-white">{label}</p><p className="mt-1 text-xs text-white/48">{copy}</p></div>
               </div>
