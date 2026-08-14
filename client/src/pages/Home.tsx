@@ -1,243 +1,213 @@
 import React from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { trpc } from "@/lib/trpc";
 import {
+  ArrowRight,
   ArrowUpRight,
   BadgeCheck,
-  Check,
-  ChevronRight,
+  Dumbbell,
   LockKeyhole,
-  Package,
+  PackageCheck,
   ShieldCheck,
-  Sparkles,
   Truck,
+  Users,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const brandAssets = {
-  logo: "/manus-storage/gorilla-gear-logo-black_d11aea3e.png",
-  categories: {
-    peptides: "/manus-storage/peptides_012076bb.jpg",
-    injectables: "/manus-storage/injectable-oils_6ddb2648.jpg",
-    orals: "/manus-storage/orals_8eb932e8.jpg",
-    anabolics: "/manus-storage/oral-anabolics_21b30f67.jpg",
-  },
+const artwork = {
+  hero: "/manus-storage/ggn-premium-hero_611e23a0.jpg",
+  supplements: "/manus-storage/ggn-collection-supplements-v2_e5318894.jpg",
+  clothing: "/manus-storage/ggn-collection-clothing-v2_1a6bf8d6.jpg",
+  coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
 };
 
-const categories = [
-  { name: "Peptides", eyebrow: "Precision support", image: brandAssets.categories.peptides },
-  { name: "Injectable oils", eyebrow: "Performance range", image: brandAssets.categories.injectables },
-  { name: "Orals", eyebrow: "Focused formulas", image: brandAssets.categories.orals },
-  { name: "Oral anabolics", eyebrow: "Member catalogue", image: brandAssets.categories.anabolics },
+const collections = [
+  {
+    title: "Supplements",
+    description: "Top brands. Proven results.",
+    action: "Shop now",
+    href: "#collections",
+    image: artwork.supplements,
+  },
+  {
+    title: "Clothing",
+    description: "Train. Lifestyle. Every day.",
+    action: "Shop now",
+    href: "#collections",
+    image: artwork.clothing,
+  },
+  {
+    title: "Coaching",
+    description: "Personalised plans. Real results.",
+    action: "Learn more",
+    href: "#coaching",
+    image: artwork.coaching,
+  },
 ];
 
-const processSteps = [
-  { number: "01", title: "Apply", description: "Complete the membership application with your details." },
-  { number: "02", title: "Verify", description: "Our team reviews each application before access is granted." },
-  { number: "03", title: "Get approved", description: "Approved members unlock private pricing and ordering." },
-  { number: "04", title: "Request a quote", description: "Build your selection and submit a quote request for review." },
+const pillars = [
+  { icon: BadgeCheck, title: "Premium range", copy: "Quality you can trust." },
+  { icon: Dumbbell, title: "Performance driven", copy: "Built to support progress." },
+  { icon: Users, title: "Expert coaching", copy: "Guidance that transforms." },
+  { icon: LockKeyhole, title: "Community", copy: "Like-minded. Goal driven." },
 ];
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
-  const isPending = (user as any)?.status === "pending";
-
-  const featuredQuery = trpc.products.listPage.useQuery({ featuredOnly: true, limit: 4, offset: 0 });
-  const allProductsQuery = trpc.products.listPage.useQuery(
-    { limit: 4, offset: 0 },
-    { enabled: !!(featuredQuery.data && featuredQuery.data.items.length < 4) },
-  );
-  const displayProducts = featuredQuery.data && featuredQuery.data.items.length >= 1
-    ? featuredQuery.data.items
-    : allProductsQuery.data?.items ?? [];
 
   return (
-    <div className="min-h-screen bg-[#f7f5f0] text-[#161616]">
+    <div className="min-h-screen bg-[#070707] text-white selection:bg-[#c99a3d] selection:text-black">
       <Navbar />
 
       <main>
-        <section className="relative overflow-hidden border-b border-black/10 bg-[#f7f5f0]">
-          <div className="pointer-events-none absolute -right-28 top-20 h-72 w-72 rounded-full bg-[#d8f36f]/55 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-[#e4a28f]/25 blur-3xl" />
-          <div className="container relative pb-14 pt-24 sm:pb-20 sm:pt-20 lg:py-24">
-            <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-black/15 bg-white/65 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-black/65">
-                  <span className="h-2 w-2 rounded-full bg-[#d7472f]" />
-                  Premium performance nutrition
-                </div>
-                <h1 className="max-w-3xl text-[clamp(2.9rem,14vw,6.8rem)] sm:text-[clamp(3.2rem,8vw,6.8rem)] font-black uppercase leading-[0.86] tracking-[-0.075em] text-[#101010]">
-                  Fuel your
-                  <span className="block text-[#d7472f]">potential.</span>
-                  <span className="mt-2 block text-[0.68em] tracking-[-0.055em]">Built to perform.</span>
-                </h1>
-                <p className="mt-6 max-w-xl text-[15px] leading-7 text-black/62 sm:mt-7 sm:text-lg">
-                  Gorilla Gear Nutrition is a private South African catalogue for serious athletes and dedicated fitness enthusiasts. Apply for access to browse the range and request a tailored quote.
-                </p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  {!isAuthenticated ? (
-                    <>
-                      <Link href="/register" className="w-full no-underline sm:w-auto">
-                        <Button size="lg" className="h-12 w-full rounded-sm bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f] sm:w-auto">
-                          Apply for membership
-                          <ArrowUpRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Link href="/products" className="w-full no-underline sm:w-auto">
-                        <Button size="lg" variant="outline" className="h-12 w-full rounded-sm border-black/25 bg-transparent px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-[#111111] hover:border-black hover:bg-white sm:w-auto">
-                          Browse products
-                        </Button>
-                      </Link>
-                    </>
-                  ) : isPending ? (
-                    <div className="inline-flex items-center gap-3 rounded-sm border border-[#d7472f]/30 bg-[#d7472f]/8 px-5 py-3 text-xs font-extrabold uppercase tracking-[0.13em] text-[#b33c28]">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-[#d7472f]" />
-                      Application pending review
-                    </div>
-                  ) : isApproved ? (
-                    <Link href="/products" className="w-full no-underline sm:w-auto">
-                      <Button size="lg" className="h-12 w-full rounded-sm sm:w-auto bg-[#111111] px-7 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#d7472f]">
-                        Enter member catalogue
-                        <ArrowUpRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  ) : null}
-                </div>
-                <div className="mt-8 grid max-w-xl grid-cols-2 gap-x-4 gap-y-4 border-t border-black/15 pt-6 sm:mt-10 sm:grid-cols-4 sm:gap-x-6">
-                  {[
-                    { icon: ShieldCheck, label: "Verified range" },
-                    { icon: LockKeyhole, label: "Private access" },
-                    { icon: Truck, label: "Fast delivery" },
-                    { icon: BadgeCheck, label: "Member support" },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-black/56">
-                      <Icon className="h-4 w-4 shrink-0 text-[#d7472f]" />
-                      <span>{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+        <section className="relative isolate overflow-hidden border-b border-white/10 bg-[#070707] pt-[5.9rem]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_77%_23%,rgba(201,154,61,0.18),transparent_24%),radial-gradient(circle_at_18%_88%,rgba(255,255,255,0.06),transparent_28%)]" />
+          <div className="container relative grid min-h-[calc(100svh-5.9rem)] items-center gap-8 py-12 sm:py-16 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10 lg:py-20">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.52 }}
+              className="relative z-10 max-w-xl"
+            >
+              <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#c99a3d] sm:text-xs">Premium supplements. Elite coaching. Real results.</p>
+              <h1 className="text-[clamp(3.25rem,13vw,7.8rem)] font-black uppercase leading-[0.79] tracking-[-0.075em] text-white">
+                Discipline
+                <span className="block">fuels</span>
+                <span className="block text-[#c99a3d]">greatness</span>
+              </h1>
+              <div className="mt-6 h-px w-12 bg-[#c99a3d]" />
+              <p className="mt-6 max-w-md text-[15px] leading-6 text-white/72 sm:text-base sm:leading-7">
+                Premium supplements, performance apparel and elite coaching. Built for those who demand more.
+              </p>
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                <a href="#collections" className="no-underline">
+                  <Button className="h-12 w-full rounded-none bg-[#c99a3d] px-4 text-[10px] font-black uppercase tracking-[0.12em] text-black hover:bg-[#e0b35a]">
+                    Shop supplements
+                  </Button>
+                </a>
+                <a href="#collections" className="no-underline">
+                  <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
+                    Shop clothing
+                  </Button>
+                </a>
+                <a href="#coaching" className="no-underline">
+                  <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
+                    Coaching
+                  </Button>
+                </a>
+              </div>
+              <div className="mt-5">
+                {isApproved ? (
+                  <Link href="/products" className="group inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#c99a3d] no-underline">
+                    Enter member catalogue <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </Link>
+                ) : !isAuthenticated ? (
+                  <Link href="/register" className="group inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-white/65 no-underline transition-colors hover:text-[#c99a3d]">
+                    Apply for member access <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </Link>
+                ) : null}
+              </div>
+            </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="relative mx-auto w-full max-w-lg"
-              >
-                <div className="absolute -right-3 top-8 h-16 w-3 bg-[#d7472f] sm:-right-6 sm:h-24 sm:w-4" />
-                <div className="absolute -bottom-3 left-8 h-3 w-28 bg-[#111111] sm:-bottom-6 sm:left-12 sm:h-4 sm:w-40" />
-                <div className="relative flex aspect-square w-full items-center justify-center">
-                  <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(215,71,47,0.16) 0, transparent 27%), radial-gradient(circle at 80% 75%, rgba(216,243,111,0.48) 0, transparent 30%)" }} />
-                  <img src={brandAssets.logo} alt="Gorilla Gear Nutrition illustrated gorilla logo" className="relative z-10 h-full w-full object-contain mix-blend-screen" />
-                </div>
-              </motion.div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.66, delay: 0.08 }}
+              className="relative min-h-[370px] overflow-hidden border border-white/10 bg-[#121212] sm:min-h-[510px] lg:min-h-[620px]"
+            >
+              <img src={artwork.hero} alt="Premium Gorilla Gear supplement and training gear collection" className="absolute inset-0 h-full w-full object-cover object-[70%_center]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#070707]/85 via-[#070707]/15 to-transparent lg:hidden" />
+              <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between border-t border-white/20 pt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-white/70">
+                <span>Built to perform</span>
+                <span className="text-[#c99a3d]">GGN / 01</span>
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        <section className="bg-[#111111] py-5 text-white">
-          <div className="container flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/55">Controlled access. Clear process. Serious standards.</p>
-            <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#d8f36f]"><Sparkles className="h-4 w-4" /> Adults 18+ only</div>
+        <section className="border-b border-white/10 bg-[#0d0d0d] py-7">
+          <div className="container grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+            {pillars.map(({ icon: Icon, title, copy }, index) => (
+              <div key={title} className={`flex items-center gap-4 ${index > 0 ? "lg:border-l lg:border-white/10 lg:pl-8" : ""} ${index < pillars.length - 1 ? "lg:pr-8" : ""}`}>
+                <Icon className="h-8 w-8 shrink-0 text-[#c99a3d]" strokeWidth={1.4} />
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white">{title}</p>
+                  <p className="mt-1 text-xs text-white/53">{copy}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="border-b border-black/10 bg-white py-14 sm:py-20 lg:py-24">
+        <section id="collections" className="scroll-mt-24 bg-[#080808] py-16 sm:py-20 lg:py-24">
           <div className="container">
-            <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-              <div>
-                <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">Member catalogue</p>
-                <h2 className="max-w-2xl text-4xl font-black uppercase leading-[0.92] tracking-[-0.05em] text-[#111111] sm:text-5xl">Explore the <span className="text-[#d7472f]">range.</span></h2>
-              </div>
-              <Link href="/products" className="group inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#111111] no-underline">
-                View all products <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+            <div className="mb-9 text-center sm:mb-12">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#c99a3d]">The Gorilla Gear edit</p>
+              <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.055em] text-white sm:text-5xl">Shop our collections</h2>
+              <div className="mx-auto mt-4 h-px w-10 bg-[#c99a3d]" />
             </div>
-            {featuredQuery.isLoading ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {[...Array(4)].map((_, i) => <div key={i} className="h-72 animate-pulse rounded-2xl bg-[#ece9e2]" />)}
-              </div>
-            ) : displayProducts.length > 0 ? (
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {displayProducts.slice(0, 4).map((product: any) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}
-              </motion.div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/15 bg-[#f7f5f0] px-6 py-16 text-center">
-                <Package className="mb-4 h-10 w-10 text-[#d7472f]" />
-                <h3 className="text-xl font-black uppercase tracking-[-0.03em]">The new range is on its way</h3>
-                <p className="mt-2 max-w-md text-sm leading-6 text-black/55">Product data and catalogue imagery can be re-uploaded from the admin panel when you are ready to load the Gorilla Gear Nutrition range.</p>
-                <Link href="/products" className="mt-6 no-underline"><Button variant="outline" className="rounded-sm border-black/25 text-xs font-extrabold uppercase tracking-[0.15em]">Open catalogue <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="border-b border-black/10 bg-[#f7f5f0] py-14 sm:py-20 lg:py-24">
-          <div className="container">
-            <div className="mb-10 max-w-xl">
-              <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">Browse by category</p>
-              <h2 className="text-4xl font-black uppercase leading-[0.92] tracking-[-0.05em] text-[#111111] sm:text-5xl">Find your <span className="text-[#d7472f]">focus.</span></h2>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {categories.map((category, index) => (
-                <Link key={category.name} href="/products" className="group relative min-h-[220px] overflow-hidden rounded-2xl sm:min-h-[260px] bg-[#111111] no-underline">
-                  <img src={category.image} alt={category.name} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-500 group-hover:scale-105 group-hover:opacity-85" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                    <div className="mb-2 flex items-center justify-between text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#d8f36f]"><span>0{index + 1}</span><ArrowUpRight className="h-4 w-4" /></div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/65">{category.eyebrow}</p>
-                    <h3 className="mt-1 text-2xl font-black uppercase leading-none tracking-[-0.04em]">{category.name}</h3>
+            <div className="grid gap-5 md:grid-cols-3">
+              {collections.map((collection, index) => (
+                <a key={collection.title} href={collection.href} className="group block overflow-hidden border border-white/10 bg-[#111111] no-underline transition-transform duration-300 hover:-translate-y-1">
+                  <div className="relative aspect-[4/4.5] overflow-hidden">
+                    <img src={collection.image} alt={collection.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    <span className="absolute left-5 top-5 text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">0{index + 1}</span>
                   </div>
-                </Link>
+                  <div className="border-t border-white/10 bg-[#f2f0eb] px-6 py-6 text-center text-[#0a0a0a]">
+                    <h3 className="text-xl font-black uppercase tracking-[-0.035em]">{collection.title}</h3>
+                    <p className="mt-2 text-sm text-black/60">{collection.description}</p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#9b742c]">
+                      {collection.action} <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="border-b border-black/10 bg-white py-14 sm:py-20 lg:py-24">
-          <div className="container">
-            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-              <div>
-                <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d7472f]">How it works</p>
-                <h2 className="text-4xl font-black uppercase leading-[0.92] tracking-[-0.05em] text-[#111111] sm:text-5xl">Access is <span className="text-[#d7472f]">earned.</span></h2>
-                <p className="mt-6 max-w-md text-base leading-7 text-black/58">Gorilla Gear Nutrition is a gated platform. We keep the catalogue private so approved members can shop with a clear, supported process.</p>
-                <Link href="/register" className="mt-8 inline-flex no-underline"><Button className="rounded-sm bg-[#111111] text-xs font-extrabold uppercase tracking-[0.15em] text-white hover:bg-[#d7472f]">Start your application <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+        <section id="coaching" className="scroll-mt-24 border-y border-white/10 bg-[#0e0e0e] py-16 sm:py-20">
+          <div className="container grid items-stretch gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="relative min-h-[340px] overflow-hidden border border-white/10 bg-[#151515] sm:min-h-[420px]">
+              <img src={artwork.coaching} alt="Elite strength coaching in a premium training environment" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/22 to-transparent" />
+              <div className="absolute bottom-7 left-7 max-w-xs sm:bottom-10 sm:left-10">
+                <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#c99a3d]">Coaching built for progress</p>
+                <h2 className="mt-3 text-3xl font-black uppercase leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl">Built in the gym. Backed by discipline.</h2>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {processSteps.map((step) => (
-                  <div key={step.number} className="rounded-2xl border border-black/10 bg-[#f7f5f0] p-6">
-                    <div className="mb-10 flex items-start justify-between"><span className="text-4xl font-black tracking-[-0.06em] text-[#d7472f]">{step.number}</span><Check className="h-5 w-5 text-black/30" /></div>
-                    <h3 className="text-lg font-black uppercase tracking-[-0.03em]">{step.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-black/55">{step.description}</p>
-                  </div>
-                ))}
-              </div>
+            </div>
+            <div id="membership" className="scroll-mt-24 flex flex-col justify-center bg-[#c99a3d] p-8 text-black sm:p-12">
+              <Users className="h-11 w-11" strokeWidth={1.4} />
+              <p className="mt-8 text-[10px] font-black uppercase tracking-[0.24em] text-black/62">Private member access</p>
+              <h2 className="mt-3 text-4xl font-black uppercase leading-[0.88] tracking-[-0.055em]">Become a member</h2>
+              <p className="mt-5 max-w-sm text-sm leading-6 text-black/72">Apply for membership to be part of our community and unlock exclusive insights, education and access to the private member catalogue.</p>
+              {isApproved ? (
+                <Link href="/products" className="mt-8 inline-flex no-underline"><Button className="h-12 rounded-none bg-black px-6 text-[10px] font-black uppercase tracking-[0.16em] text-white hover:bg-black/80">Open member catalogue <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+              ) : (
+                <Link href="/register" className="mt-8 inline-flex no-underline"><Button className="h-12 rounded-none bg-black px-6 text-[10px] font-black uppercase tracking-[0.16em] text-white hover:bg-black/80">Apply now <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+              )}
             </div>
           </div>
         </section>
 
-        <section className="bg-[#111111] py-12 text-white sm:py-16 lg:py-20">
-          <div className="container">
-            <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#191919] px-5 py-10 text-center sm:rounded-[2rem] sm:px-10 sm:py-14">
-              <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-[#d8f36f]/15 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#d7472f]/20 blur-3xl" />
-              <div className="relative">
-                <p className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#d8f36f]">Your next phase starts here</p>
-                <h2 className="mx-auto max-w-3xl text-4xl font-black uppercase leading-[0.9] tracking-[-0.055em] sm:text-6xl">Ready to fuel your <span className="text-[#d7472f]">potential?</span></h2>
-                <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-white/60">Apply for membership, get verified, and access the Gorilla Gear Nutrition catalogue built for dedicated performance.</p>
-                {!isAuthenticated && <Link href="/register" className="mt-8 inline-flex w-full justify-center no-underline sm:w-auto"><Button size="lg" className="h-12 rounded-sm bg-[#d7472f] px-8 text-xs font-extrabold uppercase tracking-[0.16em] text-white hover:bg-[#ef6447]">Get started today <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>}
+        <section className="bg-[#080808] py-8">
+          <div className="container grid gap-5 text-center sm:grid-cols-2 lg:grid-cols-4 lg:text-left">
+            {[
+              { icon: Truck, label: "Fast shipping", copy: "Nationwide delivery" },
+              { icon: ShieldCheck, label: "Secure payments", copy: "Protected checkout" },
+              { icon: PackageCheck, label: "Quality guarantee", copy: "Curated performance range" },
+              { icon: LockKeyhole, label: "Member support", copy: "Here when you need us" },
+            ].map(({ icon: Icon, label, copy }) => (
+              <div key={label} className="flex items-center justify-center gap-3 lg:justify-start">
+                <Icon className="h-5 w-5 text-[#c99a3d]" strokeWidth={1.5} />
+                <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-white">{label}</p><p className="mt-1 text-xs text-white/48">{copy}</p></div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
       </main>

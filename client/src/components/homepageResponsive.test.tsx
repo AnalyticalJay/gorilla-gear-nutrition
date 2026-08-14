@@ -39,26 +39,29 @@ beforeEach(() => {
 });
 
 describe("Homepage responsive structure", () => {
-  it("renders the responsive hero, member CTA, category section, process, and final CTA", () => {
+  it("renders the responsive premium hero, collection cards, member CTA, and no public catalogue grid", () => {
     const { container } = render(<Home />);
 
-    expect(screen.getByText("Fuel your")).toBeTruthy();
+    expect(screen.getByText("Discipline")).toBeTruthy();
+    expect(screen.getByText("greatness")).toBeTruthy();
     expect(screen.getByText("Enter member catalogue")).toBeTruthy();
-    expect(screen.getByText("Find your")).toBeTruthy();
-    expect(screen.getByText("Access is")).toBeTruthy();
-    expect(screen.getByText("Ready to fuel your")).toBeTruthy();
+    expect(screen.getByText("Shop our collections")).toBeTruthy();
+    expect(screen.getByText("Supplements")).toBeTruthy();
+    expect(screen.getByText("Clothing")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Coaching" })).toBeTruthy();
+    expect(screen.getByText("Become a member")).toBeTruthy();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
+    expect(screen.queryByText(/trusted brands/i)).toBeNull();
+    expect(screen.queryByText(/anabolics/i)).toBeNull();
 
-    const heroHeading = screen.getByText("Fuel your").closest("h1");
-    expect(heroHeading?.className).toContain("sm:text-[clamp(3.2rem,8vw,6.8rem)]");
-    expect(container.querySelector(".pt-24")).toBeTruthy();
+    const heroHeading = screen.getByText("Discipline").closest("h1");
+    expect(heroHeading?.className).toContain("text-[clamp(3.25rem,13vw,7.8rem)]");
+    expect(container.querySelector("#collections")).toBeTruthy();
   });
 
-  it("requests compact featured products through the paginated endpoint", () => {
+  it("does not request member catalogue products on the public homepage", () => {
     render(<Home />);
 
-    expect(listPageQuery).toHaveBeenCalledWith(
-      expect.objectContaining({ featuredOnly: true, limit: 4, offset: 0 }),
-    );
+    expect(listPageQuery).not.toHaveBeenCalled();
   });
 });

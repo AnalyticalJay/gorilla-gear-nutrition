@@ -323,3 +323,9 @@
 - [x] Add a direct tracking button and URL to the dispatched-order email template.
 - [x] Add regression coverage for carrier-link and fallback-link email states.
 - [x] Save a checkpoint for the dispatch-email tracking enhancement.
+
+## Active Implementation — Premium Public Homepage Redesign
+- [x] Analyze the supplied black-and-gold reference and translate its content hierarchy into an original Gorilla Gear homepage.
+- [x] Create original hero and collection artwork for Supplements, Clothing, and Coaching.
+- [x] Rebuild the public homepage with the requested mockup copy and no public anabolics or Trusted Brands section.
+- [x] Preserve member-only access to the private catalogue and verify desktop/mobile layouts, tests, and checkpoint.
