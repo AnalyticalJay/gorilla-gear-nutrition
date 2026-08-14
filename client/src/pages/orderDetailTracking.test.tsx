@@ -3,7 +3,7 @@
  */
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 const mocks = vi.hoisted(() => ({
   orderQuery: vi.fn(),
@@ -71,18 +71,24 @@ function makeOrder(proofStatus: "pending" | "approved" | "rejected", proofReview
 
 describe("customer order detail payment proof status", () => {
   afterEach(() => cleanup());
-  it("shows PayFast and EFT actions when payment is awaiting method selection", () => {
+  it("shows PayFast, Instant EFT, and manual EFT actions when payment is awaiting method selection", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
     render(<OrderDetail />);
     expect(screen.getByRole("button", { name: /pay via payfast/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /pay via eft/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /payfast instant eft/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /manual eft.*pop/i })).toBeTruthy();
+    expect(screen.getByText(/Instant EFT opens PayFast/i)).toBeTruthy();
+    mocks.paymentMutate.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: /payfast instant eft/i }));
+    expect(mocks.paymentMutate).toHaveBeenCalledWith({ orderId: 42, method: "instant_eft" });
   });
 
   it("shows payment CTAs for a newly approved quote", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), status: "quote_approved", paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
     render(<OrderDetail />);
     expect(screen.getByRole("button", { name: /pay via payfast/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /pay via eft/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /payfast instant eft/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /manual eft.*pop/i })).toBeTruthy();
   });
 
   it("shows upload and rejected re-upload states for EFT proof", () => {

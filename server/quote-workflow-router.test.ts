@@ -134,6 +134,16 @@ describe("quote workflow router", () => {
     const payfast = await caller.orders.choosePayment({ orderId: 55, method: "payfast" });
     expect(payfast).toMatchObject({ orderId: 55, method: "payfast", payfastReference: "AA-55" });
 
+    dbMocks.chooseQuotePayment.mockResolvedValue({
+      paymentStatus: "awaiting_payfast",
+      payfastReference: "AA-55-INSTANT",
+      total: "200.00",
+    });
+    const instantEft = await caller.orders.choosePayment({ orderId: 55, method: "instant_eft" });
+    expect(instantEft).toMatchObject({ orderId: 55, method: "instant_eft", payfastReference: "AA-55-INSTANT" });
+    expect(instantEft.payfastData).toMatchObject({ payment_method: "ef" });
+    expect(dbMocks.chooseQuotePayment).toHaveBeenLastCalledWith(55, 7, "payfast");
+
     dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-55" });
     const eft = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
     expect(eft).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-55" });

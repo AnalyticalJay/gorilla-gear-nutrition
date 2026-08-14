@@ -80,7 +80,7 @@ export default function OrderDetail() {
   const choosePayment = trpc.orders.choosePayment.useMutation({
     onSuccess: (data) => {
       if (data.method === "eft") {
-        toast.success("EFT selected. Follow the payment instructions below.");
+        toast.success("Manual EFT selected. Follow the banking instructions and upload your proof of payment.");
         utils.orders.detail.invalidate({ orderId: parsedOrderId });
         return;
       }
@@ -88,6 +88,7 @@ export default function OrderDetail() {
         toast.error("PayFast checkout data could not be generated.");
         return;
       }
+      if (data.method === "instant_eft") toast.success("Opening PayFast Instant EFT. Select your bank to continue.");
       submitPayFast(data.payfastData);
     },
     onError: (error) => toast.error(error.message),
@@ -197,7 +198,14 @@ export default function OrderDetail() {
 
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 text-sm text-yellow-200"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-200">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
-              {canSelectPayment && <div className="mt-5 grid gap-3 sm:grid-cols-2"><Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button><Button variant="outline" className="min-h-11 font-bold border-[#0EA5E9]/40" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Pay via EFT</Button></div>}
+              {canSelectPayment && <div className="mt-5 space-y-3">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button>
+                  <Button className="min-h-11 bg-[#0EA5E9] text-white font-bold hover:bg-[#0284C7]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "instant_eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />PayFast Instant EFT</Button>
+                  <Button variant="outline" className="min-h-11 font-bold border-[#0EA5E9]/40" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Manual EFT &amp; POP</Button>
+                </div>
+                <p className="rounded-lg border border-border/40 bg-background/30 px-3 py-2 text-xs leading-5 text-muted-foreground">Instant EFT opens PayFast so you can authorise a bank payment online. It is available only after Instant EFT and payment receiving are activated on the PayFast merchant account. If PayFast reports that the merchant cannot receive payments, use <strong className="text-foreground">Manual EFT &amp; POP</strong> or contact us while merchant activation is completed.</p>
+              </div>}
               {isEftAwaiting && (
                 <div className="mt-5 rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 p-4 text-sm space-y-4">
                   <div className="flex items-center gap-2 font-bold text-[#38BDF8]"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div>

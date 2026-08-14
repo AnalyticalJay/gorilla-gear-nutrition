@@ -351,3 +351,9 @@
 - [x] Generate a replacement original hero visual without an unlabelled product bottle.
 - [x] Apply mobile-first homepage refinements and the new hero visual.
 - [x] Verify phone, tablet, and desktop layouts, run regression coverage, and save a checkpoint.
+
+## Active Implementation — PayFast and Instant EFT Repair
+- [x] Inspect PayFast request generation, merchant configuration handling, and current EFT behavior.
+- [x] Route Pay via EFT to PayFast Instant EFT when available and retain manual EFT proof-upload fallback.
+- [x] Add clear customer guidance for PayFast merchant activation errors without exposing credentials.
+- [x] Add regression coverage, verify mobile payment controls, and save a checkpoint.

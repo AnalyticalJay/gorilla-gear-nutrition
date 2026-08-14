@@ -656,7 +656,7 @@ export const appRouter = router({
       }),
 
     choosePayment: approvedProcedure
-      .input(z.object({ orderId: z.number(), method: z.enum(["eft", "payfast"]) }))
+      .input(z.object({ orderId: z.number(), method: z.enum(["eft", "payfast", "instant_eft"]) }))
       .mutation(async ({ ctx, input }) => {
         const quote = await getOrderById(input.orderId);
         if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
@@ -665,9 +665,12 @@ export const appRouter = router({
         if (!canChoosePayment) {
           throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Quote must be approved before payment" });
         }
-        const payment = await chooseQuotePayment(input.orderId, ctx.user.id, input.method);
+        // Instant EFT is processed by PayFast, so persist it as PayFast while retaining
+        // the requested method in the response used to build the hosted checkout form.
+        const storedMethod = input.method === "eft" ? "eft" : "payfast";
+        const payment = await chooseQuotePayment(input.orderId, ctx.user.id, storedMethod);
         let payfastData: Record<string, string> | undefined = undefined;
-        if (input.method === "payfast") {
+        if (input.method === "payfast" || input.method === "instant_eft") {
           const cfg = getPayFastConfig();
           const ref = payment.payfastReference || `AA-${input.orderId}-${Date.now()}`;
           const origin = ctx.req.headers.origin || `https://${ctx.req.headers.host || "localhost:3000"}`;
@@ -684,6 +687,7 @@ export const appRouter = router({
             name_first: ((ctx.user as any)?.fullName ?? "").split(" ")[0] ?? "",
             name_last: ((ctx.user as any)?.fullName ?? "").split(" ").slice(1).join(" ") || ".",
           };
+          if (input.method === "instant_eft") params.payment_method = "ef";
           const signature = generatePayFastSignature(params, cfg.passphrase);
           payfastData = {
             actionUrl: cfg.isSandbox ? "https://sandbox.payfast.co.za/eng/process" : "https://www.payfast.co.za/eng/process",
