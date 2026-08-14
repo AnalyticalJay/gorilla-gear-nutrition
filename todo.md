@@ -278,3 +278,15 @@
 - [x] Promote legendsales101@gmail.com to Admin and preserve approved/active access.
 - [x] Add protected Admin/User role switching with last-admin safeguards and audit logging.
 - [x] Add regression coverage, verify both access paths, and save a checkpoint.
+
+## Active Verification — Chris Production Permissions
+- [ ] Verify Chris’s production database identity, approval, active status, and current Admin role.
+- [ ] Verify the authenticated production session reaches the admin dashboard and protected admin routes.
+- [ ] Obtain confirmation before changing the live role to User, test customer access, and restore Admin.
+- [ ] Document the verification result and save a verification checkpoint if code or data changes are made.
+
+## Active Audit — Password Reset Readiness
+- [x] Inspect the users/session schema and current password-auth capabilities.
+- [x] Verify SMTP configuration and run a credential-safe handshake test without sending email.
+- [x] Assess password-reset token, email-template, and delivery-readiness gaps.
+- [x] Document findings and save a readiness checkpoint if changes are made.
