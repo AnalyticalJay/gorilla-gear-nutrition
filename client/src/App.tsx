@@ -30,6 +30,7 @@ import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import AdminBulkImport from "./pages/admin/AdminBulkImport";
 import AdminBulkImages from "./pages/admin/AdminBulkImages";
 import AdminMemberPreview from "./pages/admin/AdminMemberPreview";
+import AdminResetAudit from "./pages/admin/AdminResetAudit";
 import MobileBottomNav from "./components/MobileBottomNav";
 import { shouldShowMobileNav } from "@shared/mobileNav";
 
@@ -86,6 +87,13 @@ function Router() {
           {() => (
             <AdminLayout>
               <AdminUsers />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/reset-audit">
+          {() => (
+            <AdminLayout>
+              <AdminResetAudit />
             </AdminLayout>
           )}
         </Route>

@@ -297,3 +297,10 @@
 - [x] Create email transport support for sending password reset links with secure token URLs.
 - [x] Build responsive forgot-password and reset-password frontend screens and link them from the login page.
 - [x] Add regression tests, verify desktop/mobile rendering, and save a checkpoint.
+
+## Active Implementation — Admin Reset-Token Audit View
+- [x] Add password-reset audit log table schema and migration.
+- [x] Record forgot-password request, token issuance, password reset success, and invalid-token attempts.
+- [x] Expose an admin-only tRPC query to retrieve sanitized reset audit events with filters.
+- [x] Build the responsive admin reset-audit dashboard view.
+- [x] Add regression tests, verify responsive states, and save a checkpoint.

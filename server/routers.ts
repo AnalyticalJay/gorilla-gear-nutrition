@@ -45,6 +45,10 @@ import {
   getUserByEmail,
   getUserById,
   consumePasswordResetToken,
+  getPasswordResetTokenOwner,
+  getPasswordResetAuditEvents,
+  maskPasswordResetEmail,
+  recordPasswordResetAuditEvent,
   setPasswordResetToken,
   removeCartItem,
   reviewQuote,
@@ -80,6 +84,15 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 const passwordResetRequestTimes = new Map<string, number>();
 const PASSWORD_RESET_COOLDOWN_MS = 60_000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
+
+function buildPasswordResetAuditIdentity(email: string, userId?: number | null) {
+  const normalizedEmail = email.trim().toLowerCase();
+  return {
+    userId: userId ?? null,
+    emailHash: createHash("sha256").update(normalizedEmail).digest("hex"),
+    maskedEmail: maskPasswordResetEmail(normalizedEmail),
+  };
+}
 
 const approvedProcedure = protectedProcedure.use(({ ctx, next }) => {
   if ((ctx.user as any).status !== "approved") {
@@ -163,31 +176,42 @@ export const appRouter = router({
       .input(z.object({ email: z.string().email() }))
       .mutation(async ({ input }) => {
         const normalizedEmail = input.email.trim().toLowerCase();
+        const identity = buildPasswordResetAuditIdentity(normalizedEmail);
         const now = Date.now();
         const lastRequestedAt = passwordResetRequestTimes.get(normalizedEmail) ?? 0;
         if (now - lastRequestedAt < PASSWORD_RESET_COOLDOWN_MS) {
+          await recordPasswordResetAuditEvent({ ...identity, eventType: "request_received", detail: "cooldown_active" });
           return { success: true } as const;
         }
         passwordResetRequestTimes.set(normalizedEmail, now);
+        await recordPasswordResetAuditEvent({ ...identity, eventType: "request_received" });
 
         const user = await getUserByEmail(normalizedEmail);
         if (user?.isActive && user.passwordHash) {
+          const userIdentity = buildPasswordResetAuditIdentity(user.email, user.id);
           const resetToken = randomBytes(32).toString("hex");
           const tokenHash = createHash("sha256").update(resetToken).digest("hex");
           await setPasswordResetToken(user.id, tokenHash, new Date(now + PASSWORD_RESET_TTL_MS));
+          await recordPasswordResetAuditEvent({ ...userIdentity, eventType: "token_issued", tokenHashPrefix: tokenHash.slice(0, 16), detail: "expires_in_60_minutes" });
           try {
             const sent = await sendPasswordResetEmail({
               customerName: user.fullName,
               customerEmail: user.email,
               resetToken,
             });
-            if (!sent) {
+            if (sent) {
+              await recordPasswordResetAuditEvent({ ...userIdentity, eventType: "email_sent", tokenHashPrefix: tokenHash.slice(0, 16) });
+            } else {
+              await recordPasswordResetAuditEvent({ ...userIdentity, eventType: "email_failed", tokenHashPrefix: tokenHash.slice(0, 16), detail: "transport_returned_false" });
               await consumePasswordResetToken(tokenHash, user.passwordHash);
             }
           } catch (error) {
             console.error("[Auth] Password reset email failed", error);
+            await recordPasswordResetAuditEvent({ ...userIdentity, eventType: "email_failed", tokenHashPrefix: tokenHash.slice(0, 16), detail: "transport_exception" });
             await consumePasswordResetToken(tokenHash, user.passwordHash);
           }
+        } else {
+          await recordPasswordResetAuditEvent({ ...identity, eventType: "account_not_eligible", detail: "inactive_or_no_password" });
         }
 
         // Always return the same response to avoid revealing whether an email is registered.
@@ -201,11 +225,16 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const tokenHash = createHash("sha256").update(input.token).digest("hex");
+        const owner = await getPasswordResetTokenOwner(tokenHash);
+        const identity = owner ? buildPasswordResetAuditIdentity(owner.email, owner.id) : buildPasswordResetAuditIdentity("unknown@example.invalid");
         const passwordHash = await bcrypt.hash(input.newPassword, 12);
         const consumed = await consumePasswordResetToken(tokenHash, passwordHash);
         if (!consumed) {
+          const eventType = owner?.resetTokenExpiresAt && owner.resetTokenExpiresAt <= new Date() ? "token_expired" : "token_invalid";
+          await recordPasswordResetAuditEvent({ ...identity, eventType, tokenHashPrefix: owner ? tokenHash.slice(0, 16) : null });
           throw new TRPCError({ code: "BAD_REQUEST", message: "This reset link is invalid or has expired" });
         }
+        await recordPasswordResetAuditEvent({ ...identity, eventType: "token_consumed", tokenHashPrefix: tokenHash.slice(0, 16) });
         return { success: true } as const;
       }),
 
@@ -770,6 +799,13 @@ export const appRouter = router({
   // ─── Admin: Users ─────────────────────────────────────────────────────────
   admin: router({
     users: adminProcedure.query(() => getAllUsers()),
+
+    passwordResetAudit: adminProcedure
+      .input(z.object({
+        eventType: z.enum(["request_received", "token_issued", "email_sent", "email_failed", "token_consumed", "token_invalid", "token_expired", "account_not_eligible"]).optional(),
+        limit: z.number().int().min(1).max(250).optional(),
+      }).optional())
+      .query(({ input }) => getPasswordResetAuditEvents(input)),
 
     memberPreview: adminProcedure
       .input(z.object({ userId: z.number().int().positive() }))

@@ -35,6 +35,31 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
+// ─── Password Reset Audit Events ───────────────────────────────────────────────
+// Raw reset tokens are never stored. Only masked identity, hashed-email lookup,
+// event type, and a non-sensitive hash prefix are retained for admin auditing.
+export const passwordResetAuditEvents = mysqlTable("password_reset_audit_events", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").references(() => users.id),
+  emailHash: varchar("emailHash", { length: 64 }).notNull(),
+  maskedEmail: varchar("maskedEmail", { length: 320 }).notNull(),
+  eventType: mysqlEnum("eventType", [
+    "request_received",
+    "token_issued",
+    "email_sent",
+    "email_failed",
+    "token_consumed",
+    "token_invalid",
+    "token_expired",
+    "account_not_eligible",
+  ]).notNull(),
+  tokenHashPrefix: varchar("tokenHashPrefix", { length: 16 }),
+  detail: varchar("detail", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PasswordResetAuditEvent = typeof passwordResetAuditEvents.$inferSelect;
+
 // ─── User Approvals ───────────────────────────────────────────────────────────
 export const userApprovals = mysqlTable("user_approvals", {
   id: int("id").autoincrement().primaryKey(),

@@ -6,6 +6,9 @@ const dbMocks = vi.hoisted(() => ({
   getUserByEmail: vi.fn(),
   setPasswordResetToken: vi.fn(),
   consumePasswordResetToken: vi.fn(),
+  getPasswordResetTokenOwner: vi.fn(),
+  recordPasswordResetAuditEvent: vi.fn(),
+  getPasswordResetAuditEvents: vi.fn(),
 }));
 const emailMocks = vi.hoisted(() => ({
   sendPasswordResetEmail: vi.fn(),

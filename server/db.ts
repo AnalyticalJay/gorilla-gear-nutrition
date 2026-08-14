@@ -11,6 +11,7 @@ import {
   orders,
   productImages,
   products,
+  passwordResetAuditEvents,
   shippingDetails,
   userApprovals,
   users,
@@ -178,6 +179,13 @@ export async function getUserByPasswordResetTokenHash(tokenHash: string) {
   return result[0];
 }
 
+export async function getPasswordResetTokenOwner(tokenHash: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.resetTokenHash, tokenHash)).limit(1);
+  return result[0];
+}
+
 export async function clearPasswordResetToken(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -198,6 +206,69 @@ export async function consumePasswordResetToken(tokenHash: string, passwordHash:
     .set({ passwordHash, loginMethod: "email", resetTokenHash: null, resetTokenExpiresAt: null })
     .where(and(eq(users.resetTokenHash, tokenHash), gt(users.resetTokenExpiresAt, new Date())));
   return Number((result as unknown as { affectedRows?: number }).affectedRows ?? 0) > 0;
+}
+
+export type PasswordResetAuditEventType =
+  | "request_received"
+  | "token_issued"
+  | "email_sent"
+  | "email_failed"
+  | "token_consumed"
+  | "token_invalid"
+  | "token_expired"
+  | "account_not_eligible";
+
+export function maskPasswordResetEmail(email: string): string {
+  const [local = "", domain = ""] = email.trim().toLowerCase().split("@");
+  if (!local || !domain) return "hidden";
+  const visible = local.length <= 2 ? local.slice(0, 1) : local.slice(0, 2);
+  return `${visible}${"*".repeat(Math.max(2, local.length - visible.length))}@${domain}`;
+}
+
+export async function recordPasswordResetAuditEvent(input: {
+  userId?: number | null;
+  emailHash: string;
+  maskedEmail: string;
+  eventType: PasswordResetAuditEventType;
+  tokenHashPrefix?: string | null;
+  detail?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(passwordResetAuditEvents).values({
+    userId: input.userId ?? null,
+    emailHash: input.emailHash,
+    maskedEmail: input.maskedEmail,
+    eventType: input.eventType,
+    tokenHashPrefix: input.tokenHashPrefix ?? null,
+    detail: input.detail ?? null,
+  });
+}
+
+export async function getPasswordResetAuditEvents(input?: {
+  eventType?: PasswordResetAuditEventType;
+  emailHash?: string;
+  limit?: number;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  const conditions = [];
+  if (input?.eventType) conditions.push(eq(passwordResetAuditEvents.eventType, input.eventType));
+  if (input?.emailHash) conditions.push(eq(passwordResetAuditEvents.emailHash, input.emailHash));
+  return db
+    .select({
+      id: passwordResetAuditEvents.id,
+      userId: passwordResetAuditEvents.userId,
+      maskedEmail: passwordResetAuditEvents.maskedEmail,
+      eventType: passwordResetAuditEvents.eventType,
+      tokenHashPrefix: passwordResetAuditEvents.tokenHashPrefix,
+      detail: passwordResetAuditEvents.detail,
+      createdAt: passwordResetAuditEvents.createdAt,
+    })
+    .from(passwordResetAuditEvents)
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(passwordResetAuditEvents.createdAt))
+    .limit(Math.min(Math.max(input?.limit ?? 100, 1), 250));
 }
 
 // ─── Admin Analytics ──────────────────────────────────────────────────────────
