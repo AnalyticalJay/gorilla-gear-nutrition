@@ -58,6 +58,12 @@ const pillars = [
   { icon: LockKeyhole, title: "Community", copy: "Like-minded. Goal driven." },
 ];
 
+const membershipBenefits = [
+  { icon: BadgeCheck, title: "Admin-approved", copy: "Membership reviewed with intent." },
+  { icon: ShieldCheck, title: "Secure account", copy: "Quotes, orders and tracking in one place." },
+  { icon: Users, title: "Member support", copy: "Coaching, guidance and clear next steps." },
+];
+
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
@@ -115,6 +121,14 @@ export default function Home() {
                     Apply for member access <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </Link>
                 ) : null}
+              </div>
+              <div className="mt-7 grid max-w-[38rem] gap-3 border-y border-white/15 py-4 sm:grid-cols-3 sm:gap-0">
+                {membershipBenefits.map(({ icon: Icon, title, copy }, index) => (
+                  <div key={title} className={`flex items-start gap-2.5 ${index > 0 ? "sm:border-l sm:border-white/15 sm:pl-4" : ""} ${index < membershipBenefits.length - 1 ? "sm:pr-4" : ""}`}>
+                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#c99a3d]" strokeWidth={1.5} />
+                    <div><p className="text-[9px] font-black uppercase tracking-[0.14em] text-white">{title}</p><p className="mt-1 text-[11px] leading-4 text-white/55">{copy}</p></div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>

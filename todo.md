@@ -340,3 +340,8 @@
 - [x] Refine the hero background visual with an original dark gym composition aligned to the supplied reference.
 - [x] Reduce headline scale slightly while preserving responsive hierarchy and readability.
 - [x] Verify desktop/mobile hero composition, run regression coverage, and save a checkpoint.
+
+## Active Implementation — Hero Member Benefits
+- [x] Define concise approved-membership benefits without referencing private products publicly.
+- [x] Add a premium responsive benefits strip beneath the hero calls to action.
+- [x] Add regression coverage, verify desktop/mobile balance, and save a checkpoint.
