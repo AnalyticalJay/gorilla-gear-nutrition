@@ -311,3 +311,9 @@
 - [x] Implement protected admin fulfilment update procedure with audit tracking.
 - [x] Build responsive admin order fulfilment checklist UI on the admin order detail page.
 - [x] Add regression test coverage, verify desktop/mobile rendering, and save a checkpoint.
+
+## Active Implementation — Automated Order Notifications
+- [x] Inspect existing email transport in server/email.ts and order routers in server/routers.ts.
+- [x] Implement payment approval, packing completion, and order dispatch email templates and dispatch functions.
+- [x] Wire email notifications into confirmEft, updateOrderFulfilment, and adminUpdateTracking / order dispatch actions.
+- [x] Add regression tests, verify desktop/mobile rendering, and save a checkpoint.

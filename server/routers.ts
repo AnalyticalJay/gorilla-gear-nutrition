@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
-import { sendPasswordResetEmail, sendQuoteConfirmationEmail } from "./email";
+import { sendPasswordResetEmail, sendQuoteConfirmationEmail, sendPaymentApprovedEmail, sendOrderPackedEmail, sendOrderDispatchedEmail } from "./email";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
@@ -702,6 +702,16 @@ export const appRouter = router({
       .input(z.object({ orderId: z.number() }))
       .mutation(async ({ input }) => {
         await confirmEftPayment(input.orderId);
+        const order = await getOrderById(input.orderId);
+        const customer = order ? await getUserById(order.userId) : null;
+        if (order && customer?.email) {
+          sendPaymentApprovedEmail({
+            orderId: order.id,
+            customerName: customer.fullName ?? "Valued Customer",
+            customerEmail: customer.email,
+            total: Number(order.totalAmount ?? "0"),
+          }).catch((err) => console.error("[Email] Payment approved notification error:", err));
+        }
         return { success: true };
       }),
 
@@ -788,12 +798,27 @@ export const appRouter = router({
         trackingUrl: z.string().trim().url().max(1024).nullable().optional(),
         trackingNotes: z.string().trim().max(2000).nullable().optional(),
       }))
-      .mutation(({ input }) => updateOrderTracking(input.orderId, {
-        trackingNumber: input.trackingNumber || null,
-        trackingCarrier: input.trackingCarrier || null,
-        trackingUrl: input.trackingUrl || null,
-        trackingNotes: input.trackingNotes || null,
-      })),
+      .mutation(async ({ input }) => {
+        await updateOrderTracking(input.orderId, {
+          trackingNumber: input.trackingNumber || null,
+          trackingCarrier: input.trackingCarrier || null,
+          trackingUrl: input.trackingUrl || null,
+          trackingNotes: input.trackingNotes || null,
+        });
+        const order = await getOrderById(input.orderId);
+        const customer = order ? await getUserById(order.userId) : null;
+        if (order && customer?.email && input.trackingNumber) {
+          sendOrderDispatchedEmail({
+            orderId: order.id,
+            customerName: customer.fullName ?? "Valued Customer",
+            customerEmail: customer.email,
+            total: Number(order.totalAmount ?? "0"),
+            trackingNumber: input.trackingNumber,
+            trackingCarrier: input.trackingCarrier,
+            trackingUrl: input.trackingUrl,
+          }).catch((err) => console.error("[Email] Order dispatched notification error:", err));
+        }
+      }),
 
     adminUpdateFulfilment: adminProcedure
       .input(z.object({
@@ -802,11 +827,27 @@ export const appRouter = router({
         courierBooked: z.boolean().optional(),
         waybillNumber: z.string().trim().max(128).nullable().optional(),
       }))
-      .mutation(({ ctx, input }) => updateOrderFulfilment(input.orderId, ctx.user.id, {
-        packed: input.packed,
-        courierBooked: input.courierBooked,
-        waybillNumber: input.waybillNumber !== undefined ? (input.waybillNumber || null) : undefined,
-      })),
+      .mutation(async ({ ctx, input }) => {
+        const orderBefore = await getOrderById(input.orderId);
+        await updateOrderFulfilment(input.orderId, ctx.user.id, {
+          packed: input.packed,
+          courierBooked: input.courierBooked,
+          waybillNumber: input.waybillNumber !== undefined ? (input.waybillNumber || null) : undefined,
+        });
+        const order = await getOrderById(input.orderId);
+        const customer = order ? await getUserById(order.userId) : null;
+        if (order && customer?.email) {
+          if (input.packed === true && !orderBefore?.packedAt) {
+            sendOrderPackedEmail({
+              orderId: order.id,
+              customerName: customer.fullName ?? "Valued Customer",
+              customerEmail: customer.email,
+              total: Number(order.totalAmount ?? "0"),
+              waybillNumber: order.waybillNumber,
+            }).catch((err) => console.error("[Email] Order packed notification error:", err));
+          }
+        }
+      }),
 
   }),
 
