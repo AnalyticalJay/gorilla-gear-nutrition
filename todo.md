@@ -280,10 +280,10 @@
 - [x] Add regression coverage, verify both access paths, and save a checkpoint.
 
 ## Active Verification — Chris Production Permissions
-- [ ] Verify Chris’s production database identity, approval, active status, and current Admin role.
-- [ ] Verify the authenticated production session reaches the admin dashboard and protected admin routes.
-- [ ] Obtain confirmation before changing the live role to User, test customer access, and restore Admin.
-- [ ] Document the verification result and save a verification checkpoint if code or data changes are made.
+- [x] Verify Chris’s production database identity, approval, active status, and current Admin role.
+- [x] Verify the authenticated production session reaches the admin dashboard and protected admin routes.
+- [x] Confirmed the live User-role switch is deferred because Chris’s password is unavailable; no live role switch was performed and Admin access remains unchanged.
+- [x] Document the verification result and save a verification checkpoint if code or data changes are made.
 
 ## Active Audit — Password Reset Readiness
 - [x] Inspect the users/session schema and current password-auth capabilities.
