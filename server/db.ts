@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -1088,6 +1088,40 @@ export async function updateOrderTracking(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(orders).set(data).where(eq(orders.id, orderId));
+}
+
+export async function updateOrderFulfilment(
+  orderId: number,
+  adminId: number,
+  data: {
+    packed?: boolean;
+    courierBooked?: boolean;
+    waybillNumber?: string | null;
+  },
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const now = new Date();
+  const patch: Record<string, any> = {};
+  if (data.packed !== undefined) {
+    patch.packedAt = data.packed ? now : null;
+    patch.packedBy = data.packed ? adminId : null;
+  }
+  if (data.courierBooked !== undefined) {
+    patch.courierBookedAt = data.courierBooked ? now : null;
+    patch.courierBookedBy = data.courierBooked ? adminId : null;
+  }
+  if (data.waybillNumber !== undefined) {
+    patch.waybillNumber = data.waybillNumber;
+  }
+  await db.update(orders).set(patch).where(eq(orders.id, orderId));
+}
+
+export async function purgeOldPasswordResetAuditEvents(daysToKeep = 90) {
+  const db = await getDb();
+  if (!db) return;
+  const cutoff = new Date(Date.now() - daysToKeep * 24 * 60 * 60 * 1000);
+  await db.delete(passwordResetAuditEvents).where(lt(passwordResetAuditEvents.createdAt, cutoff));
 }
 
 export async function updateOrderStatus(

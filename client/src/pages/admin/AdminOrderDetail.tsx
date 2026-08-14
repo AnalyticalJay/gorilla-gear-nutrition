@@ -43,6 +43,9 @@ export default function AdminOrderDetail() {
   const [trackingUrl, setTrackingUrl] = useState("");
   const [trackingNotes, setTrackingNotes] = useState("");
   const [proofReviewNote, setProofReviewNote] = useState("");
+  const [isPacked, setIsPacked] = useState(false);
+  const [isCourierBooked, setIsCourierBooked] = useState(false);
+  const [waybillNumber, setWaybillNumber] = useState("");
   const [mockPreview, setMockPreview] = useState<{ scenario: MockCourierScenario; events: OrderTrackingEventInput[] } | null>(null);
 
   const orderQuery = trpc.orders.adminDetail.useQuery(
@@ -57,7 +60,10 @@ export default function AdminOrderDetail() {
     setTrackingCarrier(order.trackingCarrier ?? "The Courier Guy");
     setTrackingUrl(order.trackingUrl ?? "");
     setTrackingNotes(order.trackingNotes ?? "");
-  }, [order?.id, order?.trackingNumber, order?.trackingCarrier, order?.trackingUrl, order?.trackingNotes]);
+    setIsPacked(!!order.packedAt);
+    setIsCourierBooked(!!order.courierBookedAt);
+    setWaybillNumber(order.waybillNumber ?? "");
+  }, [order?.id, order?.trackingNumber, order?.trackingCarrier, order?.trackingUrl, order?.trackingNotes, order?.packedAt, order?.courierBookedAt, order?.waybillNumber]);
 
   const confirmEft = trpc.orders.confirmEft.useMutation({
     onSuccess: () => {
@@ -81,6 +87,15 @@ export default function AdminOrderDetail() {
   const updateTracking = trpc.orders.adminUpdateTracking.useMutation({
     onSuccess: () => {
       toast.success("Tracking details saved");
+      utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
+      utils.orders.adminList.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const updateFulfilment = trpc.orders.adminUpdateFulfilment.useMutation({
+    onSuccess: () => {
+      toast.success("Fulfilment checklist updated");
       utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
       utils.orders.adminList.invalidate();
     },
@@ -177,6 +192,75 @@ export default function AdminOrderDetail() {
             }}
           >
             {updateStatus.isPending ? "Updating..." : "Update Status"}
+          </Button>
+        </div>
+      </div>
+
+      {/* Fulfilment Checklist */}
+      <div className="glass-card rounded-xl p-4 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2"><Package className="h-4 w-4 text-[#38BDF8]" /><h2 className="font-bold">Fulfilment Checklist</h2></div>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">Track order preparation, Courier Guy booking, and waybill assignment before dispatch.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${isPacked && isCourierBooked ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
+              {isPacked && isCourierBooked ? "Ready for Dispatch" : "Fulfilment In Progress"}
+            </span>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="flex items-center gap-3 rounded-lg border border-[#1E293B] bg-[#0A0A0A] p-3.5 cursor-pointer hover:border-[#334155]">
+            <input
+              type="checkbox"
+              checked={isPacked}
+              onChange={(event) => setIsPacked(event.target.checked)}
+              className="h-4 w-4 rounded border-[#334155] bg-[#111111] text-[#38BDF8] focus:ring-[#38BDF8]"
+            />
+            <div>
+              <p className="text-sm font-bold text-white">Order Packed</p>
+              <p className="text-xs text-muted-foreground">{order.packedAt ? `Packed on ${format(new Date(order.packedAt), "PP p")}` : "Items inspected and boxed"}</p>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 rounded-lg border border-[#1E293B] bg-[#0A0A0A] p-3.5 cursor-pointer hover:border-[#334155]">
+            <input
+              type="checkbox"
+              checked={isCourierBooked}
+              onChange={(event) => setIsCourierBooked(event.target.checked)}
+              className="h-4 w-4 rounded border-[#334155] bg-[#111111] text-[#38BDF8] focus:ring-[#38BDF8]"
+            />
+            <div>
+              <p className="text-sm font-bold text-white">Courier Booked</p>
+              <p className="text-xs text-muted-foreground">{order.courierBookedAt ? `Booked on ${format(new Date(order.courierBookedAt), "PP p")}` : "The Courier Guy collection booked"}</p>
+            </div>
+          </label>
+
+          <div className="space-y-2 sm:col-span-2">
+            <label htmlFor="waybill-number" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Waybill / Collection Reference</label>
+            <Input
+              id="waybill-number"
+              value={waybillNumber}
+              onChange={(event) => setWaybillNumber(event.target.value)}
+              placeholder="e.g. WAY-8849201"
+              className="bg-background/50"
+            />
+          </div>
+        </div>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">Save completion steps before updating the main tracking number and shipping status.</p>
+          <Button
+            className="min-h-10 text-white font-bold bg-[#38BDF8] text-slate-950 hover:bg-[#38BDF8]/90"
+            disabled={updateFulfilment.isPending}
+            onClick={() => updateFulfilment.mutate({
+              orderId: order.id,
+              packed: isPacked,
+              courierBooked: isCourierBooked,
+              waybillNumber: waybillNumber.trim() || null,
+            })}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {updateFulfilment.isPending ? "Saving checklist..." : "Save fulfilment checklist"}
           </Button>
         </div>
       </div>

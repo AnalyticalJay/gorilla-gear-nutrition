@@ -304,3 +304,10 @@
 - [x] Expose an admin-only tRPC query to retrieve sanitized reset audit events with filters.
 - [x] Build the responsive admin reset-audit dashboard view.
 - [x] Add regression tests, verify responsive states, and save a checkpoint.
+
+## Active Implementation — Operational Security and Fulfilment Checklist
+- [x] Add audit-event retention purge helpers and password-reset security cleanup.
+- [x] Add order fulfilment checklist schema (packed status, packed timestamp, packer ID, courier booking status, booking timestamp, booker ID, and waybill number).
+- [x] Implement protected admin fulfilment update procedure with audit tracking.
+- [x] Build responsive admin order fulfilment checklist UI on the admin order detail page.
+- [x] Add regression test coverage, verify desktop/mobile rendering, and save a checkpoint.

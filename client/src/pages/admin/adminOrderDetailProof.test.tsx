@@ -22,6 +22,7 @@ vi.mock("@/lib/trpc", () => ({
       adminUpdateTracking: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
       adminUpdateStatus: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
       adminSimulateCourierScans: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
+      adminUpdateFulfilment: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
     },
   },
 }));

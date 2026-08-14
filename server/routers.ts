@@ -57,6 +57,7 @@ import {
   updateCategory,
   updateOrderStatus,
   updateOrderTracking,
+  updateOrderFulfilment,
   updateOrderPayment,
   uploadProofOfPayment,
   rejectProofOfPayment,
@@ -792,6 +793,19 @@ export const appRouter = router({
         trackingCarrier: input.trackingCarrier || null,
         trackingUrl: input.trackingUrl || null,
         trackingNotes: input.trackingNotes || null,
+      })),
+
+    adminUpdateFulfilment: adminProcedure
+      .input(z.object({
+        orderId: z.number(),
+        packed: z.boolean().optional(),
+        courierBooked: z.boolean().optional(),
+        waybillNumber: z.string().trim().max(128).nullable().optional(),
+      }))
+      .mutation(({ ctx, input }) => updateOrderFulfilment(input.orderId, ctx.user.id, {
+        packed: input.packed,
+        courierBooked: input.courierBooked,
+        waybillNumber: input.waybillNumber !== undefined ? (input.waybillNumber || null) : undefined,
       })),
 
   }),
