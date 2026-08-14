@@ -265,3 +265,10 @@
 - [x] Fix the approved-user sign-in flow so successful login is recognized by the client.
 - [x] Add regression coverage and verify the approved-user flow on desktop and mobile.
 - [x] Save a checkpoint for the authentication fix.
+
+## Active Implementation — Client Access Testing and Login UX
+- [x] Document the exact approved-client production test steps and required client-provided credentials.
+- [x] Inspect admin access patterns and design an auditable test-access workflow without exposing customer passwords.
+- [x] Enhance login loading animation, status messages, and error guidance.
+- [x] Add regression coverage, verify responsive states, and save a checkpoint.
+- [ ] Run the exact approved-client production sign-in test with the client present; do not request or store their password.

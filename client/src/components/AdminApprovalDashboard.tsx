@@ -16,6 +16,7 @@ import {
   XCircle,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { Link } from "wouter";
 import { toast } from "sonner";
 
 import { trpc } from "@/lib/trpc";
@@ -324,9 +325,18 @@ export default function AdminApprovalDashboard() {
                   </Button>
                 </DialogFooter>
               ) : (
-                <div className="flex items-center gap-2 rounded-lg border border-[#1E293B] bg-[#0D0D0D] p-3 text-sm text-[#94A3B8]">
-                  <StatusBadge status={selectedApplicant.status} />
-                  This application has already been reviewed.
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 rounded-lg border border-[#1E293B] bg-[#0D0D0D] p-3 text-sm text-[#94A3B8]">
+                    <StatusBadge status={selectedApplicant.status} />
+                    This application has already been reviewed.
+                  </div>
+                  {selectedApplicant.status === "approved" && (
+                    <Link href={`/admin/users/${selectedApplicant.id}/preview`} className="block no-underline">
+                      <Button type="button" variant="outline" className="min-h-11 w-full border-[#0EA5E9]/30 text-[#7DD3FC] hover:border-[#0EA5E9]/60 hover:bg-[#0EA5E9]/10">
+                        <ShieldCheck className="mr-2 h-4 w-4" /> Open read-only access check
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               )}
             </>

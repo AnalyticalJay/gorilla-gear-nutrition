@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ArrowLeft, Eye, EyeOff, Lock, Shield } from "lucide-react";
-import { useState } from "react";
+import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, Info, Loader2, Lock, Shield } from "lucide-react";
+import React, { useState } from "react";
 import { getLoginUrl } from "@/const";
 
 const schema = z.object({
@@ -21,16 +21,32 @@ type FormData = z.infer<typeof schema>;
 export default function Login() {
   const [, navigate] = useLocation();
   const [showPass, setShowPass] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ kind: "loading" | "success" | "error" | "info"; text: string } | null>(null);
 
   const utils = trpc.useUtils();
 
   const login = trpc.auth.login.useMutation({
-    onSuccess: async () => {
-      await utils.auth.me.invalidate();
-      toast.success("Welcome back!");
-      navigate("/products");
+    onMutate: () => {
+      setStatusMessage({ kind: "loading", text: "Checking your approved member account…" });
     },
-    onError: (err) => toast.error(err.message),
+    onSuccess: async ({ user }) => {
+      setStatusMessage({ kind: "success", text: "Sign-in confirmed. Loading your account…" });
+      await utils.auth.me.invalidate();
+      toast.success(user.status === "approved" ? "Welcome back!" : "Sign-in successful", {
+        description: user.status === "approved" ? "Your private catalogue is ready." : "Your account status is shown next.",
+      });
+      navigate(user.status === "approved" ? "/products" : "/approval-pending");
+    },
+    onError: (err) => {
+      const code = (err as any).data?.code;
+      const text = code === "UNAUTHORIZED"
+        ? "We couldn't sign you in. Check your email and password, then try again."
+        : code === "FORBIDDEN"
+          ? "Your account is inactive. If you were recently approved, contact support before retrying."
+          : "Sign-in could not be completed. Please try again or contact support.";
+      setStatusMessage({ kind: "error", text });
+      toast.error("Sign-in unsuccessful", { description: text });
+    },
   });
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -106,6 +122,25 @@ export default function Login() {
             </Link>
           </p>
 
+          {statusMessage && (
+            <div
+              role="status"
+              aria-live="polite"
+              className={`mb-5 flex items-start gap-3 rounded-lg border px-3.5 py-3 text-sm ${
+                statusMessage.kind === "loading"
+                  ? "border-[#0EA5E9]/30 bg-[#0EA5E9]/10 text-[#BAE6FD]"
+                  : statusMessage.kind === "success"
+                    ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+                    : statusMessage.kind === "error"
+                      ? "border-rose-400/30 bg-rose-400/10 text-rose-200"
+                      : "border-amber-400/30 bg-amber-400/10 text-amber-200"
+              }`}
+            >
+              {statusMessage.kind === "loading" ? <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" /> : statusMessage.kind === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : statusMessage.kind === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <Info className="mt-0.5 h-4 w-4 shrink-0" />}
+              <span>{statusMessage.text}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit((data) => login.mutate(data))} className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-sm font-bold uppercase tracking-wide text-[#94A3B8]">Email Address</Label>
@@ -142,11 +177,12 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="w-full text-white font-bold uppercase tracking-widest mt-2 h-11"
+              className="w-full text-white font-bold uppercase tracking-widest mt-2 h-11 transition-transform active:scale-[0.98]"
               style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
               disabled={login.isPending}
+              aria-busy={login.isPending}
             >
-              {login.isPending ? "Signing In..." : "Sign In"}
+              {login.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In…</> : "Sign In"}
             </Button>
 
             <div className="relative my-4">

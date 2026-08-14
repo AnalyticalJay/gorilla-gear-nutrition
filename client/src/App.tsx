@@ -27,6 +27,7 @@ import OrderCancelled from "./pages/OrderCancelled";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import AdminBulkImport from "./pages/admin/AdminBulkImport";
 import AdminBulkImages from "./pages/admin/AdminBulkImages";
+import AdminMemberPreview from "./pages/admin/AdminMemberPreview";
 import MobileBottomNav from "./components/MobileBottomNav";
 import { shouldShowMobileNav } from "@shared/mobileNav";
 
@@ -67,6 +68,13 @@ function Router() {
           {() => (
             <AdminLayout>
               <AdminDashboard />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/users/:userId/preview">
+          {(params) => (
+            <AdminLayout>
+              <AdminMemberPreview />
             </AdminLayout>
           )}
         </Route>

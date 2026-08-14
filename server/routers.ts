@@ -713,6 +713,40 @@ export const appRouter = router({
   admin: router({
     users: adminProcedure.query(() => getAllUsers()),
 
+    memberPreview: adminProcedure
+      .input(z.object({ userId: z.number().int().positive() }))
+      .query(async ({ ctx, input }) => {
+        const member = await getUserById(input.userId);
+        if (!member) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Member not found" });
+        }
+
+        const accessGranted = member.status === "approved" && member.isActive;
+        console.info(`[AdminPreview] admin=${ctx.user.id} member=${member.id} accessGranted=${accessGranted}`);
+
+        return {
+          previewMode: "read-only" as const,
+          accessGranted,
+          accessMessage: accessGranted
+            ? "This member is approved and active. Catalogue access should be available."
+            : member.status === "pending"
+              ? "This member is still awaiting approval."
+              : member.status === "rejected"
+                ? "This member was rejected and cannot access the catalogue."
+                : "This member is inactive and cannot access the catalogue.",
+          member: {
+            id: member.id,
+            fullName: member.fullName,
+            email: member.email,
+            city: member.city,
+            status: member.status,
+            isActive: member.isActive,
+            createdAt: member.createdAt,
+          },
+          previewedBy: ctx.user.id,
+        };
+      }),
+
     approveUser: adminProcedure
       .input(z.object({ userId: z.number(), notes: z.string().optional() }))
       .mutation(async ({ ctx, input }) => {
