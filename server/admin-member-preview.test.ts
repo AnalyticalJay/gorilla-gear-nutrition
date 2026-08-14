@@ -3,6 +3,8 @@ import type { TrpcContext } from "./_core/context";
 
 const dbMocks = vi.hoisted(() => ({
   getUserById: vi.fn(),
+  getAllUsers: vi.fn(),
+  updateUserRole: vi.fn(),
 }));
 
 vi.mock("./db", async () => ({
@@ -64,6 +66,29 @@ describe("admin member preview", () => {
 
     expect(result.accessGranted).toBe(false);
     expect(result.accessMessage).toContain("awaiting approval");
+  });
+
+  it("changes a member to admin through the protected role mutation", async () => {
+    dbMocks.getUserById.mockResolvedValue(makeUser({ id: 42, role: "user", status: "approved" }));
+    dbMocks.updateUserRole.mockResolvedValue(undefined);
+
+    const result = await appRouter.createCaller(makeContext()).admin.setUserRole({ userId: 42, role: "admin" });
+
+    expect(result).toEqual({ success: true, role: "admin" });
+    expect(dbMocks.updateUserRole).toHaveBeenCalledWith(42, "admin");
+  });
+
+  it("prevents self-demotion and removing the last admin", async () => {
+    dbMocks.getUserById.mockResolvedValue(makeUser({ id: 1, role: "admin", status: "approved" }));
+
+    await expect(appRouter.createCaller(makeContext()).admin.setUserRole({ userId: 1, role: "user" })).rejects.toMatchObject({ code: "FORBIDDEN" });
+
+    dbMocks.getUserById.mockResolvedValue(makeUser({ id: 42, role: "admin", status: "approved" }));
+    dbMocks.getAllUsers.mockResolvedValue([makeUser({ id: 1, role: "admin" }), makeUser({ id: 42, role: "admin" })]);
+    await expect(appRouter.createCaller(makeContext()).admin.setUserRole({ userId: 42, role: "user" })).resolves.toEqual({ success: true, role: "user" });
+
+    dbMocks.getAllUsers.mockResolvedValue([makeUser({ id: 1, role: "admin" })]);
+    await expect(appRouter.createCaller(makeContext()).admin.setUserRole({ userId: 42, role: "user" })).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 
   it("rejects non-admin preview requests", async () => {

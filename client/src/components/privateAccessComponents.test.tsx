@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   mockRegister: vi.fn(),
   mockApprove: vi.fn(),
   mockReject: vi.fn(),
+  mockRole: vi.fn(),
   mockInvalidate: vi.fn(),
   mockToastError: vi.fn(),
   mockToastSuccess: vi.fn(),
@@ -69,6 +70,9 @@ vi.mock("@/lib/trpc", () => ({
       },
       rejectUser: {
         useMutation: () => ({ isPending: false, mutate: mocks.mockReject }),
+      },
+      setUserRole: {
+        useMutation: () => ({ isPending: false, mutate: mocks.mockRole }),
       },
       stats: {
         invalidate: mocks.mockInvalidate,
@@ -154,6 +158,17 @@ describe("AdminApprovalDashboard", () => {
     await user.click(screen.getByRole("button", { name: /approve access/i }));
 
     expect(mocks.mockApprove).toHaveBeenCalledWith({ userId: 1, notes: "Verified by admin" });
+  });
+
+  it("allows an admin to request a role change for an approved member", async () => {
+    const user = userEvent.setup();
+    render(<AdminApprovalDashboard />);
+
+    await user.click(screen.getByRole("tab", { name: /approved 1/i }));
+    await user.click(screen.getAllByRole("button", { name: /view application/i })[0]!);
+    await user.selectOptions(screen.getByLabelText("Account role"), "admin");
+
+    expect(mocks.mockRole).toHaveBeenCalledWith({ userId: 2, role: "admin" });
   });
 
   it("shows an empty result when the search does not match", async () => {

@@ -271,4 +271,10 @@
 - [x] Inspect admin access patterns and design an auditable test-access workflow without exposing customer passwords.
 - [x] Enhance login loading animation, status messages, and error guidance.
 - [x] Add regression coverage, verify responsive states, and save a checkpoint.
-- [ ] Run the exact approved-client production sign-in test with the client present; do not request or store their password.
+- [x] Run the exact approved-client production sign-in test with the client present; do not request or store their password.
+
+## Active Implementation — Chris Role Management
+- [x] Verify Chris’s confirmed email account identity, approval status, and current role.
+- [x] Promote legendsales101@gmail.com to Admin and preserve approved/active access.
+- [x] Add protected Admin/User role switching with last-admin safeguards and audit logging.
+- [x] Add regression coverage, verify both access paths, and save a checkpoint.

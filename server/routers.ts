@@ -54,6 +54,7 @@ import {
   uploadProofOfPayment,
   rejectProofOfPayment,
   updateProduct,
+  updateUserRole,
   updateUserStatus,
   upsertCartItem,
 } from "./db";
@@ -745,6 +746,31 @@ export const appRouter = router({
           },
           previewedBy: ctx.user.id,
         };
+      }),
+
+    setUserRole: adminProcedure
+      .input(z.object({ userId: z.number().int().positive(), role: z.enum(["user", "admin"]) }))
+      .mutation(async ({ ctx, input }) => {
+        const target = await getUserById(input.userId);
+        if (!target) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+        if (target.role === input.role) return { success: true, role: target.role };
+
+        if (target.id === ctx.user.id && input.role === "user") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "You cannot remove your own admin access." });
+        }
+
+        if (target.role === "admin" && input.role === "user") {
+          const adminCount = (await getAllUsers()).filter((user) => user.role === "admin").length;
+          if (adminCount <= 1) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "At least one admin account must remain." });
+          }
+        }
+
+        await updateUserRole(input.userId, input.role);
+        console.info(`[AdminRoleChange] admin=${ctx.user.id} target=${target.id} from=${target.role} to=${input.role}`);
+        return { success: true, role: input.role };
       }),
 
     approveUser: adminProcedure

@@ -90,11 +90,20 @@ export default function AdminApprovalDashboard() {
     onError: (error) => toast.error("Rejection failed", { description: error.message }),
   });
 
+  const roleMutation = trpc.admin.setUserRole.useMutation({
+    onSuccess: ({ role }) => {
+      toast.success(`Account role changed to ${role === "admin" ? "Admin" : "User"}`);
+      setSelectedApplicant((current) => current ? { ...current, role } : current);
+      utils.admin.users.invalidate();
+    },
+    onError: (error) => toast.error("Role change failed", { description: error.message }),
+  });
+
   const applicants = (applicantsQuery.data ?? []) as Applicant[];
   const counts = useMemo(() => countApplicants(applicants), [applicants]);
   const filteredApplicants = useMemo(() => filterApplicants(applicants, filter, search), [applicants, filter, search]);
 
-  const isReviewing = approveMutation.isPending || rejectMutation.isPending;
+  const isReviewing = approveMutation.isPending || rejectMutation.isPending || roleMutation.isPending;
 
   const openApplicant = (applicant: Applicant) => {
     setSelectedApplicant(applicant);
@@ -301,6 +310,23 @@ export default function AdminApprovalDashboard() {
                 />
                 <p className="text-right text-[10px] text-[#64748B]">{reviewNotes.length}/2000</p>
               </div>
+
+              {selectedApplicant.status === "approved" && (
+                <div className="space-y-2 rounded-lg border border-[#0EA5E9]/20 bg-[#0EA5E9]/5 p-4">
+                  <label htmlFor="account-role" className="text-xs font-bold uppercase tracking-wide text-[#BAE6FD]">Account role</label>
+                  <select
+                    id="account-role"
+                    value={selectedApplicant.role}
+                    disabled={roleMutation.isPending}
+                    onChange={(event) => roleMutation.mutate({ userId: selectedApplicant.id, role: event.target.value as "user" | "admin" })}
+                    className="min-h-11 w-full rounded-md border border-[#1E293B] bg-[#0D0D0D] px-3 text-sm font-bold text-white outline-none focus:border-[#0EA5E9]"
+                  >
+                    <option value="user">User — customer catalogue access</option>
+                    <option value="admin">Admin — dashboard and catalogue access</option>
+                  </select>
+                  <p className="text-xs leading-relaxed text-[#7DD3FC]">Role changes apply on the account’s next authenticated request. The system prevents removing the last admin or demoting yourself.</p>
+                </div>
+              )}
 
               {selectedApplicant.status === "pending" ? (
                 <DialogFooter className="gap-2 sm:gap-3">

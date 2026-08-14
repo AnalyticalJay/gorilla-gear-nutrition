@@ -155,6 +155,12 @@ export async function updateUserStatus(
     .where(eq(userApprovals.userId, userId));
 }
 
+export async function updateUserRole(userId: number, role: "user" | "admin") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(users).set({ role }).where(eq(users.id, userId));
+}
+
 // ─── Admin Analytics ──────────────────────────────────────────────────────────
 
 export async function getAdminAnalytics() {
