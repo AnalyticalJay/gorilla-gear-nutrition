@@ -259,3 +259,9 @@
 - [x] Collect and validate the SMTP mailbox password securely without storing or exposing it in source code.
 - [x] Send customer quote confirmation emails containing subtotal, R140 nationwide delivery, total, quote number, and order link.
 - [x] Add SMTP/template tests, verify credential-safe behavior, and save a checkpoint.
+
+## Active Bug Fix — Approved User Sign-In Session
+- [x] Trace registration, admin approval, login, session cookie, and auth-state refresh behavior.
+- [x] Fix the approved-user sign-in flow so successful login is recognized by the client.
+- [x] Add regression coverage and verify the approved-user flow on desktop and mobile.
+- [x] Save a checkpoint for the authentication fix.

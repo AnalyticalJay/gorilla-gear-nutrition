@@ -172,7 +172,9 @@ class SDKServer {
       {
         openId,
         appId: ENV.appId,
-        name: options.name || "",
+        // Session verification requires a non-empty name. OAuth callers may pass an empty name,
+        // while email/password sessions identify users by numeric ID, so use openId as a safe fallback.
+        name: options.name || openId,
       },
       options
     );
