@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
+const approvedLogoSrc = "/manus-storage/logo_2d6e0f20.png";
+
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
@@ -23,7 +25,7 @@ export default function Navbar() {
   const cartCount = cartQuery.data?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
   const navLinks = [
     { href: "/#collections", label: "Shop" },
-    { href: "/#coaching", label: "Coaching" },
+    { href: "/coaching", label: "Coaching" },
     { href: "/#membership", label: "Apply" },
   ];
 
@@ -32,8 +34,8 @@ export default function Navbar() {
       <div className="border-b border-white/10 py-1.5 text-center text-[8px] font-bold uppercase tracking-[0.3em] text-white/65 sm:text-[9px]">Premium supplements. Elite coaching. <span className="text-[#c99a3d]">Real results.</span></div>
       <div className="container flex h-16 items-center justify-between gap-2">
         <Link href="/" className="flex min-w-0 items-center gap-2 no-underline sm:gap-3">
-          <div className="flex h-10 w-10 items-center justify-center border border-white/20 bg-[#111111]">
-            <span className="font-black tracking-wider text-white">GG</span>
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden border border-white/20 bg-black">
+            <img src={approvedLogoSrc} alt="Gorilla Gear Nutrition approved logo" className="h-full w-full object-contain" />
           </div>
           <div className="min-w-0">
             <span className="block truncate text-sm font-black uppercase tracking-wider text-white">Gorilla Gear</span>

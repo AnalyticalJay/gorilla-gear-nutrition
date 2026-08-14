@@ -329,3 +329,9 @@
 - [x] Create original hero and collection artwork for Supplements, Clothing, and Coaching.
 - [x] Rebuild the public homepage with the requested mockup copy and no public anabolics or Trusted Brands section.
 - [x] Preserve member-only access to the private catalogue and verify desktop/mobile layouts, tests, and checkpoint.
+
+## Active Implementation — Coaching Enquiry and Collection Enhancement
+- [x] Verify the approved Gorilla Gear logo asset and inspect current coaching/data patterns.
+- [x] Build a public Coaching enquiry/application form with protected admin review access.
+- [x] Replace the temporary navbar mark with the approved logo lockup and enhance all three collection blocks.
+- [x] Add regression coverage, verify desktop/mobile states, and save a checkpoint.

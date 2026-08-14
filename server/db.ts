@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
   categories,
+  coachingEnquiries,
   deliveryRules,
   InsertUser,
   orderComments,
@@ -160,6 +161,59 @@ export async function updateUserRole(userId: number, role: "user" | "admin") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(users).set({ role }).where(eq(users.id, userId));
+}
+
+// ─── Coaching Enquiries ───────────────────────────────────────────────────────
+
+export type CoachingEnquiryStatus = "new" | "reviewing" | "consultation_scheduled" | "accepted" | "closed";
+
+export async function createCoachingEnquiry(input: {
+  userId?: number | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  primaryGoal: string;
+  experienceLevel: "beginner" | "intermediate" | "advanced";
+  availability: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(coachingEnquiries).values({
+    userId: input.userId ?? null,
+    firstName: input.firstName,
+    lastName: input.lastName,
+    email: input.email.toLowerCase(),
+    phone: input.phone,
+    address: input.address,
+    primaryGoal: input.primaryGoal,
+    experienceLevel: input.experienceLevel,
+    availability: input.availability,
+  });
+  return (result as unknown as { insertId: number }).insertId;
+}
+
+export async function getCoachingEnquiries() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(coachingEnquiries).orderBy(desc(coachingEnquiries.createdAt));
+}
+
+export async function reviewCoachingEnquiry(input: {
+  enquiryId: number;
+  status: CoachingEnquiryStatus;
+  adminNotes?: string;
+  adminId: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(coachingEnquiries).set({
+    status: input.status,
+    adminNotes: input.adminNotes?.trim() || null,
+    reviewedBy: input.adminId,
+    reviewedAt: new Date(),
+  }).where(eq(coachingEnquiries.id, input.enquiryId));
 }
 
 export async function setPasswordResetToken(userId: number, tokenHash: string, expiresAt: Date) {

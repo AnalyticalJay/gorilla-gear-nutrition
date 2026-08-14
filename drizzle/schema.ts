@@ -74,6 +74,31 @@ export const userApprovals = mysqlTable("user_approvals", {
 
 export type UserApproval = typeof userApprovals.$inferSelect;
 
+// ─── Coaching Enquiries ───────────────────────────────────────────────────────
+// Public enquiries are stored separately from member applications. A raw customer
+// address is required for consultation and service planning, while review fields
+// remain restricted to administrators.
+export const coachingEnquiries = mysqlTable("coaching_enquiries", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").references(() => users.id),
+  firstName: varchar("firstName", { length: 128 }).notNull(),
+  lastName: varchar("lastName", { length: 128 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 32 }).notNull(),
+  address: text("address").notNull(),
+  primaryGoal: varchar("primaryGoal", { length: 255 }).notNull(),
+  experienceLevel: mysqlEnum("experienceLevel", ["beginner", "intermediate", "advanced"]).notNull(),
+  availability: varchar("availability", { length: 255 }).notNull(),
+  status: mysqlEnum("status", ["new", "reviewing", "consultation_scheduled", "accepted", "closed"]).default("new").notNull(),
+  adminNotes: text("adminNotes"),
+  reviewedBy: int("reviewedBy").references(() => users.id),
+  reviewedAt: timestamp("reviewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CoachingEnquiry = typeof coachingEnquiries.$inferSelect;
+
 // ─── Categories ───────────────────────────────────────────────────────────────
 export const categories = mysqlTable("categories", {
   id: int("id").autoincrement().primaryKey(),

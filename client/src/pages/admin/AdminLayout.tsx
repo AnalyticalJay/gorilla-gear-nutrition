@@ -14,6 +14,7 @@ import {
   Shield,
   Upload,
   FileImage,
+  GraduationCap,
   KeyRound,
 } from "lucide-react";
 import { useState } from "react";
@@ -29,6 +30,7 @@ const navItems = [
   { href: "/admin/categories", label: "Categories", icon: Tag, color: "#0EA5E9" },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag, color: "#E11D48" },
   { href: "/admin/reset-audit", label: "Reset Audit", icon: KeyRound, color: "#38BDF8" },
+  { href: "/admin/coaching-enquiries", label: "Coaching", icon: GraduationCap, color: "#c99a3d" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

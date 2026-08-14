@@ -27,23 +27,26 @@ const artwork = {
 const collections = [
   {
     title: "Supplements",
-    description: "Top brands. Proven results.",
-    action: "Shop now",
-    href: "#collections",
+    eyebrow: "Performance nutrition",
+    description: "Purpose-built fuel for disciplined progress.",
+    action: "Explore member range",
+    href: "#membership",
     image: artwork.supplements,
   },
   {
     title: "Clothing",
-    description: "Train. Lifestyle. Every day.",
-    action: "Shop now",
-    href: "#collections",
+    eyebrow: "Performance apparel",
+    description: "Train hard. Live ready. Show up with intent.",
+    action: "Explore member range",
+    href: "#membership",
     image: artwork.clothing,
   },
   {
     title: "Coaching",
-    description: "Personalised plans. Real results.",
-    action: "Learn more",
-    href: "#coaching",
+    eyebrow: "Private coaching",
+    description: "A plan, a standard and real accountability.",
+    action: "Start application",
+    href: "/coaching",
     image: artwork.coaching,
   },
 ];
@@ -94,11 +97,11 @@ export default function Home() {
                     Shop clothing
                   </Button>
                 </a>
-                <a href="#coaching" className="no-underline">
+                <Link href="/coaching" className="no-underline">
                   <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
                     Coaching
                   </Button>
-                </a>
+                </Link>
               </div>
               <div className="mt-5">
                 {isApproved ? (
@@ -152,16 +155,15 @@ export default function Home() {
             </div>
             <div className="grid gap-5 md:grid-cols-3">
               {collections.map((collection, index) => (
-                <a key={collection.title} href={collection.href} className="group block overflow-hidden border border-white/10 bg-[#111111] no-underline transition-transform duration-300 hover:-translate-y-1">
-                  <div className="relative aspect-[4/4.5] overflow-hidden">
-                    <img src={collection.image} alt={collection.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                    <span className="absolute left-5 top-5 text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">0{index + 1}</span>
-                  </div>
-                  <div className="border-t border-white/10 bg-[#f2f0eb] px-6 py-6 text-center text-[#0a0a0a]">
-                    <h3 className="text-xl font-black uppercase tracking-[-0.035em]">{collection.title}</h3>
-                    <p className="mt-2 text-sm text-black/60">{collection.description}</p>
-                    <span className="mt-5 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#9b742c]">
+                <a key={collection.title} href={collection.href} className="group relative block min-h-[480px] overflow-hidden border border-white/10 bg-[#111111] no-underline transition-all duration-300 hover:-translate-y-1 hover:border-[#c99a3d]/60 sm:min-h-[540px]">
+                  <img src={collection.image} alt={collection.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.15)_0%,rgba(0,0,0,0.28)_33%,rgba(0,0,0,0.94)_100%)]" />
+                  <div className="absolute left-5 right-5 top-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">Collection 0{index + 1}</span><span className="h-px w-8 bg-white/35" /></div>
+                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7">
+                    <p className="text-[10px] font-black uppercase tracking-[0.19em] text-[#c99a3d]">{collection.eyebrow}</p>
+                    <h3 className="mt-3 text-3xl font-black uppercase leading-none tracking-[-0.055em] text-white">{collection.title}</h3>
+                    <p className="mt-3 max-w-xs text-sm leading-6 text-white/64">{collection.description}</p>
+                    <span className="mt-6 inline-flex items-center gap-2 border-b border-[#c99a3d] pb-2 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-colors group-hover:text-[#c99a3d]">
                       {collection.action} <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
@@ -179,6 +181,7 @@ export default function Home() {
               <div className="absolute bottom-7 left-7 max-w-xs sm:bottom-10 sm:left-10">
                 <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#c99a3d]">Coaching built for progress</p>
                 <h2 className="mt-3 text-3xl font-black uppercase leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl">Built in the gym. Backed by discipline.</h2>
+                <Link href="/coaching" className="mt-6 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#c99a3d] no-underline">Start coaching application <ArrowUpRight className="h-4 w-4" /></Link>
               </div>
             </div>
             <div id="membership" className="scroll-mt-24 flex flex-col justify-center bg-[#c99a3d] p-8 text-black sm:p-12">

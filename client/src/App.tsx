@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Coaching from "./pages/Coaching";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
@@ -31,6 +32,7 @@ import AdminBulkImport from "./pages/admin/AdminBulkImport";
 import AdminBulkImages from "./pages/admin/AdminBulkImages";
 import AdminMemberPreview from "./pages/admin/AdminMemberPreview";
 import AdminResetAudit from "./pages/admin/AdminResetAudit";
+import AdminCoachingEnquiries from "./pages/admin/AdminCoachingEnquiries";
 import MobileBottomNav from "./components/MobileBottomNav";
 import { shouldShowMobileNav } from "@shared/mobileNav";
 
@@ -48,6 +50,7 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
+        <Route path="/coaching" component={Coaching} />
         <Route path="/products" component={Products} />
         <Route path="/products/:slug" component={ProductDetail} />
 
@@ -94,6 +97,13 @@ function Router() {
           {() => (
             <AdminLayout>
               <AdminResetAudit />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/coaching-enquiries">
+          {() => (
+            <AdminLayout>
+              <AdminCoachingEnquiries />
             </AdminLayout>
           )}
         </Route>

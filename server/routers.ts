@@ -15,6 +15,7 @@ import {
   chooseQuotePayment,
   confirmEftPayment,
   clearCart,
+  createCoachingEnquiry,
   createCategory,
   createEmailUser,
   createOrder,
@@ -29,6 +30,7 @@ import {
   getAllUsers,
   getCartItems,
   getCategories,
+  getCoachingEnquiries,
   getDb,
   getOrderById,
   getOrderByPayFastReference,
@@ -52,6 +54,7 @@ import {
   setPasswordResetToken,
   removeCartItem,
   reviewQuote,
+  reviewCoachingEnquiry,
   setPrimaryImage,
   saveOrderTrackingEvents,
   updateCategory,
@@ -851,9 +854,49 @@ export const appRouter = router({
 
   }),
 
+  // ─── Coaching Enquiries ───────────────────────────────────────────────────
+  coaching: router({
+    submit: publicProcedure
+      .input(z.object({
+        firstName: z.string().trim().min(2).max(128),
+        lastName: z.string().trim().min(2).max(128),
+        email: z.string().trim().email().max(320),
+        phone: z.string().trim().min(7).max(32),
+        address: z.string().trim().min(8).max(1000),
+        primaryGoal: z.string().trim().min(4).max(255),
+        experienceLevel: z.enum(["beginner", "intermediate", "advanced"]),
+        availability: z.string().trim().min(4).max(255),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const enquiryId = await createCoachingEnquiry({
+          ...input,
+          userId: ctx.user?.id ?? null,
+          email: input.email.toLowerCase(),
+        });
+        await notifyOwner({
+          title: "New Coaching Enquiry",
+          content: `**${input.firstName} ${input.lastName}** submitted a coaching enquiry for **${input.primaryGoal}**.`,
+        }).catch(() => {});
+        return { success: true, enquiryId };
+      }),
+  }),
+
   // ─── Admin: Users ─────────────────────────────────────────────────────────
   admin: router({
     users: adminProcedure.query(() => getAllUsers()),
+
+    coachingEnquiries: adminProcedure.query(() => getCoachingEnquiries()),
+
+    reviewCoachingEnquiry: adminProcedure
+      .input(z.object({
+        enquiryId: z.number().int().positive(),
+        status: z.enum(["new", "reviewing", "consultation_scheduled", "accepted", "closed"]),
+        adminNotes: z.string().max(2000).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await reviewCoachingEnquiry({ ...input, adminId: ctx.user.id });
+        return { success: true };
+      }),
 
     passwordResetAudit: adminProcedure
       .input(z.object({
