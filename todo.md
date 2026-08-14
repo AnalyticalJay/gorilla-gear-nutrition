@@ -317,3 +317,9 @@
 - [x] Implement payment approval, packing completion, and order dispatch email templates and dispatch functions.
 - [x] Wire email notifications into confirmEft, updateOrderFulfilment, and adminUpdateTracking / order dispatch actions.
 - [x] Add regression tests, verify desktop/mobile rendering, and save a checkpoint.
+
+## Active Implementation — Dispatch Email Tracking Button
+- [x] Validate carrier tracking URLs and define the order-timeline fallback link.
+- [x] Add a direct tracking button and URL to the dispatched-order email template.
+- [x] Add regression coverage for carrier-link and fallback-link email states.
+- [x] Save a checkpoint for the dispatch-email tracking enhancement.

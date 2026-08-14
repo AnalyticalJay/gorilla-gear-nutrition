@@ -40,5 +40,20 @@ describe("automated order email notifications", () => {
     expect(msg.subject).toContain("Order #101");
     expect(msg.html).toContain("TCG998877");
     expect(msg.html).toContain("The Courier Guy");
+    expect(msg.html).toContain("Track with The Courier Guy");
+    expect(msg.html).toContain("thecourierguy");
+  });
+
+  it("falls back to the order timeline when no valid tracking URL can be resolved", () => {
+    const msg = buildOrderDispatchedEmail({
+      orderId: 101,
+      customerName: "Sipho Khumalo",
+      customerEmail: "sipho@example.com",
+      total: 1590.00,
+      trackingNumber: null,
+      trackingUrl: "not a valid url",
+    });
+    expect(msg.html).toContain("View order timeline");
+    expect(msg.html).toContain("https://gorillagear.co.za/orders/101");
   });
 });

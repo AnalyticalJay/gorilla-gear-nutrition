@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { ENV } from "./_core/env";
+import { getTrackingUrl } from "../shared/orderTracking";
 
 export type QuoteConfirmationItem = {
   productName: string;
@@ -155,13 +156,23 @@ export function buildOrderDispatchedEmail(input: OrderNotificationInput) {
   const orderUrl = `https://gorillagear.co.za/orders/${input.orderId}`;
   const carrier = input.trackingCarrier || "The Courier Guy";
   const trackingNumber = input.trackingNumber || "Available soon";
+  const candidateTrackingUrl = getTrackingUrl(carrier, input.trackingNumber ?? "", input.trackingUrl ?? "");
+  let trackingUrl = orderUrl;
+  try {
+    const parsed = candidateTrackingUrl ? new URL(candidateTrackingUrl) : null;
+    if (parsed && ["https:", "http:"].includes(parsed.protocol)) trackingUrl = parsed.toString();
+  } catch {
+    trackingUrl = orderUrl;
+  }
+  const safeTrackingUrl = escapeHtml(trackingUrl);
+  const trackingAction = trackingUrl === orderUrl ? "View order timeline" : `Track with ${carrier}`;
   return {
     from: ENV.smtpFrom,
     to: input.customerEmail ?? undefined,
     replyTo: ENV.smtpFrom,
     subject: `Order Dispatched — Order #${input.orderId} | Gorilla Gear Nutrition`,
-    text: `Hi ${input.customerName},\n\nYour order #${input.orderId} has been handed to ${carrier} for nationwide delivery.\n\nTracking Number: ${trackingNumber}\n\nTrack your shipment: ${orderUrl}\n\nRegards,\nGorilla Gear Nutrition`,
-    html: `<!doctype html><html><body style="margin:0;background:#f5f5f0;font-family:Arial,sans-serif;color:#111827;"><div style="max-width:620px;margin:0 auto;padding:32px 18px;"><div style="background:#111827;color:#fff;padding:22px 24px;"><div style="font-size:12px;letter-spacing:2px;font-weight:700;color:#ef654a;">GORILLA GEAR NUTRITION</div><h1 style="margin:10px 0 0;font-size:24px;">Order Dispatched</h1></div><div style="background:#fff;padding:26px 24px;"><p style="font-size:16px;">Hi ${safeName},</p><p>Great news! Your order #${input.orderId} has been handed to <strong>${escapeHtml(carrier)}</strong> and is now on its way.</p><p style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;"><strong>Tracking Number:</strong> ${escapeHtml(trackingNumber)}</p><p><a href="${orderUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:13px 18px;font-weight:700;">Track your parcel</a></p></div><div style="padding:18px 24px;font-size:12px;color:#6b7280;">Gorilla Gear Nutrition · South Africa</div></div></body></html>`,
+    text: `Hi ${input.customerName},\n\nYour order #${input.orderId} has been handed to ${carrier} for nationwide delivery.\n\nTracking Number: ${trackingNumber}\n\n${trackingAction}: ${trackingUrl}\n\nRegards,\nGorilla Gear Nutrition`,
+    html: `<!doctype html><html><body style="margin:0;background:#f5f5f0;font-family:Arial,sans-serif;color:#111827;"><div style="max-width:620px;margin:0 auto;padding:32px 18px;"><div style="background:#111827;color:#fff;padding:22px 24px;"><div style="font-size:12px;letter-spacing:2px;font-weight:700;color:#ef654a;">GORILLA GEAR NUTRITION</div><h1 style="margin:10px 0 0;font-size:24px;">Order Dispatched</h1></div><div style="background:#fff;padding:26px 24px;"><p style="font-size:16px;">Hi ${safeName},</p><p>Great news! Your order #${input.orderId} has been handed to <strong>${escapeHtml(carrier)}</strong> and is now on its way.</p><p style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;"><strong>Tracking Number:</strong> ${escapeHtml(trackingNumber)}</p><p><a href="${safeTrackingUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:13px 18px;font-weight:700;">${escapeHtml(trackingAction)}</a></p><p style="font-size:13px;color:#6b7280;">If the courier tracking page is temporarily unavailable, you can view updates from your order timeline.</p></div><div style="padding:18px 24px;font-size:12px;color:#6b7280;">Gorilla Gear Nutrition · South Africa</div></div></body></html>`,
   };
 }
 
