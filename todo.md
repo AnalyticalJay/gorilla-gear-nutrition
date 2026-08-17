@@ -391,3 +391,8 @@
 - [x] Match the footer background to the logo block charcoal tone.
 - [x] Recalibrate footer text, navigation links, icons, and dividers for readable contrast.
 - [x] Verify desktop/mobile footer readability, run regression coverage, and save a checkpoint.
+
+## Active Implementation — White Footer Alignment
+- [x] Align the footer background with the white header background.
+- [x] Convert footer text, links, icons, dividers, and legal labels to dark readable colors.
+- [x] Verify desktop/mobile footer readability, run regression coverage, and save a checkpoint.
