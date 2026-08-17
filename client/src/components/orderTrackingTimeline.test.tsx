@@ -51,7 +51,7 @@ describe("OrderTrackingTimeline", () => {
 
   it.each([
     ["awaiting payment", "awaiting_payment", "pending", 40, "Payment confirmed"],
-    ["processing", "processing", "paid", 60, "Order dispatched"],
+    ["processing", "processing", "paid", 60, "Preparing dispatch"],
     ["shipped", "shipped", "paid", 80, "Delivered"],
     ["delivered", "completed", "paid", 100, "Delivered"],
     ["rejected", "quote_rejected", "pending", 40, "Quote not approved"],
@@ -136,7 +136,8 @@ describe("OrderTrackingTimeline", () => {
     );
 
     expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("60");
-    expect(screen.getAllByText("Order dispatched").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Dispatch pending").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Tracking number assigned\. Dispatch is pending\./i).length).toBeGreaterThan(0);
     expect(screen.getByText("Current")).toBeTruthy();
     expect(screen.getByText(/Last checked/i)).toBeTruthy();
 

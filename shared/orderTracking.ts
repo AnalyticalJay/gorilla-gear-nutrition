@@ -51,11 +51,12 @@ export function buildOrderTimeline(order: OrderTrackingInput): OrderTimelineStep
   const dispatchDescription = dispatched
     ? order.trackingNumber ? "Your parcel is with the courier." : "Your order is ready for courier collection."
     : order.trackingNumber ? "Tracking number assigned. Dispatch is pending." : "Your order is not yet with the courier.";
+  const dispatchLabel = dispatched ? "Order dispatched" : order.trackingNumber ? "Dispatch pending" : "Preparing dispatch";
   const steps: Array<Omit<OrderTimelineStep, "completed" | "active">> = [
     { key: "placed", label: "Order placed", description: "Your quote request has been received.", timestamp: order.createdAt },
     { key: "reviewed", label: "Quote reviewed", description: "Gorilla Gear Nutrition has reviewed your request.", timestamp: order.reviewedAt ?? null },
     { key: "paid", label: "Payment confirmed", description: "Payment has been confirmed and your order is being prepared.", timestamp: order.paidAt ?? null },
-    { key: "dispatched", label: "Order dispatched", description: dispatchDescription, timestamp: order.dispatchedAt ?? null },
+    { key: "dispatched", label: dispatchLabel, description: dispatchDescription, timestamp: order.dispatchedAt ?? null },
     { key: "delivered", label: "Delivered", description: "Your parcel has been marked as delivered.", timestamp: order.deliveredAt ?? null },
   ];
 

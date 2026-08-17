@@ -357,3 +357,10 @@
 - [x] Route Pay via EFT to PayFast Instant EFT when available and retain manual EFT proof-upload fallback.
 - [x] Add clear customer guidance for PayFast merchant activation errors without exposing credentials.
 - [x] Add regression coverage, verify mobile payment controls, and save a checkpoint.
+
+## Active Verification — Checkout, PayFast, and Tracking Workflow
+- [x] Verify order payment selection, PayFast/Instant EFT request construction, and manual EFT proof fallback without a live charge.
+- [x] Verify payment-status, dispatch, tracking-number, and customer timeline propagation.
+- [x] Correct the customer timeline so a pre-dispatch tracking number remains clearly marked as dispatch pending.
+- [x] Verify mobile and desktop customer/admin payment and tracking surfaces.
+- [x] Document the results and remaining PayFast merchant activation dependency.
