@@ -375,3 +375,8 @@
 - [x] Extract the supplied PDF logo and upload a web-ready high-resolution asset.
 - [x] Replace the current header logo with the supplied asset and remove the adjacent Gorilla Gear wordmark text.
 - [x] Verify desktop/mobile header alignment and save a checkpoint.
+
+## Active Implementation — White Header Navigation
+- [x] Audit current header, navigation, account, cart, and mobile-menu color states.
+- [x] Apply a white header with dark navigation text and high-contrast control styling.
+- [x] Verify desktop/mobile contrast, interactions, and regression coverage, then save a checkpoint.

@@ -30,11 +30,11 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-[#070707]/95 backdrop-blur-md">
-      <div className="border-b border-white/10 py-1.5 text-center text-[8px] font-bold uppercase tracking-[0.3em] text-white/65 sm:text-[9px]">Premium supplements. Elite coaching. <span className="text-[#c99a3d]">Real results.</span></div>
+    <nav className="fixed top-0 z-50 w-full border-b border-black/10 bg-white/95 text-black shadow-[0_8px_26px_rgba(0,0,0,0.08)] backdrop-blur-md">
+      <div className="border-b border-black/10 py-1.5 text-center text-[8px] font-bold uppercase tracking-[0.3em] text-black/62 sm:text-[9px]">Premium supplements. Elite coaching. <span className="text-[#a8751c]">Real results.</span></div>
       <div className="container flex h-16 items-center justify-between gap-2">
         <Link href="/" aria-label="Gorilla Gear Nutrition home" className="flex shrink-0 items-center no-underline">
-          <div className="flex h-11 w-12 items-center justify-center overflow-hidden border border-white/20 bg-white sm:h-12 sm:w-14">
+          <div className="flex h-11 w-12 items-center justify-center overflow-hidden border border-black/10 bg-white sm:h-12 sm:w-14">
             <img src={suppliedHeaderLogoSrc} alt="Gorilla Gear Nutrition" className="h-full w-full object-contain" />
           </div>
         </Link>
@@ -43,13 +43,13 @@ export default function Navbar() {
           {navLinks.map((link) => {
             const active = location === link.href;
             return (
-              <a key={link.href} href={link.href} className={`text-[10px] font-bold uppercase tracking-[0.16em] no-underline transition-colors ${active ? "text-[#c99a3d]" : "text-white/65 hover:text-[#c99a3d]"}`}>
+              <a key={link.href} href={link.href} className={`text-[10px] font-bold uppercase tracking-[0.16em] no-underline transition-colors ${active ? "text-[#a8751c]" : "text-black/68 hover:text-[#a8751c]"}`}>
                 {link.label}
               </a>
             );
           })}
           {isAdmin && (
-            <Link href="/admin/dashboard" className={`text-[10px] font-bold uppercase tracking-[0.16em] no-underline transition-colors ${location.startsWith("/admin") ? "text-[#c99a3d]" : "text-white/65 hover:text-[#c99a3d]"}`}>
+            <Link href="/admin/dashboard" className={`text-[10px] font-bold uppercase tracking-[0.16em] no-underline transition-colors ${location.startsWith("/admin") ? "text-[#a8751c]" : "text-black/68 hover:text-[#a8751c]"}`}>
               Admin
             </Link>
           )}
@@ -57,7 +57,7 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {isApproved && (
-            <Link href="/cart" className="relative flex h-11 w-11 items-center justify-center border border-white/20 bg-[#111111] text-white hover:border-[#c99a3d]/70 sm:h-10 sm:w-10">
+            <Link href="/cart" className="relative flex h-11 w-11 items-center justify-center border border-black/15 bg-white text-black transition-colors hover:border-[#a8751c]/70 hover:text-[#a8751c] sm:h-10 sm:w-10">
               <ShoppingCart className="h-4 w-4" />
               {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#E11D48] text-[10px] font-bold text-white">{cartCount}</span>}
             </Link>
@@ -66,26 +66,26 @@ export default function Navbar() {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button aria-label="Open account menu" variant="outline" className="h-10 min-w-10 border-[#1E293B] bg-[#111111] px-2 text-xs font-bold uppercase tracking-wider text-white hover:border-[#0EA5E9]/50 sm:px-3">
-                  <User className="h-3.5 w-3.5 text-[#c99a3d] sm:mr-2" />
+                <Button aria-label="Open account menu" variant="outline" className="h-10 min-w-10 border-black/15 bg-white px-2 text-xs font-bold uppercase tracking-wider text-black hover:border-[#a8751c]/60 hover:bg-[#fffaf0] sm:px-3">
+                  <User className="h-3.5 w-3.5 text-[#a8751c] sm:mr-2" />
                   <span className="hidden max-w-[100px] truncate sm:inline sm:max-w-[140px]">{(user as any)?.name || (user as any)?.email || "Account"}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 border-[#1E293B] bg-[#0F0F0F] text-white">
+              <DropdownMenuContent align="end" className="w-56 border-black/10 bg-white text-black shadow-xl">
                 <div className="px-3 py-2">
-                  <p className="text-xs font-bold text-white">{(user as any)?.name || "Member"}</p>
-                  <p className="text-[10px] text-white/50">Status: <span className="capitalize text-[#c99a3d]">{(user as any)?.status}</span></p>
+                  <p className="text-xs font-bold text-black">{(user as any)?.name || "Member"}</p>
+                  <p className="text-[10px] text-black/50">Status: <span className="capitalize text-[#a8751c]">{(user as any)?.status}</span></p>
                 </div>
-                <DropdownMenuSeparator className="bg-[#1E293B]" />
-                <DropdownMenuItem asChild className="focus:bg-[#1E293B] focus:text-white">
+                <DropdownMenuSeparator className="bg-black/10" />
+                <DropdownMenuItem asChild className="focus:bg-black/5 focus:text-black">
                   <Link href="/account" className="flex w-full items-center cursor-pointer text-xs font-bold uppercase">Account Status</Link>
                 </DropdownMenuItem>
                 {isAdmin && (
-                  <DropdownMenuItem asChild className="focus:bg-[#1E293B] focus:text-white">
+                  <DropdownMenuItem asChild className="focus:bg-black/5 focus:text-black">
                     <Link href="/admin/dashboard" className="flex w-full items-center cursor-pointer text-xs font-bold uppercase text-[#E11D48]">Admin Dashboard</Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuSeparator className="bg-[#1E293B]" />
+                <DropdownMenuSeparator className="bg-black/10" />
                 <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-xs font-bold uppercase text-[#E11D48] focus:bg-[#E11D48]/10 focus:text-[#E11D48]">
                   <LogOut className="mr-2 h-3.5 w-3.5" /> Logout
                 </DropdownMenuItem>
@@ -94,7 +94,7 @@ export default function Navbar() {
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
               <Link href="/login" className="no-underline">
-                  <Button variant="outline" className="h-9 border-white/25 bg-transparent text-xs font-bold uppercase tracking-wider text-white hover:border-[#c99a3d]/70 hover:bg-white/5">
+                  <Button variant="outline" className="h-9 border-black/20 bg-white text-xs font-bold uppercase tracking-wider text-black hover:border-[#a8751c]/70 hover:bg-[#fffaf0]">
                   Sign In
                 </Button>
               </Link>
@@ -106,29 +106,29 @@ export default function Navbar() {
             </div>
           )}
 
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-11 w-11 items-center justify-center border border-white/20 bg-[#111111] text-white md:hidden sm:h-10 sm:w-10" aria-label="Toggle Menu">
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-11 w-11 items-center justify-center border border-black/15 bg-white text-black transition-colors hover:border-[#a8751c]/60 hover:text-[#a8751c] md:hidden sm:h-10 sm:w-10" aria-label="Toggle Menu">
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="border-b border-white/10 bg-[#070707] p-4 md:hidden">
+        <div className="border-b border-black/10 bg-white p-4 md:hidden">
           <div className="flex flex-col gap-3">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-white/65 hover:text-[#c99a3d] no-underline">
+              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-black/68 hover:text-[#a8751c] no-underline">
                 {link.label}
               </a>
             ))}
             {isAdmin && (
-              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-white no-underline">
+              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-black no-underline">
                 Admin Dashboard
               </Link>
             )}
             {!isAuthenticated && (
-              <div className="grid grid-cols-2 gap-2 border-t border-[#1E293B] pt-3">
+              <div className="grid grid-cols-2 gap-2 border-t border-black/10 pt-3">
                 <Link href="/login" onClick={() => setMobileOpen(false)} className="no-underline">
-                  <Button variant="outline" className="h-10 w-full border-white/25 bg-transparent text-xs font-bold uppercase tracking-wider text-white">Sign In</Button>
+                  <Button variant="outline" className="h-10 w-full border-black/20 bg-white text-xs font-bold uppercase tracking-wider text-black">Sign In</Button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="no-underline">
                   <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply Access</Button>
