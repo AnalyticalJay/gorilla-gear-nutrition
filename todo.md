@@ -386,3 +386,8 @@
 - [x] Apply white/dark styling to dropdown and footer navigation elements.
 - [x] Replace white-backed logo placements and verify responsive contrast and blending.
 - [x] Run regression coverage and save a checkpoint.
+
+## Active Implementation — Unified Footer Contrast
+- [x] Match the footer background to the logo block charcoal tone.
+- [x] Recalibrate footer text, navigation links, icons, and dividers for readable contrast.
+- [x] Verify desktop/mobile footer readability, run regression coverage, and save a checkpoint.
