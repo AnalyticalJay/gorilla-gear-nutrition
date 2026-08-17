@@ -380,3 +380,9 @@
 - [x] Audit current header, navigation, account, cart, and mobile-menu color states.
 - [x] Apply a white header with dark navigation text and high-contrast control styling.
 - [x] Verify desktop/mobile contrast, interactions, and regression coverage, then save a checkpoint.
+
+## Active Implementation — Transparent Logo and Navigation Refinement
+- [x] Create a transparent approved logo variant for the header and footer.
+- [x] Apply white/dark styling to dropdown and footer navigation elements.
+- [x] Replace white-backed logo placements and verify responsive contrast and blending.
+- [x] Run regression coverage and save a checkpoint.

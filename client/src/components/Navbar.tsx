@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-const suppliedHeaderLogoSrc = "/manus-storage/ggn-header-logo-final_72dab05c.png";
+const suppliedHeaderLogoSrc = "/manus-storage/ggn-logo-transparent_bf4fb645.png";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,7 +34,7 @@ export default function Navbar() {
       <div className="border-b border-black/10 py-1.5 text-center text-[8px] font-bold uppercase tracking-[0.3em] text-black/62 sm:text-[9px]">Premium supplements. Elite coaching. <span className="text-[#a8751c]">Real results.</span></div>
       <div className="container flex h-16 items-center justify-between gap-2">
         <Link href="/" aria-label="Gorilla Gear Nutrition home" className="flex shrink-0 items-center no-underline">
-          <div className="flex h-11 w-12 items-center justify-center overflow-hidden border border-black/10 bg-white sm:h-12 sm:w-14">
+          <div className="flex h-11 w-12 items-center justify-center overflow-hidden sm:h-12 sm:w-14">
             <img src={suppliedHeaderLogoSrc} alt="Gorilla Gear Nutrition" className="h-full w-full object-contain" />
           </div>
         </Link>
