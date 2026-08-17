@@ -364,3 +364,9 @@
 - [x] Correct the customer timeline so a pre-dispatch tracking number remains clearly marked as dispatch pending.
 - [x] Verify mobile and desktop customer/admin payment and tracking surfaces.
 - [x] Document the results and remaining PayFast merchant activation dependency.
+
+## Active Implementation — Supplied Apparel Homepage Images
+- [x] Upload the supplied mannequin and two-view model apparel images to managed web storage.
+- [x] Set the mannequin apparel image as the Clothing collection card background.
+- [x] Set the two-view branded apparel model image as the hero background with responsive text-safe overlays.
+- [x] Verify desktop/mobile image framing and save a checkpoint.
