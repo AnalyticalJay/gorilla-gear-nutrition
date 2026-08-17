@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-const approvedLogoSrc = "/manus-storage/logo_2d6e0f20.png";
+const suppliedHeaderLogoSrc = "/manus-storage/ggn-header-logo-final_72dab05c.png";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,13 +33,9 @@ export default function Navbar() {
     <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-[#070707]/95 backdrop-blur-md">
       <div className="border-b border-white/10 py-1.5 text-center text-[8px] font-bold uppercase tracking-[0.3em] text-white/65 sm:text-[9px]">Premium supplements. Elite coaching. <span className="text-[#c99a3d]">Real results.</span></div>
       <div className="container flex h-16 items-center justify-between gap-2">
-        <Link href="/" className="flex min-w-0 items-center gap-2 no-underline sm:gap-3">
-          <div className="flex h-10 w-10 items-center justify-center overflow-hidden border border-white/20 bg-black">
-            <img src={approvedLogoSrc} alt="Gorilla Gear Nutrition approved logo" className="h-full w-full object-contain" />
-          </div>
-          <div className="min-w-0">
-            <span className="block truncate text-sm font-black uppercase tracking-wider text-white">Gorilla Gear</span>
-            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#c99a3d]">Nutrition</span>
+        <Link href="/" aria-label="Gorilla Gear Nutrition home" className="flex shrink-0 items-center no-underline">
+          <div className="flex h-11 w-12 items-center justify-center overflow-hidden border border-white/20 bg-white sm:h-12 sm:w-14">
+            <img src={suppliedHeaderLogoSrc} alt="Gorilla Gear Nutrition" className="h-full w-full object-contain" />
           </div>
         </Link>
 

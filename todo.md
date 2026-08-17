@@ -370,3 +370,8 @@
 - [x] Set the mannequin apparel image as the Clothing collection card background.
 - [x] Set the two-view branded apparel model image as the hero background with responsive text-safe overlays.
 - [x] Verify desktop/mobile image framing and save a checkpoint.
+
+## Active Implementation — Header Logo Replacement
+- [x] Extract the supplied PDF logo and upload a web-ready high-resolution asset.
+- [x] Replace the current header logo with the supplied asset and remove the adjacent Gorilla Gear wordmark text.
+- [x] Verify desktop/mobile header alignment and save a checkpoint.
