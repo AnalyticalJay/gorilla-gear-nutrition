@@ -179,4 +179,11 @@ describe("AdminApprovalDashboard", () => {
     await user.type(search, "does-not-exist");
     expect(screen.getByText("No applicants match this view")).toBeInTheDocument();
   });
+
+  it("uses Gorilla Gear white panels and gold active filters", () => {
+    const { container } = render(<AdminApprovalDashboard />);
+
+    expect(container.innerHTML).toContain("border-[#e5dfd4]");
+    expect(screen.getByRole("tab", { name: /pending 1/i }).className).toContain("bg-[#f6f0e4]");
+  });
 });
