@@ -408,3 +408,9 @@
 - [x] Apply the white, charcoal, dark-text, and gold-accent system to Orders and Applications management workflows.
 - [x] Verify desktop/mobile management pages and regression coverage.
 - [x] Save and deliver the admin management palette checkpoint.
+
+## Active Implementation — Catalogue Management Palette Extension
+- [x] Audit Admin Products, Categories, and bulk-import components, including upload and validation states.
+- [x] Apply the white, charcoal, dark-text, and gold-accent system to catalogue management workflows.
+- [x] Verify desktop/mobile workflows, error states, and regression coverage.
+- [x] Save and deliver the catalogue management palette checkpoint.

@@ -85,8 +85,10 @@ import AdminProducts from "@/pages/admin/AdminProducts";
 
 describe("AdminProducts Component CSV Inventory Rendering", () => {
   it("renders imported CSV products in the admin management table", () => {
-    render(<AdminProducts />);
+    const { container } = render(<AdminProducts />);
     expect(screen.getAllByText(/OL - Retatrutide 30mg \(Not Mixed\)/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/R1500\.00/i).length).toBeGreaterThan(0);
+    expect(container.innerHTML).toContain("border-[#e5dfd4]");
+    expect(container.innerHTML).toContain("text-[#a8751c]");
   });
 });

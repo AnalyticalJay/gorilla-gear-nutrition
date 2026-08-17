@@ -1,10 +1,12 @@
+import React, { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Tag, Edit, Check, X } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
+
+function Panel({ children }: { children: React.ReactNode }) { return <section className="rounded-xl border border-[#e5dfd4] bg-white p-4 shadow-[0_14px_34px_rgba(69,69,69,0.06)] sm:p-6">{children}</section>; }
 
 export default function AdminCategories() {
   const [newName, setNewName] = useState("");
@@ -12,128 +14,12 @@ export default function AdminCategories() {
   const [editId, setEditId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const utils = trpc.useUtils();
-
   const categoriesQuery = trpc.categories.list.useQuery();
-  const create = trpc.categories.create.useMutation({
-    onSuccess: () => { utils.categories.list.invalidate(); setNewName(""); setNewDesc(""); toast.success("Category created"); },
-    onError: (e) => toast.error(e.message),
-  });
-  const update = trpc.categories.update.useMutation({
-    onSuccess: () => { utils.categories.list.invalidate(); setEditId(null); toast.success("Category updated"); },
-    onError: (e) => toast.error(e.message),
-  });
-  const remove = trpc.categories.delete.useMutation({
-    onSuccess: () => { utils.categories.list.invalidate(); toast.success("Category deleted"); },
-    onError: (e) => toast.error(e.message),
-  });
-
+  const create = trpc.categories.create.useMutation({ onSuccess: () => { utils.categories.list.invalidate(); setNewName(""); setNewDesc(""); toast.success("Category created"); }, onError: (error) => toast.error(error.message) });
+  const update = trpc.categories.update.useMutation({ onSuccess: () => { utils.categories.list.invalidate(); setEditId(null); toast.success("Category updated"); }, onError: (error) => toast.error(error.message) });
+  const remove = trpc.categories.delete.useMutation({ onSuccess: () => { utils.categories.list.invalidate(); toast.success("Category deleted"); }, onError: (error) => toast.error(error.message) });
   const categories = categoriesQuery.data ?? [];
+  const inputClass = "mt-1.5 border-[#d5c7b0] bg-[#fcfbf8] text-[#1f1f1f] placeholder:text-[#8a8277] focus-visible:ring-[#a8751c]/25";
 
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-black" >
-          Category <span style={{ color: "#0EA5E9" }}>Management</span>
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">Organize your product catalog</p>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-        {/* Create Form */}
-        <div className="glass-card rounded-xl p-4 sm:p-6">
-          <h2 className="font-bold mb-4 flex items-center gap-2">
-            <Plus className="h-4 w-4 text-primary" />
-            Add Category
-          </h2>
-          <div className="space-y-3">
-            <div>
-              <Label className="text-sm font-medium">Name</Label>
-              <Input
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="e.g. Injectables"
-                className="mt-1.5 bg-input border-border"
-              />
-            </div>
-            <div>
-              <Label className="text-sm font-medium">Description (optional)</Label>
-              <Input
-                value={newDesc}
-                onChange={(e) => setNewDesc(e.target.value)}
-                placeholder="Brief description"
-                className="mt-1.5 bg-input border-border"
-              />
-            </div>
-            <Button
-              onClick={() => create.mutate({ name: newName, slug: newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), description: newDesc || undefined })}
-              disabled={!newName.trim() || create.isPending}
-              className="w-full text-white font-semibold"
-            >
-              {create.isPending ? "Creating..." : "Create Category"}
-            </Button>
-          </div>
-        </div>
-
-        {/* Categories List */}
-        <div className="glass-card rounded-xl p-4 sm:p-6">
-          <h2 className="font-bold mb-4 flex items-center gap-2">
-            <Tag className="h-4 w-4 text-primary" />
-            Existing Categories ({categories.length})
-          </h2>
-          {categoriesQuery.isLoading ? (
-            <div className="space-y-2">
-              {[...Array(4)].map((_, i) => <div key={i} className="h-10 bg-accent/20 rounded animate-pulse" />)}
-            </div>
-          ) : categories.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No categories yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {categories.map((cat) => (
-                <div key={cat.id} className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
-                  {editId === cat.id ? (
-                    <>
-                      <Input
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="flex-1 h-7 text-sm bg-input border-border"
-                        autoFocus
-                      />
-                      <button
-                        onClick={() => update.mutate({ id: cat.id, name: editName })}
-                        className="flex h-11 w-11 items-center justify-center text-green-400 hover:text-green-300"
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => setEditId(null)} className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground">
-                        <X className="h-4 w-4" />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{cat.name}</p>
-                        {cat.description && <p className="text-xs text-muted-foreground">{cat.description}</p>}
-                      </div>
-                      <button
-                        onClick={() => { setEditId(cat.id); setEditName(cat.name); }}
-                        className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => { if (confirm(`Delete "${cat.name}"?`)) remove.mutate({ id: cat.id }); }}
-                        className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  return <div className="space-y-6"><header><p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#a8751c]">Catalogue taxonomy</p><h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-[#1f1f1f]">Category <span className="text-[#a8751c]">Management</span></h1><p className="mt-1 text-sm text-[#6b665e]">Organise and maintain the product catalogue structure.</p></header><div className="grid gap-6 lg:grid-cols-2 lg:gap-8"><Panel><h2 className="mb-4 flex items-center gap-2 font-black uppercase tracking-tight text-[#1f1f1f]"><span className="flex h-8 w-8 items-center justify-center rounded bg-[#f6f0e4] text-[#a8751c]"><Plus className="h-4 w-4" /></span>Add category</h2><div className="space-y-4"><div><Label className="text-sm font-medium text-[#454545]">Name</Label><Input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="e.g. Injectables" className={inputClass} /></div><div><Label className="text-sm font-medium text-[#454545]">Description <span className="font-normal text-[#6b665e]">(optional)</span></Label><Input value={newDesc} onChange={(event) => setNewDesc(event.target.value)} placeholder="Brief description" className={inputClass} /></div><Button onClick={() => create.mutate({ name: newName, slug: newName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), description: newDesc || undefined })} disabled={!newName.trim() || create.isPending} className="min-h-11 w-full bg-[#a8751c] font-semibold text-[#1f1f1f] hover:bg-[#c89536]">{create.isPending ? "Creating..." : "Create category"}</Button></div></Panel><Panel><h2 className="mb-4 flex items-center gap-2 font-black uppercase tracking-tight text-[#1f1f1f]"><span className="flex h-8 w-8 items-center justify-center rounded bg-[#f6f0e4] text-[#a8751c]"><Tag className="h-4 w-4" /></span>Existing categories <span className="text-sm font-bold text-[#6b665e]">({categories.length})</span></h2>{categoriesQuery.isLoading ? <div className="space-y-2">{[...Array(4)].map((_, index) => <div key={index} className="h-12 animate-pulse rounded bg-[#eee9df]" />)}</div> : categories.length === 0 ? <p className="py-6 text-center text-sm text-[#6b665e]">No categories yet.</p> : <div className="space-y-2">{categories.map((category) => <div key={category.id} className="flex items-center gap-3 rounded-lg border border-[#e5dfd4] bg-[#fcfbf8] p-3">{editId === category.id ? <><Input value={editName} onChange={(event) => setEditName(event.target.value)} className="h-9 flex-1 border-[#d5c7b0] bg-white text-sm text-[#1f1f1f]" autoFocus /><button aria-label={`Save ${category.name}`} onClick={() => update.mutate({ id: category.id, name: editName })} className="flex h-11 w-11 items-center justify-center text-[#1f7a45] hover:bg-[#1f7a45]/8"><Check className="h-4 w-4" /></button><button aria-label="Cancel category edit" onClick={() => setEditId(null)} className="flex h-11 w-11 items-center justify-center text-[#6b665e] hover:bg-white hover:text-[#1f1f1f]"><X className="h-4 w-4" /></button></> : <><div className="min-w-0 flex-1"><p className="text-sm font-bold text-[#1f1f1f]">{category.name}</p>{category.description && <p className="text-xs text-[#6b665e]">{category.description}</p>}</div><button aria-label={`Edit ${category.name}`} onClick={() => { setEditId(category.id); setEditName(category.name); }} className="flex h-11 w-11 items-center justify-center text-[#6b665e] hover:bg-white hover:text-[#a8751c]"><Edit className="h-3.5 w-3.5" /></button><button aria-label={`Delete ${category.name}`} onClick={() => { if (confirm(`Delete "${category.name}"?`)) remove.mutate({ id: category.id }); }} className="flex h-11 w-11 items-center justify-center text-[#6b665e] hover:bg-[#b42318]/5 hover:text-[#b42318]"><Trash2 className="h-3.5 w-3.5" /></button></>}</div>)}</div>}</Panel></div></div>;
 }

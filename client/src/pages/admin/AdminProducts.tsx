@@ -7,158 +7,20 @@ import { Plus, Search, Edit, Trash2, Package } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
+function ActivityBadge({ active }: { active: boolean }) {
+  return <Badge className={`border text-xs ${active ? "border-[#1f7a45]/25 bg-[#1f7a45]/10 text-[#1f7a45]" : "border-[#b42318]/25 bg-[#b42318]/8 text-[#b42318]"}`}>{active ? "Active" : "Inactive"}</Badge>;
+}
+
 export default function AdminProducts() {
   const [search, setSearch] = useState("");
   const utils = trpc.useUtils();
-
   const productsQuery = trpc.products.list.useQuery({ search: search || undefined });
-  const deleteProduct = trpc.products.delete.useMutation({
-    onSuccess: () => {
-      utils.products.list.invalidate();
-      toast.success("Product deleted successfully");
-    },
-    onError: (err) => {
-      toast.error(`Failed to delete product: ${err.message}`);
-    },
-  });
-
-  const updateProduct = trpc.products.update.useMutation({
-    onSuccess: () => {
-      utils.products.list.invalidate();
-      toast.success("Product status updated");
-    },
-    onError: (err: any) => {
-      toast.error(`Failed to update status: ${err.message}`);
-    },
-  });
-
+  const deleteProduct = trpc.products.delete.useMutation({ onSuccess: () => { utils.products.list.invalidate(); toast.success("Product deleted successfully"); }, onError: (error) => toast.error(`Failed to delete product: ${error.message}`) });
+  const updateProduct = trpc.products.update.useMutation({ onSuccess: () => { utils.products.list.invalidate(); toast.success("Product status updated"); }, onError: (error: any) => toast.error(`Failed to update status: ${error.message}`) });
   const products = productsQuery.data ?? [];
+  const removeProduct = (product: any) => { if (confirm(`Are you sure you want to delete "${product.name}"?`)) deleteProduct.mutate({ id: product.id }); };
 
-  return (
-    <div>
-      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-white">Product Management</h1>
-          <p className="text-sm text-[#64748B]">Manage catalogue items, pricing, and stock levels</p>
-        </div>
-        <Link href="/admin/products/new" className="no-underline">
-          <Button
-            className="text-xs font-black uppercase tracking-wider text-white shadow-lg transition hover:opacity-90"
-            style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
-          >
-            <Plus className="h-4 w-4 mr-2" /> Add Product
-          </Button>
-        </Link>
-      </div>
-
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
-          <Input
-            placeholder="Search products by name, compound, or brand..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-[#111111] border-[#1E293B] text-white placeholder:text-[#64748B]"
-          />
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-[#1E293B] bg-[#111111] overflow-hidden shadow-xl">
-        <div className="space-y-3 p-3 md:hidden">
-          {productsQuery.isLoading ? <div className="p-4 text-center text-sm text-[#64748B]">Loading products...</div> : products.length === 0 ? <div className="p-4 text-center text-sm text-[#64748B]">No products found.</div> : products.map((product: any) => (
-            <article key={product.id} className="rounded-lg border border-[#1E293B] bg-[#0A0A0A] p-3">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-[#1E293B] bg-[#1A1A1A]"><Package className="h-4 w-4 text-[#0EA5E9]" /></div>
-                <div className="min-w-0 flex-1"><p className="font-bold text-sm text-white">{product.name}</p><p className="truncate text-xs font-mono text-[#64748B]">{product.slug}</p></div>
-                <button onClick={() => updateProduct.mutate({ id: product.id, isActive: !product.isActive })} className="min-h-10 shrink-0 cursor-pointer"><Badge variant={product.isActive ? "default" : "secondary"} className={product.isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/30"}>{product.isActive ? "Active" : "Inactive"}</Badge></button>
-              </div>
-              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-[#1E293B] pt-3 text-xs"><div><span className="block text-[#64748B]">Category</span><span className="text-white">{product.category?.name || "General"}</span></div><div><span className="block text-[#64748B]">Price</span><span className="font-mono font-bold text-[#0EA5E9]">R{parseFloat(product.price).toFixed(2)}</span></div><div><span className="block text-[#64748B]">Stock</span><span className="text-white">{product.stockQuantity}</span></div></div>
-              <div className="mt-3 flex gap-2 border-t border-[#1E293B] pt-3"><Link href={`/admin/products/${product.id}/edit`} className="flex-1 no-underline"><Button variant="outline" className="min-h-10 w-full border-[#1E293B] text-xs font-bold uppercase"><Edit className="mr-1 h-3.5 w-3.5" />Edit</Button></Link><Button variant="outline" className="min-h-10 border-red-500/30 text-xs font-bold uppercase text-red-300 hover:bg-red-500/10" onClick={() => { if (confirm(`Are you sure you want to delete \"${product.name}\"?`)) deleteProduct.mutate({ id: product.id }); }}><Trash2 className="mr-1 h-3.5 w-3.5" />Delete</Button></div>
-            </article>
-          ))}
-        </div>
-        <div className="hidden overflow-x-auto md:block">
-          <table className="w-full min-w-[760px] text-left border-collapse">
-            <thead>
-              <tr className="border-b border-[#1E293B] bg-black/40 text-[11px] font-black uppercase tracking-widest text-[#64748B]">
-                <th className="py-3.5 px-4">Product</th>
-                <th className="py-3.5 px-4">Category</th>
-                <th className="py-3.5 px-4">Price</th>
-                <th className="py-3.5 px-4">Stock</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#1E293B] text-sm">
-              {productsQuery.isLoading ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#64748B]">Loading products...</td>
-                </tr>
-              ) : products.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#64748B]">No products found.</td>
-                </tr>
-              ) : (
-                products.map((product: any) => (
-                  <tr key={product.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-medium text-white">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded bg-[#1A1A1A] border border-[#1E293B] flex items-center justify-center shrink-0">
-                          <Package className="h-4 w-4 text-[#0EA5E9]" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-white text-sm">{product.name}</p>
-                          <p className="text-xs text-[#64748B] font-mono">{product.slug}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-[#94A3B8]">
-                      {product.category?.name || "General"}
-                    </td>
-                    <td className="py-3.5 px-4 font-mono font-bold text-[#0EA5E9]">
-                      R{parseFloat(product.price).toFixed(2)}
-                    </td>
-                    <td className="py-3.5 px-4 text-white">
-                      {product.stockQuantity}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <button
-                        onClick={() => updateProduct.mutate({ id: product.id, isActive: !product.isActive })}
-                        className="inline-flex cursor-pointer"
-                      >
-                        <Badge variant={product.isActive ? "default" : "secondary"} className={product.isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-red-500/10 text-red-400 border-red-500/30"}>
-                          {product.isActive ? "Active" : "Inactive"}
-                        </Badge>
-                      </button>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/admin/products/${product.id}/edit`}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#64748B] hover:text-white hover:bg-white/5">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-[#64748B] hover:text-[#E11D48] hover:bg-[#E11D48]/10"
-                          onClick={() => {
-                            if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-                              deleteProduct.mutate({ id: product.id });
-                            }
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
+  return <div className="space-y-6"><header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#a8751c]">Catalogue control</p><h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-[#1f1f1f]">Product <span className="text-[#a8751c]">Management</span></h1><p className="mt-1 text-sm text-[#6b665e]">Manage catalogue items, pricing, and stock levels</p></div><Link href="/admin/products/new" className="no-underline"><Button className="min-h-11 bg-[#a8751c] text-xs font-black uppercase tracking-wider text-[#1f1f1f] shadow-[0_10px_24px_rgba(168,117,28,0.2)] hover:bg-[#c89536]"><Plus className="mr-2 h-4 w-4" />Add product</Button></Link></header>
+    <div className="relative max-w-md"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a8277]" /><Input placeholder="Search products by name, compound, or brand..." value={search} onChange={(event) => setSearch(event.target.value)} className="h-11 border-[#d5c7b0] bg-white pl-9 text-[#1f1f1f] placeholder:text-[#8a8277] focus-visible:ring-[#a8751c]/25" /></div>
+    <section className="overflow-hidden rounded-xl border border-[#e5dfd4] bg-white shadow-[0_14px_34px_rgba(69,69,69,0.06)]"><div className="space-y-3 p-3 md:hidden">{productsQuery.isLoading ? <div className="p-4 text-center text-sm text-[#6b665e]">Loading products...</div> : products.length === 0 ? <div className="p-8 text-center"><Package className="mx-auto mb-3 h-9 w-9 text-[#bdb5a8]" /><p className="text-sm text-[#6b665e]">No products found.</p></div> : products.map((product: any) => <article key={product.id} className="rounded-lg border border-[#e5dfd4] bg-[#fcfbf8] p-3"><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-[#a8751c]/25 bg-[#f6f0e4]"><Package className="h-4 w-4 text-[#a8751c]" /></div><div className="min-w-0 flex-1"><p className="text-sm font-bold text-[#1f1f1f]">{product.name}</p><p className="truncate text-xs font-mono text-[#6b665e]">{product.slug}</p></div><button aria-label={`Toggle ${product.name} status`} onClick={() => updateProduct.mutate({ id: product.id, isActive: !product.isActive })} className="min-h-10 shrink-0 cursor-pointer"><ActivityBadge active={product.isActive} /></button></div><div className="mt-3 grid grid-cols-3 gap-2 border-t border-[#e5dfd4] pt-3 text-xs"><div><span className="block text-[#6b665e]">Category</span><span className="text-[#454545]">{product.category?.name || "General"}</span></div><div><span className="block text-[#6b665e]">Price</span><span className="font-mono font-bold text-[#1f1f1f]">R{parseFloat(product.price).toFixed(2)}</span></div><div><span className="block text-[#6b665e]">Stock</span><span className="text-[#454545]">{product.stockQuantity}</span></div></div><div className="mt-3 flex gap-2 border-t border-[#e5dfd4] pt-3"><Link href={`/admin/products/${product.id}/edit`} className="flex-1 no-underline"><Button variant="outline" className="min-h-10 w-full border-[#d5c7b0] text-xs font-bold uppercase text-[#454545] hover:bg-white"><Edit className="mr-1 h-3.5 w-3.5" />Edit</Button></Link><Button variant="outline" className="min-h-10 border-[#b42318]/30 text-xs font-bold uppercase text-[#b42318] hover:bg-[#b42318]/5" onClick={() => removeProduct(product)}><Trash2 className="mr-1 h-3.5 w-3.5" />Delete</Button></div></article>)}</div><div className="hidden overflow-x-auto md:block"><table className="w-full min-w-[760px] border-collapse text-left"><thead><tr className="border-b border-[#e5dfd4] bg-[#fcfbf8] text-[11px] font-black uppercase tracking-widest text-[#6b665e]"><th className="px-4 py-3.5">Product</th><th className="px-4 py-3.5">Category</th><th className="px-4 py-3.5">Price</th><th className="px-4 py-3.5">Stock</th><th className="px-4 py-3.5">Status</th><th className="px-4 py-3.5 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[#eee9df] text-sm">{productsQuery.isLoading ? <tr><td colSpan={6} className="py-8 text-center text-[#6b665e]">Loading products...</td></tr> : products.length === 0 ? <tr><td colSpan={6} className="py-8 text-center text-[#6b665e]">No products found.</td></tr> : products.map((product: any) => <tr key={product.id} className="transition-colors hover:bg-[#fcfbf8]"><td className="px-4 py-3.5"><div className="flex items-center gap-3"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-[#a8751c]/25 bg-[#f6f0e4]"><Package className="h-4 w-4 text-[#a8751c]" /></div><div><p className="text-sm font-bold text-[#1f1f1f]">{product.name}</p><p className="font-mono text-xs text-[#6b665e]">{product.slug}</p></div></div></td><td className="px-4 py-3.5 text-[#454545]">{product.category?.name || "General"}</td><td className="px-4 py-3.5 font-mono font-bold text-[#1f1f1f]">R{parseFloat(product.price).toFixed(2)}</td><td className="px-4 py-3.5 text-[#454545]">{product.stockQuantity}</td><td className="px-4 py-3.5"><button aria-label={`Toggle ${product.name} status`} onClick={() => updateProduct.mutate({ id: product.id, isActive: !product.isActive })} className="inline-flex cursor-pointer"><ActivityBadge active={product.isActive} /></button></td><td className="px-4 py-3.5 text-right"><div className="flex items-center justify-end gap-2"><Link href={`/admin/products/${product.id}/edit`}><Button variant="outline" size="icon" className="h-8 w-8 border-[#d5c7b0] text-[#454545] hover:bg-[#f6f0e4]"><Edit className="h-4 w-4" /></Button></Link><Button variant="outline" size="icon" className="h-8 w-8 border-[#b42318]/25 text-[#b42318] hover:bg-[#b42318]/5" onClick={() => removeProduct(product)}><Trash2 className="h-4 w-4" /></Button></div></td></tr>)}</tbody></table></div></section></div>;
 }
