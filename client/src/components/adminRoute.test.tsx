@@ -68,11 +68,13 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 
 describe("Admin dashboard route rendering", () => {
   it("renders admin stats and dashboard overview with analytics sections", () => {
-    render(<AdminDashboard />);
+    const { container } = render(<AdminDashboard />);
     expect(screen.getAllByText(/Gorilla Gear/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Total users/i)).toBeTruthy();
     expect(screen.getByText(/Ready to sell/i)).toBeTruthy();
     expect(screen.getByText(/Where work is moving/i)).toBeTruthy();
     expect(screen.getByText(/Member approvals/i)).toBeTruthy();
+    expect(container.innerHTML).toContain("border-[#e5dfd4]");
+    expect(container.innerHTML).toContain("bg-[#a8751c]");
   });
 });

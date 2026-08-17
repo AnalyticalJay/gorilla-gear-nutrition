@@ -396,3 +396,9 @@
 - [x] Align the footer background with the white header background.
 - [x] Convert footer text, links, icons, dividers, and legal labels to dark readable colors.
 - [x] Verify desktop/mobile footer readability, run regression coverage, and save a checkpoint.
+
+## Active Implementation — Dashboard Brand Alignment
+- [x] Audit dashboard layouts, shared theme tokens, and status color usage.
+- [x] Apply branded white, charcoal, dark-text, and gold-accent styling to admin and customer dashboards.
+- [x] Verify responsive dashboard layouts, status readability, and regression coverage.
+- [x] Save and deliver the dashboard brand alignment checkpoint.

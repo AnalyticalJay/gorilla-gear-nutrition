@@ -30,7 +30,9 @@ describe("OrderStatusSummaryCard", () => {
     render(<OrderStatusSummaryCard orders={[]} />);
 
     expect(screen.getByText("No order activity yet")).toBeTruthy();
-    expect(screen.getByRole("link", { name: /browse products/i }).getAttribute("href")).toBe("/products");
+    const browseLink = screen.getByRole("link", { name: /browse products/i });
+    expect(browseLink.getAttribute("href")).toBe("/products");
+    expect(browseLink.className).toContain("bg-[#a8751c]");
   });
 
   it("summarizes the latest active order with status and progress", () => {
@@ -40,6 +42,7 @@ describe("OrderStatusSummaryCard", () => {
     expect(screen.getByText("Processing · Updated from your order timeline.")).toBeTruthy();
     expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("60");
     expect(screen.getByRole("link", { name: /view tracking/i }).getAttribute("href")).toBe("/orders/42");
+    expect(screen.getByRole("progressbar").firstElementChild?.className).toContain("bg-[#a8751c]");
   });
 
   it("prefers an active order over a newer terminal order", () => {
