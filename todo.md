@@ -444,3 +444,9 @@
 - [x] Implement required recovery, idempotency, or operational notification safeguards.
 - [x] Validate failed-transaction and retry behavior without creating a payment.
 - [x] Report the final error-handling configuration and any live-test conditions.
+
+## Active Fix — Quote Submission Order-Item Insert Failure
+- [x] Inspect the reported order-item insertion error, affected product data, and database schema.
+- [x] Correct the quote line-item snapshot mapping or schema mismatch safely.
+- [x] Verify quote creation and regression coverage without starting a payment.
+- [x] Save and deliver the quote-submission fix checkpoint.

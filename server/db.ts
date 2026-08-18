@@ -21,6 +21,7 @@ import {
 import { ENV } from "./_core/env";
 import { getOrderStatusTimelineUpdates } from "../shared/orderTracking";
 import { NATIONWIDE_SHIPPING_FEE_ZAR } from "../shared/shipping";
+import { getInsertId } from "./insertResult";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -114,7 +115,7 @@ export async function createEmailUser(data: {
     isOver18: data.isOver18,
     isActive: true,
   });
-  const userId = (result as unknown as { insertId: number }).insertId;
+  const userId = getInsertId(result, "user");
   // Create approval record
   await db.insert(userApprovals).values({
     userId,
@@ -192,7 +193,7 @@ export async function createCoachingEnquiry(input: {
     experienceLevel: input.experienceLevel,
     availability: input.availability,
   });
-  return (result as unknown as { insertId: number }).insertId;
+  return getInsertId(result, "coaching enquiry");
 }
 
 export async function getCoachingEnquiries() {
@@ -669,7 +670,7 @@ export async function createProduct(data: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(products).values(data);
-  return (result as unknown as { insertId: number }).insertId;
+  return getInsertId(result, "product");
 }
 
 export async function updateProduct(
@@ -890,37 +891,40 @@ export async function createOrder(data: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const orderResult = await db.insert(orders).values({
-    userId: data.userId,
-    totalAmount: data.totalAmount,
-    deliveryFee: data.deliveryFee,
-    deliveryType: data.deliveryType,
-    status: data.status ?? "quote_pending",
-    paymentStatus: "pending",
-    quoteNotes: data.quoteNotes ?? null,
-  });
-  const orderId = (orderResult as unknown as { insertId: number }).insertId;
-  const productIds = Array.from(new Set(data.items.map((item) => item.productId)));
-  const productRows = productIds.length > 0
-    ? await db.select({ id: products.id, name: products.name, dosageInfo: products.dosageInfo }).from(products).where(inArray(products.id, productIds))
-    : [];
-  const productById = new Map(productRows.map((product) => [product.id, product]));
-
-  for (const item of data.items) {
-    const product = productById.get(item.productId);
-    await db.insert(orderItems).values({
-      orderId,
-      productId: item.productId,
-      productNameSnapshot: product?.name ?? `Product #${item.productId}`,
-      strengthSnapshot: product?.dosageInfo ?? null,
-      quantity: item.quantity,
-      priceAtPurchase: typeof item.priceAtPurchase === "number" ? (item.priceAtPurchase as number).toFixed(2) : String(item.priceAtPurchase ?? "0"),
+  // A quote must never be visible without its line items or delivery details.
+  // Any insert failure rolls the entire quote back rather than leaving an orphan.
+  return db.transaction(async (tx) => {
+    const orderResult = await tx.insert(orders).values({
+      userId: data.userId,
+      totalAmount: data.totalAmount,
+      deliveryFee: data.deliveryFee,
+      deliveryType: data.deliveryType,
+      status: data.status ?? "quote_pending",
+      paymentStatus: "pending",
+      quoteNotes: data.quoteNotes ?? null,
     });
-  }
+    const orderId = getInsertId(orderResult, "quote");
+    const productIds = Array.from(new Set(data.items.map((item) => item.productId)));
+    const productRows = productIds.length > 0
+      ? await tx.select({ id: products.id, name: products.name, dosageInfo: products.dosageInfo }).from(products).where(inArray(products.id, productIds))
+      : [];
+    const productById = new Map(productRows.map((product) => [product.id, product]));
 
-  await db.insert(shippingDetails).values({ orderId, ...data.shipping });
+    for (const item of data.items) {
+      const product = productById.get(item.productId);
+      await tx.insert(orderItems).values({
+        orderId,
+        productId: item.productId,
+        productNameSnapshot: product?.name ?? `Product #${item.productId}`,
+        strengthSnapshot: product?.dosageInfo ?? null,
+        quantity: item.quantity,
+        priceAtPurchase: typeof item.priceAtPurchase === "number" ? (item.priceAtPurchase as number).toFixed(2) : String(item.priceAtPurchase ?? "0"),
+      });
+    }
 
-  return orderId;
+    await tx.insert(shippingDetails).values({ orderId, ...data.shipping });
+    return orderId;
+  });
 }
 
 export async function reviewQuote(
@@ -1101,7 +1105,7 @@ export async function createOrderComment(data: { orderId: number; userId: number
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(orderComments).values(data);
-  return (result as unknown as { insertId: number }).insertId;
+  return getInsertId(result, "order comment");
 }
 
 export async function getAllOrders() {
