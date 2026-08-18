@@ -689,9 +689,9 @@ export const appRouter = router({
               externalTransactionID: ref,
               urls: {
                 callbackUrl: `${origin}/api/payments/ikhokha/callback?reference=${encodeURIComponent(ref)}`,
-                successPageUrl: `${origin}/order-success/${input.orderId}`,
-                failurePageUrl: `${origin}/orders/${input.orderId}`,
-                cancelUrl: `${origin}/orders/${input.orderId}`,
+                successPageUrl: `${origin}/order-success/${input.orderId}?payment=returned`,
+                failurePageUrl: `${origin}/orders/${input.orderId}?payment=failed`,
+                cancelUrl: `${origin}/orders/${input.orderId}?payment=cancelled`,
               },
             });
             await setOrderIkhokhaPaylink(ref, paylink.paylinkID, paylink.paylinkUrl);

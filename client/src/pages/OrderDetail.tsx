@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Banknote, CheckCircle2, CreditCard, Loader2, Lock, MapPin, Package, Send, Truck } from "lucide-react";
-import { Link, useParams } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import { format } from "date-fns";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
@@ -33,6 +33,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function OrderDetail() {
   const { orderId } = useParams<{ orderId: string }>();
+  const [location] = useLocation();
   const { isAuthenticated, user } = useAuth();
   const utils = trpc.useUtils();
   const parsedOrderId = parseInt(orderId ?? "0");
@@ -133,6 +134,7 @@ export default function OrderDetail() {
   const isIkhokhaAwaiting = order.status === "awaiting_payment" && order.paymentMethod === "ikhokha" && order.paymentStatus === "pending";
   const proofStatus = resolveProofStatus(order);
   const proofMeta = proofStatusMeta[proofStatus];
+  const paymentReturnState = new URLSearchParams(location.split("?")[1] ?? "").get("payment");
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -185,6 +187,8 @@ export default function OrderDetail() {
 
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] p-4 text-sm text-[#7c5a20]"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-[#b42318]/20 bg-[#b42318]/5 p-4 text-sm text-[#b42318]">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
+              {paymentReturnState === "cancelled" && <div role="status" className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm text-[#7c5a20]"><strong>Payment cancelled.</strong> No payment was confirmed. You can try secure iKhokha checkout again or choose Manual EFT &amp; POP.</div>}
+              {paymentReturnState === "failed" && <div role="alert" className="mt-5 rounded-lg border border-[#b42318]/25 bg-[#b42318]/5 p-4 text-sm text-[#b42318]"><strong>Payment was not completed.</strong> Your approved quote remains available. Please try again or use Manual EFT &amp; POP.</div>}
               {canSelectPayment && <div className="mt-5 space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "ikhokha" })} disabled={choosePayment.isPending}>{choosePayment.isPending && checkoutAction === "ikhokha" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing secure checkout…</> : <><CreditCard className="h-4 w-4 mr-2" />Pay securely with iKhokha</>}</Button>

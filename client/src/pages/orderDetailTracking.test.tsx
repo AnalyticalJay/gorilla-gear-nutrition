@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   invalidate: vi.fn(),
   paymentMutate: vi.fn(),
   paymentPending: false,
+  location: "/orders/42",
   trackingMutate: vi.fn(),
 }));
 
@@ -31,6 +32,7 @@ vi.mock("@/_core/hooks/useAuth", () => ({
 
 vi.mock("wouter", () => ({
   useParams: () => ({ orderId: "42" }),
+  useLocation: () => [mocks.location, vi.fn()],
   Link: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a>,
 }));
 
@@ -71,7 +73,7 @@ function makeOrder(proofStatus: "pending" | "approved" | "rejected", proofReview
 }
 
 describe("customer order detail payment proof status", () => {
-  afterEach(() => { mocks.paymentPending = false; cleanup(); });
+  afterEach(() => { mocks.paymentPending = false; mocks.location = "/orders/42"; cleanup(); });
   it("shows iKhokha checkout and manual EFT actions when payment is awaiting method selection", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
     render(<OrderDetail />);
@@ -97,6 +99,15 @@ describe("customer order detail payment proof status", () => {
     fireEvent.click(screen.getByRole("button", { name: /pay securely with iKhokha/i }));
     expect(screen.getByRole("status").textContent).toMatch(/creating your secure iKhokha payment link/i);
     expect((screen.getByRole("button", { name: /preparing secure checkout/i }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("explains a failed iKhokha return and keeps the approved quote available for another payment method", () => {
+    mocks.location = "/orders/42?payment=failed";
+    mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), status: "awaiting_payment", paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "failed" } });
+    render(<OrderDetail />);
+    expect(screen.getByRole("alert").textContent).toMatch(/payment was not completed/i);
+    expect(screen.getByRole("button", { name: /pay securely with iKhokha/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /manual eft.*pop/i })).toBeTruthy();
   });
 
   it("shows upload and rejected re-upload states for EFT proof", () => {

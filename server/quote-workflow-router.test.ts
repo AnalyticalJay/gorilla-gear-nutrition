@@ -146,7 +146,7 @@ describe("quote workflow router", () => {
 
     const ikhokha = await caller.orders.choosePayment({ orderId: 55, method: "ikhokha" });
     expect(ikhokha).toMatchObject({ orderId: 55, method: "ikhokha", ikhokhaReference: "GGN-55", ikhokhaData: { paylinkId: "paylink-55", paylinkUrl: "https://pay.ikhokha.example/55" } });
-    expect(ikhokhaMocks.createIkhokhaPaylink).toHaveBeenCalledWith(expect.objectContaining({ entityID: "GGN", amount: 20_000, currency: "ZAR", externalTransactionID: "GGN-55" }));
+    expect(ikhokhaMocks.createIkhokhaPaylink).toHaveBeenCalledWith(expect.objectContaining({ entityID: "GGN", amount: 20_000, currency: "ZAR", externalTransactionID: "GGN-55", urls: expect.objectContaining({ callbackUrl: expect.stringContaining("/api/payments/ikhokha/callback?reference=GGN-55"), failurePageUrl: expect.stringContaining("?payment=failed"), cancelUrl: expect.stringContaining("?payment=cancelled") }) }));
     expect(dbMocks.setOrderIkhokhaPaylink).toHaveBeenCalledWith("GGN-55", "paylink-55", "https://pay.ikhokha.example/55");
     expect(dbMocks.chooseQuotePayment).toHaveBeenLastCalledWith(55, 7, "ikhokha");
 

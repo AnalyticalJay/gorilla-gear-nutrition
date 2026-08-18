@@ -965,6 +965,7 @@ export async function chooseQuotePayment(
     payfastReference,
     ikhokhaReference,
     ikhokhaPaylinkId: null,
+    ikhokhaPaylinkUrl: null,
   }).where(eq(orders.id, orderId));
 
   return { payfastReference, ikhokhaReference, total: order[0].totalAmount };
@@ -1303,12 +1304,14 @@ export async function updateIkhokhaPaymentAttemptStatus(
   externalReference: string,
   status: "pending" | "paid" | "failed",
   gatewayStatus?: string | null,
+  failureReason?: string | null,
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(ikhokhaPaymentAttempts).set({
     status,
     gatewayStatus: gatewayStatus?.slice(0, 128) ?? null,
+    ...(failureReason ? { failureReason: failureReason.slice(0, 512) } : {}),
     ...(status === "paid" || status === "failed" ? { completedAt: new Date() } : {}),
   }).where(eq(ikhokhaPaymentAttempts.externalReference, externalReference));
 }
@@ -1364,7 +1367,10 @@ export async function updateOrderIkhokhaPayment(ikhokhaReference: string, paymen
   if (!db) throw new Error("Database not available");
   await db.update(orders).set({
     paymentStatus,
-    status: paymentStatus === "paid" ? "paid" : "cancelled",
+    // A decline, cancellation, or expiry should not cancel the approved quote.
+    // The customer may safely select iKhokha again or switch to Manual EFT.
+    status: paymentStatus === "paid" ? "paid" : "awaiting_payment",
+    ...(paymentStatus === "failed" ? { paymentMethod: null } : {}),
     ...(paymentStatus === "paid" ? { paidAt: new Date() } : {}),
   }).where(eq(orders.ikhokhaReference, ikhokhaReference));
 }

@@ -433,3 +433,14 @@
 - [x] Add a loading animation and clear customer messaging while iKhokha payment links are generated.
 - [x] Verify desktop/mobile views and regression coverage without a live payment.
 - [x] Save and deliver the iKhokha audit and checkout-feedback checkpoint.
+
+## Active Verification — iKhokha Webhook and Callback Configuration
+- [x] Inspect generated production callback URLs, endpoint availability, and webhook handler configuration.
+- [x] Confirm secure status reconciliation and order-update safeguards without creating a payment.
+- [x] Report verified configuration and any required merchant-dashboard action.
+
+## Active Review — iKhokha Failed Transaction Handling
+- [x] Audit failure, cancellation, expiry, duplicate callback, malformed payload, and audit-record handling.
+- [x] Implement required recovery, idempotency, or operational notification safeguards.
+- [x] Validate failed-transaction and retry behavior without creating a payment.
+- [x] Report the final error-handling configuration and any live-test conditions.

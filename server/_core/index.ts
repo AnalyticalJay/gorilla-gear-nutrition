@@ -43,8 +43,9 @@ async function startServer() {
   // iKhokha callbacks are reconciled through the authenticated payment-status API.
   // The callback body itself is never trusted to mark an order paid.
   app.post("/api/payments/ikhokha/callback", async (req, res) => {
+    let reference = "";
     try {
-      const reference = String(req.query.reference ?? req.body?.externalTransactionID ?? req.body?.externalTransactionId ?? "").trim();
+      reference = String(req.query.reference ?? req.body?.externalTransactionID ?? req.body?.externalTransactionId ?? "").trim();
       if (!reference) return res.status(400).send("Missing iKhokha payment reference");
       const order = await getOrderByIkhokhaReference(reference);
       if (!order) {
@@ -57,10 +58,14 @@ async function startServer() {
       }
       const statusPayload = await getIkhokhaPaymentStatus(order.ikhokhaPaylinkId);
       const gatewayReference = String(statusPayload.externalTransactionID ?? statusPayload.externalTransactionId ?? "").trim();
-      if (gatewayReference && gatewayReference !== reference) return res.status(400).send("Payment reference mismatch");
+      if (gatewayReference && gatewayReference !== reference) {
+        await updateIkhokhaPaymentAttemptStatus(reference, "pending", "REFERENCE_MISMATCH", "iKhokha returned a different transaction reference");
+        return res.status(400).send("Payment reference mismatch");
+      }
       const amount = Number(statusPayload.amount ?? statusPayload.amountInCents ?? statusPayload.transactionAmount);
       const expectedCents = Math.round(Number(order.totalAmount) * 100);
       if (Number.isFinite(amount) && amount > 0 && amount !== expectedCents && Number(amount.toFixed(2)) !== Number(order.totalAmount)) {
+        await updateIkhokhaPaymentAttemptStatus(reference, "pending", "AMOUNT_MISMATCH", "iKhokha amount did not match the approved quote total");
         return res.status(400).send("Payment amount mismatch");
       }
       const outcome = getIkhokhaPaymentOutcome(statusPayload);
@@ -86,6 +91,11 @@ async function startServer() {
       return res.status(200).send("OK");
     } catch (error) {
       console.error("[iKhokha callback] Failed to process payment status", error);
+      if (reference) {
+        const message = error instanceof Error ? error.message : "Unexpected iKhokha reconciliation error";
+        updateIkhokhaPaymentAttemptStatus(reference, "pending", "RECONCILIATION_ERROR", message)
+          .catch((auditError) => console.error("[iKhokha callback] Failed to record reconciliation error", auditError));
+      }
       return res.status(500).send("Payment reconciliation failed");
     }
   });
