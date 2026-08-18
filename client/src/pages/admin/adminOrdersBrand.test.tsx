@@ -24,9 +24,9 @@ vi.mock("@/lib/trpc", () => ({
             userFullName: "Test Member",
             userEmail: "member@example.com",
             totalAmount: "1450.00",
-            paymentStatus: "awaiting_eft",
-            paymentMethod: "eft",
-            status: "awaiting_payment",
+            paymentStatus: "pending",
+            paymentMethod: null,
+            status: "quote_pending",
             createdAt: new Date("2026-08-12T10:00:00Z"),
           }],
         }),
@@ -41,11 +41,14 @@ vi.mock("@/lib/trpc", () => ({
 import AdminOrders from "./AdminOrders";
 
 describe("AdminOrders branded management surface", () => {
-  it("renders a white management panel with Gorilla Gear gold commercial accents", () => {
+  it("renders a white management panel with Gorilla Gear gold commercial accents and prioritises new quotes awaiting approval", () => {
     const { container } = render(<AdminOrders />);
 
     expect(screen.getByRole("heading", { name: /quote management/i })).toBeTruthy();
     expect(screen.getAllByText("Test Member").length).toBeGreaterThan(0);
+    expect(screen.getByRole("combobox", { name: /filter orders by status/i })).toBeTruthy();
+    expect(screen.getAllByText(/awaiting approval/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/new quote/i).length).toBeGreaterThan(0);
     expect(container.innerHTML).toContain("border-[#e5dfd4]");
     expect(container.innerHTML).toContain("text-[#a8751c]");
   });

@@ -450,3 +450,11 @@
 - [x] Correct the quote line-item snapshot mapping or schema mismatch safely.
 - [x] Verify quote creation and regression coverage without starting a payment.
 - [x] Save and deliver the quote-submission fix checkpoint.
+
+## Active Implementation — Admin Quote Triage and Catalogue Image Sourcing
+- [x] Audit Admin Orders states and product-image coverage by brand and product.
+- [x] Add an awaiting-approval filter and visual highlight for newly submitted quotes in Admin Orders.
+- [x] Research official and authorised product imagery and assemble a confidence-ranked brand/product match manifest.
+- [x] Apply high-confidence images through managed storage and document unmatched or uncertain records.
+- [x] Verify responsive Admin Orders behaviour, catalogue images, and regression coverage.
+- [x] Save and deliver the Admin Orders and catalogue-image sourcing checkpoint.
