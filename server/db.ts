@@ -946,7 +946,7 @@ export async function reviewQuote(
 export async function chooseQuotePayment(
   orderId: number,
   userId: number,
-  method: "eft" | "payfast",
+  method: "eft" | "payfast" | "ikhokha",
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -956,14 +956,17 @@ export async function chooseQuotePayment(
   if (!canChoosePayment) throw new Error("Quote is not approved for payment");
 
   const payfastReference = method === "payfast" ? `AA-${orderId}-${Date.now()}` : null;
+  const ikhokhaReference = method === "ikhokha" ? `GGN-${orderId}-${Date.now()}` : null;
   await db.update(orders).set({
     paymentMethod: method,
     status: "awaiting_payment",
     paymentStatus: method === "eft" ? "awaiting_eft" : "pending",
     payfastReference,
+    ikhokhaReference,
+    ikhokhaPaylinkId: null,
   }).where(eq(orders.id, orderId));
 
-  return { payfastReference, total: order[0].totalAmount };
+  return { payfastReference, ikhokhaReference, total: order[0].totalAmount };
 }
 
 export async function getUserOrders(userId: number) {
@@ -1255,6 +1258,42 @@ export async function getOrderByPayFastReference(payfastReference: string) {
   if (!db) return undefined;
   const rows = await db.select().from(orders).where(eq(orders.payfastReference, payfastReference)).limit(1);
   return rows[0];
+}
+
+export async function setOrderIkhokhaPaylink(ikhokhaReference: string, ikhokhaPaylinkId: string, ikhokhaPaylinkUrl: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({ ikhokhaPaylinkId, ikhokhaPaylinkUrl }).where(eq(orders.ikhokhaReference, ikhokhaReference));
+}
+
+export async function resetFailedIkhokhaPaymentAttempt(orderId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({
+    status: "quote_approved",
+    paymentStatus: "pending",
+    paymentMethod: null,
+    ikhokhaReference: null,
+    ikhokhaPaylinkId: null,
+    ikhokhaPaylinkUrl: null,
+  }).where(and(eq(orders.id, orderId), eq(orders.userId, userId), eq(orders.paymentMethod, "ikhokha"), eq(orders.paymentStatus, "pending")));
+}
+
+export async function getOrderByIkhokhaReference(ikhokhaReference: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(orders).where(eq(orders.ikhokhaReference, ikhokhaReference)).limit(1);
+  return rows[0];
+}
+
+export async function updateOrderIkhokhaPayment(ikhokhaReference: string, paymentStatus: "paid" | "failed") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({
+    paymentStatus,
+    status: paymentStatus === "paid" ? "paid" : "cancelled",
+    ...(paymentStatus === "paid" ? { paidAt: new Date() } : {}),
+  }).where(eq(orders.ikhokhaReference, ikhokhaReference));
 }
 
 export async function updateOrderPayment(

@@ -84,12 +84,12 @@ export default function OrderDetail() {
         utils.orders.detail.invalidate({ orderId: parsedOrderId });
         return;
       }
-      if (!data.payfastData) {
-        toast.error("PayFast checkout data could not be generated.");
+      if (!data.ikhokhaData?.paylinkUrl) {
+        toast.error("iKhokha checkout could not be generated. Please try again or use Manual EFT & POP.");
         return;
       }
-      if (data.method === "instant_eft") toast.success("Opening PayFast Instant EFT. Select your bank to continue.");
-      submitPayFast(data.payfastData);
+      toast.success("Opening secure iKhokha checkout. Select your preferred payment method to continue.");
+      window.location.assign(data.ikhokhaData.paylinkUrl);
     },
     onError: (error) => toast.error(error.message),
   });
@@ -113,27 +113,6 @@ export default function OrderDetail() {
     reader.readAsDataURL(file);
   };
 
-  const submitPayFast = (payfastData?: Record<string, string>) => {
-    if (!payfastData) {
-      toast.error("PayFast checkout data could not be generated.");
-      return;
-    }
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = payfastData.actionUrl || "https://www.payfast.co.za/eng/process";
-    const dataToSend = { ...payfastData };
-    delete dataToSend.actionUrl;
-    Object.entries(dataToSend).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    });
-    document.body.appendChild(form);
-    form.submit();
-  };
-
   if (orderQuery.isLoading) {
     return <div className="min-h-screen flex flex-col bg-background"><Navbar /><main className="flex-1 container px-4 py-8 pb-24 sm:py-12 sm:pb-12"><div className="max-w-3xl mx-auto space-y-4">{[...Array(4)].map((_, i) => <div key={i} className="h-24 bg-accent/20 rounded-xl animate-pulse" />)}</div></main><Footer /></div>;
   }
@@ -144,6 +123,7 @@ export default function OrderDetail() {
 
   const canSelectPayment = order.status === "quote_approved" || (order.status === "awaiting_payment" && !order.paymentMethod);
   const isEftAwaiting = order.status === "awaiting_payment" && order.paymentMethod === "eft";
+  const isIkhokhaAwaiting = order.status === "awaiting_payment" && order.paymentMethod === "ikhokha" && order.paymentStatus === "pending";
   const proofStatus = resolveProofStatus(order);
   const proofMeta = proofStatusMeta[proofStatus];
 
@@ -199,13 +179,13 @@ export default function OrderDetail() {
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] p-4 text-sm text-[#7c5a20]"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-[#b42318]/20 bg-[#b42318]/5 p-4 text-sm text-[#b42318]">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
               {canSelectPayment && <div className="mt-5 space-y-3">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <Button className="min-h-11 text-white font-bold" onClick={() => choosePayment.mutate({ orderId: order.id, method: "payfast" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay via PayFast</Button>
-                  <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "instant_eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />PayFast Instant EFT</Button>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "ikhokha" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay securely with iKhokha</Button>
                   <Button variant="outline" className="min-h-11 font-bold border-[#a8751c]/40 hover:bg-[#f6f0e4]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Manual EFT &amp; POP</Button>
                 </div>
-                <p className="rounded-lg border border-border/40 bg-background/30 px-3 py-2 text-xs leading-5 text-muted-foreground">Instant EFT opens PayFast so you can authorise a bank payment online. It is available only after Instant EFT and payment receiving are activated on the PayFast merchant account. If PayFast reports that the merchant cannot receive payments, use <strong className="text-foreground">Manual EFT &amp; POP</strong> or contact us while merchant activation is completed.</p>
+                <p className="rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] px-3 py-2 text-xs leading-5 text-[#6b665e]">Secure iKhokha checkout lets you select the available payment method on the payment page. <strong className="text-[#1f1f1f]">Manual EFT &amp; POP</strong> remains available if you prefer to submit a bank transfer for review.</p>
               </div>}
+              {isIkhokhaAwaiting && <div className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm space-y-3"><div className="flex items-center gap-2 font-bold text-[#7c5a20]"><Lock className="h-4 w-4" />Secure iKhokha payment pending</div><p className="text-[#6b665e]">Your payment link is ready. Once iKhokha confirms the payment, this quote will update automatically.</p>{order.ikhokhaPaylinkUrl && <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] hover:bg-[#c89536]" onClick={() => { if (order.ikhokhaPaylinkUrl) window.location.assign(order.ikhokhaPaylinkUrl); }}><CreditCard className="mr-2 h-4 w-4" />Continue secure payment</Button>}</div>}
               {isEftAwaiting && (
                 <div className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm space-y-4">
                   <div className="flex items-center gap-2 font-bold text-[#7c5a20]"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div>

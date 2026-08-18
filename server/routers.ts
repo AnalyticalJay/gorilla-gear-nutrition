@@ -8,7 +8,7 @@ import { sendPasswordResetEmail, sendQuoteConfirmationEmail, sendPaymentApproved
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
-import { getPayFastConfig, generatePayFastSignature, verifyPayFastItnSignature } from "./payfast";
+import { createIkhokhaPaylink, getIkhokhaConfig } from "./ikhokha";
 import {
   addProductImage,
   calculateDelivery,
@@ -33,7 +33,6 @@ import {
   getCoachingEnquiries,
   getDb,
   getOrderById,
-  getOrderByPayFastReference,
   getOrderComments,
   getOrderTrackingEvents,
   getProductById,
@@ -55,13 +54,14 @@ import {
   removeCartItem,
   reviewQuote,
   reviewCoachingEnquiry,
+  resetFailedIkhokhaPaymentAttempt,
   setPrimaryImage,
   saveOrderTrackingEvents,
   updateCategory,
   updateOrderStatus,
   updateOrderTracking,
   updateOrderFulfilment,
-  updateOrderPayment,
+  setOrderIkhokhaPaylink,
   uploadProofOfPayment,
   rejectProofOfPayment,
   updateProduct,
@@ -656,7 +656,7 @@ export const appRouter = router({
       }),
 
     choosePayment: approvedProcedure
-      .input(z.object({ orderId: z.number(), method: z.enum(["eft", "payfast", "instant_eft"]) }))
+      .input(z.object({ orderId: z.number(), method: z.enum(["eft", "ikhokha"]) }))
       .mutation(async ({ ctx, input }) => {
         const quote = await getOrderById(input.orderId);
         if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
@@ -665,37 +665,40 @@ export const appRouter = router({
         if (!canChoosePayment) {
           throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Quote must be approved before payment" });
         }
-        // Instant EFT is processed by PayFast, so persist it as PayFast while retaining
-        // the requested method in the response used to build the hosted checkout form.
-        const storedMethod = input.method === "eft" ? "eft" : "payfast";
-        const payment = await chooseQuotePayment(input.orderId, ctx.user.id, storedMethod);
-        let payfastData: Record<string, string> | undefined = undefined;
-        if (input.method === "payfast" || input.method === "instant_eft") {
-          const cfg = getPayFastConfig();
-          const ref = payment.payfastReference || `AA-${input.orderId}-${Date.now()}`;
+        const payment = await chooseQuotePayment(input.orderId, ctx.user.id, input.method);
+        let ikhokhaData: { paylinkUrl: string; paylinkId: string } | undefined = undefined;
+        if (input.method === "ikhokha") {
+          const cfg = getIkhokhaConfig();
+          const ref = payment.ikhokhaReference || `GGN-${input.orderId}-${Date.now()}`;
           const origin = ctx.req.headers.origin || `https://${ctx.req.headers.host || "localhost:3000"}`;
-          const params: Record<string, string | number> = {
-            merchant_id: cfg.merchantId,
-            merchant_key: cfg.merchantKey,
-            return_url: `${origin}/order-success/${input.orderId}`,
-            cancel_url: `${origin}/orders/${input.orderId}`,
-            notify_url: `${origin}/api/payments/payfast/itn`,
-            m_payment_id: ref,
-            amount: parseFloat(String(quote.totalAmount)).toFixed(2),
-            item_name: `Gorilla Gear Nutrition Approved Quote #${input.orderId}`,
-            email_address: (ctx.user as any)?.email ?? "",
-            name_first: ((ctx.user as any)?.fullName ?? "").split(" ")[0] ?? "",
-            name_last: ((ctx.user as any)?.fullName ?? "").split(" ").slice(1).join(" ") || ".",
-          };
-          if (input.method === "instant_eft") params.payment_method = "ef";
-          const signature = generatePayFastSignature(params, cfg.passphrase);
-          payfastData = {
-            actionUrl: cfg.isSandbox ? "https://sandbox.payfast.co.za/eng/process" : "https://www.payfast.co.za/eng/process",
-            ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
-            signature,
-          };
+          const amount = Math.round(Number(quote.totalAmount) * 100);
+          if (!Number.isSafeInteger(amount) || amount <= 0) throw new TRPCError({ code: "BAD_REQUEST", message: "Quote total is invalid for payment" });
+          try {
+            const paylink = await createIkhokhaPaylink({
+              entityID: cfg.entityId,
+              externalEntityID: cfg.entityId,
+              amount,
+              currency: "ZAR",
+              requesterUrl: origin,
+              description: `Gorilla Gear Nutrition Approved Quote #${input.orderId}`,
+              paymentReference: `Quote #${input.orderId}`,
+              mode: "live",
+              externalTransactionID: ref,
+              urls: {
+                callbackUrl: `${origin}/api/payments/ikhokha/callback?reference=${encodeURIComponent(ref)}`,
+                successPageUrl: `${origin}/order-success/${input.orderId}`,
+                failurePageUrl: `${origin}/orders/${input.orderId}`,
+                cancelUrl: `${origin}/orders/${input.orderId}`,
+              },
+            });
+            await setOrderIkhokhaPaylink(ref, paylink.paylinkID, paylink.paylinkUrl);
+            ikhokhaData = { paylinkUrl: paylink.paylinkUrl, paylinkId: paylink.paylinkID };
+          } catch (error) {
+            await resetFailedIkhokhaPaymentAttempt(input.orderId, ctx.user.id);
+            throw error;
+          }
         }
-        return { ...payment, orderId: input.orderId, method: input.method, payfastData };
+        return { ...payment, orderId: input.orderId, method: input.method, ikhokhaData };
       }),
 
     review: adminProcedure
@@ -755,32 +758,6 @@ export const appRouter = router({
         const { url, key } = await storagePut(fileKey, buffer, contentType);
         await uploadProofOfPayment(input.orderId, ctx.user.id, url, key);
         return { success: true, url };
-      }),
-
-    // Legacy tRPC ITN compatibility route. PayFast should use /api/payments/payfast/itn.
-    payfastItn: publicProcedure
-      .input(z.object({
-        m_payment_id: z.string(),
-        pf_payment_id: z.string().optional(),
-        payment_status: z.string(),
-        item_name: z.string().optional(),
-        amount_gross: z.string().optional(),
-        merchant_id: z.string().optional(),
-        signature: z.string().optional(),
-      }))
-      .mutation(async ({ input }) => {
-        const cfg = getPayFastConfig();
-        if (input.merchant_id !== cfg.merchantId || !input.signature || !verifyPayFastItnSignature(input, input.signature, cfg.passphrase)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid PayFast ITN signature" });
-        }
-        const order = await getOrderByPayFastReference(input.m_payment_id);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Payment reference not found" });
-        if (input.amount_gross && Number(input.amount_gross).toFixed(2) !== Number(order.totalAmount).toFixed(2)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Payment amount mismatch" });
-        }
-        const status = input.payment_status === "COMPLETE" ? "paid" : "failed";
-        await updateOrderPayment(input.m_payment_id, status);
-        return { success: true };
       }),
 
     // Admin

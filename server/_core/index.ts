@@ -6,8 +6,9 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
-import { getOrderByPayFastReference, updateOrderPayment } from "../db";
-import { getPayFastConfig, verifyPayFastItnSignature } from "../payfast";
+import { getOrderByIkhokhaReference, getUserById, updateOrderIkhokhaPayment } from "../db";
+import { getIkhokhaPaymentOutcome, getIkhokhaPaymentStatus } from "../ikhokha";
+import { sendPaymentApprovedEmail } from "../email";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
@@ -39,34 +40,47 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
 
-  // PayFast sends ITN callbacks as form-encoded POST data, not tRPC JSON.
-  app.post("/api/payments/payfast/itn", async (req, res) => {
+  // iKhokha callbacks are reconciled through the authenticated payment-status API.
+  // The callback body itself is never trusted to mark an order paid.
+  app.post("/api/payments/ikhokha/callback", async (req, res) => {
     try {
-      const payload = Object.fromEntries(Object.entries(req.body ?? {}).map(([key, value]) => [key, String(value ?? "")]));
-      const cfg = getPayFastConfig();
-      if (payload.merchant_id !== cfg.merchantId || !payload.signature || !verifyPayFastItnSignature(payload, payload.signature, cfg.passphrase)) {
-        res.status(400).send("Invalid PayFast signature");
-        return;
-      }
-      if (!payload.m_payment_id || !payload.payment_status) {
-        res.status(400).send("Missing PayFast payment fields");
-        return;
-      }
-      const order = await getOrderByPayFastReference(payload.m_payment_id);
+      const reference = String(req.query.reference ?? req.body?.externalTransactionID ?? req.body?.externalTransactionId ?? "").trim();
+      if (!reference) return res.status(400).send("Missing iKhokha payment reference");
+      const order = await getOrderByIkhokhaReference(reference);
       if (!order) {
         res.status(404).send("Payment reference not found");
         return;
       }
-      if (payload.amount_gross && Number(payload.amount_gross).toFixed(2) !== Number(order.totalAmount).toFixed(2)) {
-        res.status(400).send("Payment amount mismatch");
+      if (!order.ikhokhaPaylinkId) {
+        res.status(409).send("iKhokha payment link is not ready");
         return;
       }
-      const status = payload.payment_status === "COMPLETE" ? "paid" : "failed";
-      await updateOrderPayment(payload.m_payment_id, status);
-      res.status(200).send("OK");
+      const statusPayload = await getIkhokhaPaymentStatus(order.ikhokhaPaylinkId);
+      const gatewayReference = String(statusPayload.externalTransactionID ?? statusPayload.externalTransactionId ?? "").trim();
+      if (gatewayReference && gatewayReference !== reference) return res.status(400).send("Payment reference mismatch");
+      const amount = Number(statusPayload.amount ?? statusPayload.amountInCents ?? statusPayload.transactionAmount);
+      const expectedCents = Math.round(Number(order.totalAmount) * 100);
+      if (Number.isFinite(amount) && amount > 0 && amount !== expectedCents && Number(amount.toFixed(2)) !== Number(order.totalAmount)) {
+        return res.status(400).send("Payment amount mismatch");
+      }
+      const outcome = getIkhokhaPaymentOutcome(statusPayload);
+      if (outcome === "pending") return res.status(202).send("Payment is still pending");
+      await updateOrderIkhokhaPayment(reference, outcome);
+      if (outcome === "paid" && order.paymentStatus !== "paid") {
+        const customer = await getUserById(order.userId);
+        if (customer?.email) {
+          sendPaymentApprovedEmail({
+            orderId: order.id,
+            customerName: customer.fullName ?? "Valued Customer",
+            customerEmail: customer.email,
+            total: Number(order.totalAmount ?? "0"),
+          }).catch((emailError) => console.error("[iKhokha callback] Payment email error", emailError));
+        }
+      }
+      return res.status(200).send("OK");
     } catch (error) {
-      console.error("[PayFast ITN] Failed to process callback", error);
-      res.status(500).send("ITN processing failed");
+      console.error("[iKhokha callback] Failed to process payment status", error);
+      return res.status(500).send("Payment reconciliation failed");
     }
   });
   // tRPC API

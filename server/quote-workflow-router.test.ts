@@ -7,9 +7,16 @@ const dbMocks = vi.hoisted(() => ({
   clearCart: vi.fn(),
   getOrderById: vi.fn(),
   chooseQuotePayment: vi.fn(),
+  setOrderIkhokhaPaylink: vi.fn(),
+  resetFailedIkhokhaPaymentAttempt: vi.fn(),
   reviewQuote: vi.fn(),
   confirmEftPayment: vi.fn(),
   rejectProofOfPayment: vi.fn(),
+}));
+
+const ikhokhaMocks = vi.hoisted(() => ({
+  createIkhokhaPaylink: vi.fn(),
+  getIkhokhaConfig: vi.fn(),
 }));
 
 vi.mock("./db", async () => ({
@@ -24,6 +31,8 @@ vi.mock("./_core/notification", () => ({
 vi.mock("./email", () => ({
   sendQuoteConfirmationEmail: vi.fn().mockResolvedValue(true),
 }));
+
+vi.mock("./ikhokha", () => ikhokhaMocks);
 
 import { sendQuoteConfirmationEmail } from "./email";
 import { appRouter } from "./routers";
@@ -116,7 +125,7 @@ describe("quote workflow router", () => {
     expect(dbMocks.reviewQuote).toHaveBeenCalledWith(55, 7, "quote_approved", "Approved for payment.");
   });
 
-  it("gates payment selection until the quote is approved and supports both methods", async () => {
+  it("gates payment selection until the quote is approved and supports iKhokha plus Manual EFT", async () => {
     dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_pending" });
     const caller = appRouter.createCaller(makeContext());
 
@@ -124,25 +133,20 @@ describe("quote workflow router", () => {
       code: "PRECONDITION_FAILED",
     });
 
-    dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_approved" });
+    dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_approved", totalAmount: "200.00" });
     dbMocks.chooseQuotePayment.mockResolvedValue({
-      paymentStatus: "awaiting_payfast",
-      payfastReference: "AA-55",
+      paymentStatus: "pending",
+      ikhokhaReference: "GGN-55",
       total: "200.00",
     });
+    ikhokhaMocks.getIkhokhaConfig.mockReturnValue({ entityId: "GGN" });
+    ikhokhaMocks.createIkhokhaPaylink.mockResolvedValue({ paylinkID: "paylink-55", paylinkUrl: "https://pay.ikhokha.example/55" });
 
-    const payfast = await caller.orders.choosePayment({ orderId: 55, method: "payfast" });
-    expect(payfast).toMatchObject({ orderId: 55, method: "payfast", payfastReference: "AA-55" });
-
-    dbMocks.chooseQuotePayment.mockResolvedValue({
-      paymentStatus: "awaiting_payfast",
-      payfastReference: "AA-55-INSTANT",
-      total: "200.00",
-    });
-    const instantEft = await caller.orders.choosePayment({ orderId: 55, method: "instant_eft" });
-    expect(instantEft).toMatchObject({ orderId: 55, method: "instant_eft", payfastReference: "AA-55-INSTANT" });
-    expect(instantEft.payfastData).toMatchObject({ payment_method: "ef" });
-    expect(dbMocks.chooseQuotePayment).toHaveBeenLastCalledWith(55, 7, "payfast");
+    const ikhokha = await caller.orders.choosePayment({ orderId: 55, method: "ikhokha" });
+    expect(ikhokha).toMatchObject({ orderId: 55, method: "ikhokha", ikhokhaReference: "GGN-55", ikhokhaData: { paylinkId: "paylink-55", paylinkUrl: "https://pay.ikhokha.example/55" } });
+    expect(ikhokhaMocks.createIkhokhaPaylink).toHaveBeenCalledWith(expect.objectContaining({ entityID: "GGN", amount: 20_000, currency: "ZAR", externalTransactionID: "GGN-55" }));
+    expect(dbMocks.setOrderIkhokhaPaylink).toHaveBeenCalledWith("GGN-55", "paylink-55", "https://pay.ikhokha.example/55");
+    expect(dbMocks.chooseQuotePayment).toHaveBeenLastCalledWith(55, 7, "ikhokha");
 
     dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-55" });
     const eft = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
@@ -152,6 +156,16 @@ describe("quote workflow router", () => {
     dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-56" });
     const recovered = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
     expect(recovered).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-56" });
+  });
+
+  it("restores payment selection when iKhokha rejects payment-link creation", async () => {
+    dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_approved", totalAmount: "200.00" });
+    dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "pending", ikhokhaReference: "GGN-55", total: "200.00" });
+    ikhokhaMocks.getIkhokhaConfig.mockReturnValue({ entityId: "GGN" });
+    ikhokhaMocks.createIkhokhaPaylink.mockRejectedValue(new Error("Gateway unavailable"));
+
+    await expect(appRouter.createCaller(makeContext()).orders.choosePayment({ orderId: 55, method: "ikhokha" })).rejects.toThrow("Gateway unavailable");
+    expect(dbMocks.resetFailedIkhokhaPaymentAttempt).toHaveBeenCalledWith(55, 7);
   });
 
   it("lets an admin confirm an EFT payment and transition the quote to paid", async () => {

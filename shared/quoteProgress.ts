@@ -27,7 +27,7 @@ export function getQuoteProgress(status: string, paymentStatus?: string): QuoteP
     submitted: { label: "Submitted", description: "Your quote request was received." },
     review: { label: "Under Review", description: "An admin is reviewing your request." },
     approved: { label: "Approved", description: "Your quote has been approved for payment." },
-    payment: { label: "Payment", description: "Choose EFT or PayFast to settle the quote." },
+    payment: { label: "Payment", description: "Choose secure iKhokha checkout or manual EFT to settle the quote." },
     paid: { label: "Paid", description: "Payment received and order confirmed." },
   };
 

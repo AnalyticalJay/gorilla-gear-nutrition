@@ -414,3 +414,15 @@
 - [x] Apply the white, charcoal, dark-text, and gold-accent system to catalogue management workflows.
 - [x] Verify desktop/mobile workflows, error states, and regression coverage.
 - [x] Save and deliver the catalogue management palette checkpoint.
+
+## Active Assessment — iKhokha Payment Gateway Replacement
+- [x] Verify iKhokha online-payment products, API access, and merchant-account requirements.
+- [x] Assess compatibility with the quote-to-order payment, notification, and order-tracking workflow.
+- [x] Present prerequisites and a recommended replacement plan before changing the live payment gateway.
+
+## Active Implementation — iKhokha Payment Gateway
+- [x] Store iKhokha API credentials securely and verify the integration contract.
+- [x] Replace PayFast payment creation and callback reconciliation with iKhokha iK Pay API handling.
+- [x] Update customer payment controls to use iKhokha while retaining Manual EFT proof uploads.
+- [x] Verify the quote-to-payment workflow, regression coverage, and responsive customer controls without a live charge.
+- [x] Save and deliver the iKhokha integration checkpoint.

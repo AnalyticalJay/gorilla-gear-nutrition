@@ -40,7 +40,7 @@ vi.mock("@/components/QuoteConversation", () => ({ default: () => <div>Quote con
 
 import OrderDetail from "./OrderDetail";
 
-function makeOrder(proofStatus: "pending" | "approved" | "rejected", proofReviewNote: string | null = null, paymentMethod: "eft" | null = "eft") {
+function makeOrder(proofStatus: "pending" | "approved" | "rejected", proofReviewNote: string | null = null, paymentMethod: "eft" | "ikhokha" | null = "eft") {
   return {
     id: 42,
     userId: 7,
@@ -71,23 +71,21 @@ function makeOrder(proofStatus: "pending" | "approved" | "rejected", proofReview
 
 describe("customer order detail payment proof status", () => {
   afterEach(() => cleanup());
-  it("shows PayFast, Instant EFT, and manual EFT actions when payment is awaiting method selection", () => {
+  it("shows iKhokha checkout and manual EFT actions when payment is awaiting method selection", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
     render(<OrderDetail />);
-    expect(screen.getByRole("button", { name: /pay via payfast/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /payfast instant eft/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /pay securely with iKhokha/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /manual eft.*pop/i })).toBeTruthy();
-    expect(screen.getByText(/Instant EFT opens PayFast/i)).toBeTruthy();
+    expect(screen.getByText(/Secure iKhokha checkout/i)).toBeTruthy();
     mocks.paymentMutate.mockClear();
-    fireEvent.click(screen.getByRole("button", { name: /payfast instant eft/i }));
-    expect(mocks.paymentMutate).toHaveBeenCalledWith({ orderId: 42, method: "instant_eft" });
+    fireEvent.click(screen.getByRole("button", { name: /pay securely with iKhokha/i }));
+    expect(mocks.paymentMutate).toHaveBeenCalledWith({ orderId: 42, method: "ikhokha" });
   });
 
   it("shows payment CTAs for a newly approved quote", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), status: "quote_approved", paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
     render(<OrderDetail />);
-    expect(screen.getByRole("button", { name: /pay via payfast/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /payfast instant eft/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /pay securely with iKhokha/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /manual eft.*pop/i })).toBeTruthy();
   });
 
