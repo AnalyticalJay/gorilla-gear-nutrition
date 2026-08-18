@@ -18,6 +18,7 @@ import {
   createCoachingEnquiry,
   createCategory,
   createEmailUser,
+  createIkhokhaPaymentAttempt,
   createOrder,
   createOrderComment,
   createProduct,
@@ -32,6 +33,7 @@ import {
   getCategories,
   getCoachingEnquiries,
   getDb,
+  getIkhokhaPaymentAttempts,
   getOrderById,
   getOrderComments,
   getOrderTrackingEvents,
@@ -50,6 +52,7 @@ import {
   getPasswordResetAuditEvents,
   maskPasswordResetEmail,
   recordPasswordResetAuditEvent,
+  recordFailedIkhokhaPaymentAttempt,
   setPasswordResetToken,
   removeCartItem,
   reviewQuote,
@@ -692,8 +695,20 @@ export const appRouter = router({
               },
             });
             await setOrderIkhokhaPaylink(ref, paylink.paylinkID, paylink.paylinkUrl);
+            await createIkhokhaPaymentAttempt({
+              orderId: input.orderId,
+              externalReference: ref,
+              paylinkId: paylink.paylinkID,
+              amountCents: amount,
+            });
             ikhokhaData = { paylinkUrl: paylink.paylinkUrl, paylinkId: paylink.paylinkID };
           } catch (error) {
+            await recordFailedIkhokhaPaymentAttempt({
+              orderId: input.orderId,
+              externalReference: ref,
+              amountCents: amount,
+              failureReason: error instanceof Error ? error.message : "iKhokha payment-link request failed",
+            });
             await resetFailedIkhokhaPaymentAttempt(input.orderId, ctx.user.id);
             throw error;
           }
@@ -885,6 +900,8 @@ export const appRouter = router({
         limit: z.number().int().min(1).max(250).optional(),
       }).optional())
       .query(({ input }) => getPasswordResetAuditEvents(input)),
+
+    ikhokhaPaymentAudit: adminProcedure.query(() => getIkhokhaPaymentAttempts()),
 
     memberPreview: adminProcedure
       .input(z.object({ userId: z.number().int().positive() }))

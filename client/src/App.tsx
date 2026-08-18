@@ -33,6 +33,7 @@ import AdminBulkImages from "./pages/admin/AdminBulkImages";
 import AdminMemberPreview from "./pages/admin/AdminMemberPreview";
 import AdminResetAudit from "./pages/admin/AdminResetAudit";
 import AdminCoachingEnquiries from "./pages/admin/AdminCoachingEnquiries";
+import AdminIkhokhaPaymentAudit from "./pages/admin/AdminIkhokhaPaymentAudit";
 import MobileBottomNav from "./components/MobileBottomNav";
 import { shouldShowMobileNav } from "@shared/mobileNav";
 
@@ -97,6 +98,13 @@ function Router() {
           {() => (
             <AdminLayout>
               <AdminResetAudit />
+            </AdminLayout>
+          )}
+        </Route>
+        <Route path="/admin/payment-audit">
+          {() => (
+            <AdminLayout>
+              <AdminIkhokhaPaymentAudit />
             </AdminLayout>
           )}
         </Route>

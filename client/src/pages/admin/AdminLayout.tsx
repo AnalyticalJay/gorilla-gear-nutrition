@@ -3,6 +3,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Link, useLocation } from "wouter";
 import {
   FileImage,
+  CreditCard,
   GraduationCap,
   KeyRound,
   LayoutDashboard,
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/admin/bulk-images", label: "Bulk Images", icon: FileImage },
   { href: "/admin/categories", label: "Categories", icon: Tag },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/payment-audit", label: "Payment Audit", icon: CreditCard },
   { href: "/admin/reset-audit", label: "Reset Audit", icon: KeyRound },
   { href: "/admin/coaching-enquiries", label: "Coaching", icon: GraduationCap },
 ];

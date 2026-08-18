@@ -8,6 +8,8 @@ const dbMocks = vi.hoisted(() => ({
   getOrderById: vi.fn(),
   chooseQuotePayment: vi.fn(),
   setOrderIkhokhaPaylink: vi.fn(),
+  createIkhokhaPaymentAttempt: vi.fn(),
+  recordFailedIkhokhaPaymentAttempt: vi.fn(),
   resetFailedIkhokhaPaymentAttempt: vi.fn(),
   reviewQuote: vi.fn(),
   confirmEftPayment: vi.fn(),

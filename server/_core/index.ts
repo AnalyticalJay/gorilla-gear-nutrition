@@ -6,7 +6,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
-import { getOrderByIkhokhaReference, getUserById, updateOrderIkhokhaPayment } from "../db";
+import { getOrderByIkhokhaReference, getUserById, updateIkhokhaPaymentAttemptStatus, updateOrderIkhokhaPayment } from "../db";
 import { getIkhokhaPaymentOutcome, getIkhokhaPaymentStatus } from "../ikhokha";
 import { sendPaymentApprovedEmail } from "../email";
 import { createContext } from "./context";
@@ -64,8 +64,14 @@ async function startServer() {
         return res.status(400).send("Payment amount mismatch");
       }
       const outcome = getIkhokhaPaymentOutcome(statusPayload);
-      if (outcome === "pending") return res.status(202).send("Payment is still pending");
+      const gatewayStatus = [statusPayload.paymentStatus, statusPayload.status, statusPayload.transactionStatus, statusPayload.responseCode]
+        .find((value) => typeof value === "string");
+      if (outcome === "pending") {
+        await updateIkhokhaPaymentAttemptStatus(reference, "pending", typeof gatewayStatus === "string" ? gatewayStatus : null);
+        return res.status(202).send("Payment is still pending");
+      }
       await updateOrderIkhokhaPayment(reference, outcome);
+      await updateIkhokhaPaymentAttemptStatus(reference, outcome, typeof gatewayStatus === "string" ? gatewayStatus : null);
       if (outcome === "paid" && order.paymentStatus !== "paid") {
         const customer = await getUserById(order.userId);
         if (customer?.email) {

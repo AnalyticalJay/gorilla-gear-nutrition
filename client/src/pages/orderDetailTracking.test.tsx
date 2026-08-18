@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   orderQuery: vi.fn(),
   invalidate: vi.fn(),
   paymentMutate: vi.fn(),
+  paymentPending: false,
   trackingMutate: vi.fn(),
 }));
 
@@ -17,7 +18,7 @@ vi.mock("@/lib/trpc", () => ({
     useUtils: () => ({ orders: { detail: { invalidate: mocks.invalidate } } }),
     orders: {
       detail: { useQuery: mocks.orderQuery },
-      choosePayment: { useMutation: () => ({ isPending: false, mutate: mocks.paymentMutate }) },
+      choosePayment: { useMutation: (options: { onMutate?: (input: { method: "ikhokha" | "eft" }) => void } = {}) => ({ isPending: mocks.paymentPending, mutate: (input: { orderId: number; method: "ikhokha" | "eft" }) => { mocks.paymentMutate(input); options.onMutate?.(input); } }) },
       uploadProof: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
       refreshTracking: { useMutation: () => ({ isPending: false, mutate: mocks.trackingMutate, mutateAsync: vi.fn().mockResolvedValue({ configured: false, synced: 0, events: [] }) }) },
     },
@@ -70,7 +71,7 @@ function makeOrder(proofStatus: "pending" | "approved" | "rejected", proofReview
 }
 
 describe("customer order detail payment proof status", () => {
-  afterEach(() => cleanup());
+  afterEach(() => { mocks.paymentPending = false; cleanup(); });
   it("shows iKhokha checkout and manual EFT actions when payment is awaiting method selection", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
     render(<OrderDetail />);
@@ -87,6 +88,15 @@ describe("customer order detail payment proof status", () => {
     render(<OrderDetail />);
     expect(screen.getByRole("button", { name: /pay securely with iKhokha/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /manual eft.*pop/i })).toBeTruthy();
+  });
+
+  it("shows a clear loading state while iKhokha payment-link generation is in progress", () => {
+    mocks.orderQuery.mockReturnValue({ isLoading: false, data: { ...makeOrder("pending"), status: "quote_approved", paymentMethod: null, proofStatus: "not_submitted", proofOfPaymentUrl: null, paymentStatus: "pending" } });
+    render(<OrderDetail />);
+    mocks.paymentPending = true;
+    fireEvent.click(screen.getByRole("button", { name: /pay securely with iKhokha/i }));
+    expect(screen.getByRole("status").textContent).toMatch(/creating your secure iKhokha payment link/i);
+    expect((screen.getByRole("button", { name: /preparing secure checkout/i }) as HTMLButtonElement).disabled).toBe(true);
   });
 
   it("shows upload and rejected re-upload states for EFT proof", () => {

@@ -1,11 +1,11 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Banknote, CheckCircle2, CreditCard, Lock, MapPin, Package, Send, Truck } from "lucide-react";
+import { ArrowLeft, Banknote, CheckCircle2, CreditCard, Loader2, Lock, MapPin, Package, Send, Truck } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { format } from "date-fns";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -36,6 +36,7 @@ export default function OrderDetail() {
   const { isAuthenticated, user } = useAuth();
   const utils = trpc.useUtils();
   const parsedOrderId = parseInt(orderId ?? "0");
+  const [checkoutAction, setCheckoutAction] = useState<"ikhokha" | "eft" | null>(null);
 
   const orderQuery = trpc.orders.detail.useQuery(
     { orderId: parsedOrderId },
@@ -78,20 +79,26 @@ export default function OrderDetail() {
   };
 
   const choosePayment = trpc.orders.choosePayment.useMutation({
+    onMutate: ({ method }) => setCheckoutAction(method),
     onSuccess: (data) => {
       if (data.method === "eft") {
+        setCheckoutAction(null);
         toast.success("Manual EFT selected. Follow the banking instructions and upload your proof of payment.");
         utils.orders.detail.invalidate({ orderId: parsedOrderId });
         return;
       }
       if (!data.ikhokhaData?.paylinkUrl) {
+        setCheckoutAction(null);
         toast.error("iKhokha checkout could not be generated. Please try again or use Manual EFT & POP.");
         return;
       }
       toast.success("Opening secure iKhokha checkout. Select your preferred payment method to continue.");
       window.location.assign(data.ikhokhaData.paylinkUrl);
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      setCheckoutAction(null);
+      toast.error(error.message);
+    },
   });
 
   const uploadProof = trpc.orders.uploadProof.useMutation({
@@ -180,9 +187,10 @@ export default function OrderDetail() {
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-[#b42318]/20 bg-[#b42318]/5 p-4 text-sm text-[#b42318]">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
               {canSelectPayment && <div className="mt-5 space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "ikhokha" })} disabled={choosePayment.isPending}><CreditCard className="h-4 w-4 mr-2" />Pay securely with iKhokha</Button>
-                  <Button variant="outline" className="min-h-11 font-bold border-[#a8751c]/40 hover:bg-[#f6f0e4]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}><Banknote className="h-4 w-4 mr-2" />Manual EFT &amp; POP</Button>
+                  <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "ikhokha" })} disabled={choosePayment.isPending}>{choosePayment.isPending && checkoutAction === "ikhokha" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing secure checkout…</> : <><CreditCard className="h-4 w-4 mr-2" />Pay securely with iKhokha</>}</Button>
+                  <Button variant="outline" className="min-h-11 font-bold border-[#a8751c]/40 hover:bg-[#f6f0e4]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}>{choosePayment.isPending && checkoutAction === "eft" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Selecting Manual EFT…</> : <><Banknote className="h-4 w-4 mr-2" />Manual EFT &amp; POP</>}</Button>
                 </div>
+                {choosePayment.isPending && checkoutAction === "ikhokha" && <div role="status" aria-live="polite" className="flex items-start gap-3 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] px-3 py-3 text-sm text-[#6b665e]"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#a8751c]/30 bg-white"><Loader2 className="h-3.5 w-3.5 animate-spin text-[#a8751c]" /></span><span><strong className="block text-[#7c5a20]">Creating your secure iKhokha payment link</strong><span className="mt-1 block text-xs leading-5">Please do not refresh or close this page. You will be redirected to iKhokha to choose your payment method.</span></span></div>}
                 <p className="rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] px-3 py-2 text-xs leading-5 text-[#6b665e]">Secure iKhokha checkout lets you select the available payment method on the payment page. <strong className="text-[#1f1f1f]">Manual EFT &amp; POP</strong> remains available if you prefer to submit a bank transfer for review.</p>
               </div>}
               {isIkhokhaAwaiting && <div className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm space-y-3"><div className="flex items-center gap-2 font-bold text-[#7c5a20]"><Lock className="h-4 w-4" />Secure iKhokha payment pending</div><p className="text-[#6b665e]">Your payment link is ready. Once iKhokha confirms the payment, this quote will update automatically.</p>{order.ikhokhaPaylinkUrl && <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] hover:bg-[#c89536]" onClick={() => { if (order.ikhokhaPaylinkUrl) window.location.assign(order.ikhokhaPaylinkUrl); }}><CreditCard className="mr-2 h-4 w-4" />Continue secure payment</Button>}</div>}

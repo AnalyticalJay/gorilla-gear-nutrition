@@ -5,6 +5,7 @@ import {
   categories,
   coachingEnquiries,
   deliveryRules,
+  ikhokhaPaymentAttempts,
   InsertUser,
   orderComments,
   orderItems,
@@ -1264,6 +1265,78 @@ export async function setOrderIkhokhaPaylink(ikhokhaReference: string, ikhokhaPa
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(orders).set({ ikhokhaPaylinkId, ikhokhaPaylinkUrl }).where(eq(orders.ikhokhaReference, ikhokhaReference));
+}
+
+export async function createIkhokhaPaymentAttempt(data: {
+  orderId: number;
+  externalReference: string;
+  paylinkId: string;
+  amountCents: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(ikhokhaPaymentAttempts).values({
+    ...data,
+    status: "link_created",
+    gatewayStatus: "PAYLINK_CREATED",
+  });
+}
+
+export async function recordFailedIkhokhaPaymentAttempt(data: {
+  orderId: number;
+  externalReference: string;
+  amountCents: number;
+  failureReason: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(ikhokhaPaymentAttempts).values({
+    ...data,
+    status: "link_failed",
+    gatewayStatus: "LINK_CREATION_FAILED",
+    failureReason: data.failureReason.slice(0, 512),
+    completedAt: new Date(),
+  });
+}
+
+export async function updateIkhokhaPaymentAttemptStatus(
+  externalReference: string,
+  status: "pending" | "paid" | "failed",
+  gatewayStatus?: string | null,
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(ikhokhaPaymentAttempts).set({
+    status,
+    gatewayStatus: gatewayStatus?.slice(0, 128) ?? null,
+    ...(status === "paid" || status === "failed" ? { completedAt: new Date() } : {}),
+  }).where(eq(ikhokhaPaymentAttempts.externalReference, externalReference));
+}
+
+export async function getIkhokhaPaymentAttempts() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: ikhokhaPaymentAttempts.id,
+    orderId: ikhokhaPaymentAttempts.orderId,
+    externalReference: ikhokhaPaymentAttempts.externalReference,
+    paylinkId: ikhokhaPaymentAttempts.paylinkId,
+    amountCents: ikhokhaPaymentAttempts.amountCents,
+    status: ikhokhaPaymentAttempts.status,
+    gatewayStatus: ikhokhaPaymentAttempts.gatewayStatus,
+    failureReason: ikhokhaPaymentAttempts.failureReason,
+    createdAt: ikhokhaPaymentAttempts.createdAt,
+    updatedAt: ikhokhaPaymentAttempts.updatedAt,
+    completedAt: ikhokhaPaymentAttempts.completedAt,
+    orderStatus: orders.status,
+    paymentStatus: orders.paymentStatus,
+    customerName: users.fullName,
+    customerEmail: users.email,
+  })
+    .from(ikhokhaPaymentAttempts)
+    .innerJoin(orders, eq(ikhokhaPaymentAttempts.orderId, orders.id))
+    .innerJoin(users, eq(orders.userId, users.id))
+    .orderBy(desc(ikhokhaPaymentAttempts.createdAt));
 }
 
 export async function resetFailedIkhokhaPaymentAttempt(orderId: number, userId: number) {

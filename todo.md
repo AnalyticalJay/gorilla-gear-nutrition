@@ -426,3 +426,10 @@
 - [x] Update customer payment controls to use iKhokha while retaining Manual EFT proof uploads.
 - [x] Verify the quote-to-payment workflow, regression coverage, and responsive customer controls without a live charge.
 - [x] Save and deliver the iKhokha integration checkpoint.
+
+## Active Implementation — iKhokha Payment Audit and Checkout Feedback
+- [x] Audit admin payment data, navigation patterns, and customer checkout state handling.
+- [x] Add an admin iKhokha payment-attempt audit view with reference, hosted-link, amount, and status details.
+- [x] Add a loading animation and clear customer messaging while iKhokha payment links are generated.
+- [x] Verify desktop/mobile views and regression coverage without a live payment.
+- [x] Save and deliver the iKhokha audit and checkout-feedback checkpoint.

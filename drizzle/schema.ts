@@ -197,6 +197,21 @@ export const orders = mysqlTable("orders", {
 
 export type Order = typeof orders.$inferSelect;
 
+// ─── iKhokha Payment Attempts ────────────────────────────────────────────────
+export const ikhokhaPaymentAttempts = mysqlTable("ikhokha_payment_attempts", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull().references(() => orders.id),
+  externalReference: varchar("externalReference", { length: 255 }).notNull(),
+  paylinkId: varchar("paylinkId", { length: 255 }),
+  amountCents: int("amountCents").notNull(),
+  status: mysqlEnum("status", ["link_created", "pending", "paid", "failed", "link_failed"]).default("pending").notNull(),
+  gatewayStatus: varchar("gatewayStatus", { length: 128 }),
+  failureReason: varchar("failureReason", { length: 512 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
 // ─── Courier Tracking Events ───────────────────────────────────────────────────
 export const orderTrackingEvents = mysqlTable("order_tracking_events", {
   id: int("id").autoincrement().primaryKey(),
