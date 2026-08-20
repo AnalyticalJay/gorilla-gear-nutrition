@@ -458,3 +458,9 @@
 - [x] Apply high-confidence images through managed storage and document unmatched or uncertain records.
 - [x] Verify responsive Admin Orders behaviour, catalogue images, and regression coverage.
 - [x] Save and deliver the Admin Orders and catalogue-image sourcing checkpoint.
+
+## Active Implementation — Quote Submission Success Modal
+- [x] Audit quote submission data, mutation response, and existing dialog patterns.
+- [x] Add a branded quote-success modal with a clear submitted-quote summary and next steps.
+- [x] Verify modal accessibility, responsive behavior, navigation actions, and regression coverage.
+- [x] Save and deliver the quote-success modal checkpoint.
