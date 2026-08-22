@@ -470,3 +470,10 @@
 - [x] Centre appropriate customer-facing mobile content and refine mobile form, card, and action layouts.
 - [x] Verify phone layouts, form usability, and responsive regression coverage.
 - [x] Save and deliver the mobile optimisation checkpoint.
+
+## Active Implementation — Remaining Catalogue Image Deep Search
+- [x] Refresh the exact product inventory still missing a primary catalogue image.
+- [x] Research official and authorised product imagery at brand and product level with confidence scoring.
+- [x] Apply only clean, exact high-confidence matches through managed storage.
+- [x] Document uncertain and unmatched products, then verify updated catalogue coverage.
+- [x] Save and deliver the remaining catalogue image research checkpoint.
