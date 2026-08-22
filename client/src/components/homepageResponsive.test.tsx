@@ -2,8 +2,8 @@
  * @vitest-environment jsdom
  */
 import React from "react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 
 const { listPageQuery } = vi.hoisted(() => ({
   listPageQuery: vi.fn(),
@@ -38,6 +38,8 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => cleanup());
+
 describe("Homepage responsive structure", () => {
   it("renders the responsive premium hero, collection cards, member CTA, and no public catalogue grid", () => {
     const { container } = render(<Home />);
@@ -60,6 +62,18 @@ describe("Homepage responsive structure", () => {
     const heroHeading = screen.getByText("Discipline").closest("h1");
     expect(heroHeading?.className).toContain("text-[clamp(3rem,10.5vw,6.65rem)]");
     expect(container.querySelector("#collections")).toBeTruthy();
+  });
+
+  it("centres key marketing content on phones while retaining desktop alignment fallbacks", () => {
+    render(<Home />);
+
+    const heroHeading = screen.getByText("Discipline").closest("h1");
+    expect(heroHeading?.parentElement?.className).toContain("text-center");
+    expect(heroHeading?.parentElement?.className).toContain("sm:text-left");
+
+    const membershipHeading = screen.getByText("Become a member");
+    expect(membershipHeading.parentElement?.className).toContain("text-center");
+    expect(membershipHeading.parentElement?.className).toContain("sm:text-left");
   });
 
   it("does not request member catalogue products on the public homepage", () => {

@@ -190,8 +190,8 @@ export default function Products() {
       <div className="pt-16">
         <div className="border-b border-[#1E293B] bg-[#080808] py-12">
           <div className="container">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <div className="mb-5 h-[3px] w-16" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center lg:text-left">
+              <div className="mx-auto mb-5 h-[3px] w-16 lg:mx-0" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
               <h1 className="mb-2 text-4xl font-black uppercase tracking-tight text-white">Product <span style={{ color: "#0EA5E9" }}>Catalog</span></h1>
               <p className="text-sm text-[#64748B]">{isApproved ? `${totalProducts} premium products available` : "Prices hidden — get approved to view pricing and purchase"}</p>
             </motion.div>
@@ -200,15 +200,15 @@ export default function Products() {
 
         {!isApproved && (
           <div className="border-b py-3" style={{ borderColor: "#0EA5E9" + "30", background: "#0EA5E9" + "08" }}>
-            <div className="container flex flex-col items-stretch gap-3 py-1 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2 text-sm text-[#64748B]"><Lock className="h-4 w-4 flex-shrink-0" style={{ color: "#0EA5E9" }} /><span>Prices are hidden. <strong className="text-white">Get approved</strong> to view pricing and add products to your quote cart.</span></div>
+            <div className="container flex flex-col items-center gap-3 py-1 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+              <div className="flex items-center justify-center gap-2 text-sm text-[#64748B] sm:justify-start"><Lock className="h-4 w-4 flex-shrink-0" style={{ color: "#0EA5E9" }} /><span>Prices are hidden. <strong className="text-white">Get approved</strong> to view pricing and add products to your quote cart.</span></div>
               <Link href="/register" className="no-underline"><Button size="sm" className="h-10 w-full flex-shrink-0 px-4 text-xs font-bold uppercase tracking-wide text-white sm:w-auto" style={{ background: "linear-gradient(135deg, #E11D48, #BE123C)" }}>Apply Now</Button></Link>
             </div>
           </div>
         )}
 
         <div className="container py-8">
-          <div className="mb-6 flex items-center justify-between gap-3 lg:hidden">
+          <div className="mb-6 flex flex-col items-center justify-center gap-3 text-center lg:hidden">
             <button onClick={() => setMobileFiltersOpen(true)} className="inline-flex min-h-11 items-center gap-2 rounded border border-[#1E293B] bg-[#111111] px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:border-[#0EA5E9]/50">
               <SlidersHorizontal className="h-4 w-4 text-[#0EA5E9]" /> Filters {activeFilterCount > 0 && <span className="rounded-full bg-[#E11D48] px-2 py-0.5 text-[10px]">{activeFilterCount}</span>}
             </button>

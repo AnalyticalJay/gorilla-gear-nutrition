@@ -85,7 +85,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.52 }}
-              className="relative z-10 max-w-xl"
+              className="relative z-10 w-full max-w-xl text-center sm:text-left"
             >
               <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.24em] text-[#c99a3d] sm:mb-5 sm:text-xs sm:tracking-[0.3em]">Premium supplements. Elite coaching. Real results.</p>
               <h1 className="text-[clamp(2.7rem,10.5vw,6.65rem)] font-black uppercase leading-[0.82] tracking-[-0.07em] text-white sm:text-[clamp(3rem,10.5vw,6.65rem)]">
@@ -93,8 +93,8 @@ export default function Home() {
                 <span className="block">fuels</span>
                 <span className="block text-[#c99a3d]">greatness</span>
               </h1>
-              <div className="mt-5 h-px w-10 bg-[#c99a3d] sm:mt-6 sm:w-12" />
-              <p className="mt-5 max-w-md text-sm leading-6 text-white/78 sm:mt-6 sm:text-base sm:leading-7">
+              <div className="mx-auto mt-5 h-px w-10 bg-[#c99a3d] sm:mx-0 sm:mt-6 sm:w-12" />
+              <p className="mx-auto mt-5 max-w-md text-sm leading-6 text-white/78 sm:mx-0 sm:mt-6 sm:text-base sm:leading-7">
                 Premium supplements, performance apparel and elite coaching. Built for those who demand more.
               </p>
               <div className="mt-6 grid gap-2.5 sm:mt-8 sm:grid-cols-3 sm:gap-3">
@@ -114,7 +114,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-              <div className="mt-4 sm:mt-5">
+              <div className="mt-4 flex justify-center sm:mt-5 sm:block">
                 {isApproved ? (
                   <Link href="/products" className="group inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#c99a3d] no-underline">
                     Enter member catalogue <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -127,7 +127,7 @@ export default function Home() {
               </div>
               <div className="mt-6 grid max-w-[38rem] grid-cols-3 gap-0 border-y border-white/15 py-3.5 sm:mt-7 sm:py-4">
                 {membershipBenefits.map(({ icon: Icon, title, copy }, index) => (
-                  <div key={title} className={`min-w-0 px-2 first:pl-0 last:pr-0 ${index > 0 ? "border-l border-white/15 sm:pl-4" : ""} ${index < membershipBenefits.length - 1 ? "sm:pr-4" : ""}`}>
+                  <div key={title} className={`flex min-w-0 flex-col items-center px-2 text-center first:pl-0 last:pr-0 sm:block sm:text-left ${index > 0 ? "border-l border-white/15 sm:pl-4" : ""} ${index < membershipBenefits.length - 1 ? "sm:pr-4" : ""}`}>
                     <Icon className="mb-1 h-3.5 w-3.5 text-[#c99a3d] sm:mb-0.5 sm:h-4 sm:w-4" strokeWidth={1.5} />
                     <div><p className="text-[8px] font-black uppercase leading-3 tracking-[0.1em] text-white sm:text-[9px] sm:tracking-[0.14em]">{title}</p><p className="mt-1 text-[10px] leading-3.5 text-white/60 sm:text-[11px] sm:leading-4">{copy}</p></div>
                   </div>
@@ -141,7 +141,7 @@ export default function Home() {
         <section className="border-b border-white/10 bg-[#0d0d0d] py-6 sm:py-7">
           <div className="container grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
             {pillars.map(({ icon: Icon, title, copy }, index) => (
-              <div key={title} className={`flex items-center gap-4 ${index > 0 ? "lg:border-l lg:border-white/10 lg:pl-8" : ""} ${index < pillars.length - 1 ? "lg:pr-8" : ""}`}>
+              <div key={title} className={`flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left ${index > 0 ? "lg:border-l lg:border-white/10 lg:pl-8" : ""} ${index < pillars.length - 1 ? "lg:pr-8" : ""}`}>
                 <Icon className="h-8 w-8 shrink-0 text-[#c99a3d]" strokeWidth={1.4} />
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white">{title}</p>
@@ -165,7 +165,7 @@ export default function Home() {
                   <img src={collection.image} alt={collection.title} className={`absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 ${collection.imageClass}`} />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.15)_0%,rgba(0,0,0,0.28)_33%,rgba(0,0,0,0.94)_100%)]" />
                   <div className="absolute left-5 right-5 top-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">Collection 0{index + 1}</span><span className="h-px w-8 bg-white/35" /></div>
-                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+                  <div className="absolute inset-x-0 bottom-0 p-5 text-center sm:p-7 sm:text-left">
                     <p className="text-[10px] font-black uppercase tracking-[0.19em] text-[#c99a3d]">{collection.eyebrow}</p>
                     <h3 className="mt-3 text-2xl font-black uppercase leading-none tracking-[-0.055em] text-white sm:text-3xl">{collection.title}</h3>
                     <p className="mt-2 max-w-xs text-sm leading-5 text-white/64 sm:mt-3 sm:leading-6">{collection.description}</p>
@@ -184,13 +184,13 @@ export default function Home() {
             <div className="relative min-h-[300px] overflow-hidden border border-white/10 bg-[#151515] sm:min-h-[420px]">
               <img src={artwork.coaching} alt="Elite strength coaching in a premium training environment" className="absolute inset-0 h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/22 to-transparent" />
-              <div className="absolute bottom-6 left-6 max-w-xs sm:bottom-10 sm:left-10">
+              <div className="absolute bottom-6 left-5 right-5 mx-auto max-w-xs text-center sm:bottom-10 sm:left-10 sm:right-auto sm:mx-0 sm:text-left">
                 <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#c99a3d]">Coaching built for progress</p>
                 <h2 className="mt-3 text-3xl font-black uppercase leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl">Built in the gym. Backed by discipline.</h2>
                 <Link href="/coaching" className="mt-6 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#c99a3d] no-underline">Start coaching application <ArrowUpRight className="h-4 w-4" /></Link>
               </div>
             </div>
-            <div id="membership" className="scroll-mt-24 flex flex-col justify-center bg-[#c99a3d] p-6 text-black sm:p-12">
+            <div id="membership" className="scroll-mt-24 flex flex-col items-center justify-center bg-[#c99a3d] p-6 text-center text-black sm:items-start sm:p-12 sm:text-left">
               <Users className="h-11 w-11" strokeWidth={1.4} />
               <p className="mt-8 text-[10px] font-black uppercase tracking-[0.24em] text-black/62">Private member access</p>
               <h2 className="mt-3 text-4xl font-black uppercase leading-[0.88] tracking-[-0.055em]">Become a member</h2>
@@ -205,14 +205,14 @@ export default function Home() {
         </section>
 
         <section className="bg-[#080808] py-7 sm:py-8">
-          <div className="container grid grid-cols-2 gap-x-4 gap-y-6 text-left sm:grid-cols-2 lg:grid-cols-4">
+          <div className="container grid grid-cols-2 gap-x-4 gap-y-6 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-4">
             {[
               { icon: Truck, label: "Fast shipping", copy: "Nationwide delivery" },
               { icon: ShieldCheck, label: "Secure payments", copy: "Protected checkout" },
               { icon: PackageCheck, label: "Quality guarantee", copy: "Curated performance range" },
               { icon: LockKeyhole, label: "Member support", copy: "Here when you need us" },
             ].map(({ icon: Icon, label, copy }) => (
-              <div key={label} className="flex items-center gap-3">
+              <div key={label} className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
                 <Icon className="h-5 w-5 text-[#c99a3d]" strokeWidth={1.5} />
                 <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-white">{label}</p><p className="mt-1 text-xs text-white/48">{copy}</p></div>
               </div>

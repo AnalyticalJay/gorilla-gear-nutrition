@@ -114,14 +114,14 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="border-b border-black/10 bg-white p-4 md:hidden">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col items-center gap-3 text-center">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-black/68 hover:text-[#a8751c] no-underline">
+              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-black/68 hover:text-[#a8751c] no-underline">
                 {link.label}
               </a>
             ))}
             {isAdmin && (
-              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-black no-underline">
+              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-black no-underline">
                 Admin Dashboard
               </Link>
             )}

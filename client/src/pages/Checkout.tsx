@@ -230,7 +230,7 @@ export default function Checkout() {
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1f7a45] text-white shadow-sm">
                   <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
                 </div>
-                <DialogHeader className="space-y-1 text-left">
+                <DialogHeader className="space-y-1 text-center sm:text-left">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#a8751c]">Quote submitted</p>
                   <DialogTitle className="text-xl font-black uppercase tracking-tight text-[#1f1f1f] sm:text-2xl">We’ve received your request</DialogTitle>
                   <DialogDescription className="text-sm leading-relaxed text-[#6b665e]">Your quote is now with the Gorilla Gear team for review.</DialogDescription>

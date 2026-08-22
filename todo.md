@@ -464,3 +464,9 @@
 - [x] Add a branded quote-success modal with a clear submitted-quote summary and next steps.
 - [x] Verify modal accessibility, responsive behavior, navigation actions, and regression coverage.
 - [x] Save and deliver the quote-success modal checkpoint.
+
+## Active Implementation — Mobile Alignment and Experience Refinement
+- [x] Audit public, customer, and admin views for mobile alignment, spacing, and touch-target consistency.
+- [x] Centre appropriate customer-facing mobile content and refine mobile form, card, and action layouts.
+- [x] Verify phone layouts, form usability, and responsive regression coverage.
+- [x] Save and deliver the mobile optimisation checkpoint.

@@ -75,7 +75,7 @@ export default function ProductCard({
       </Link>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4">
+      <div className="flex flex-1 flex-col p-3 text-center sm:p-4 sm:text-left">
         {product.categoryName && (
           <span className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#0EA5E9" }}>
             {product.categoryName}
@@ -89,7 +89,7 @@ export default function ProductCard({
         </Link>
 
         {/* Price + CTA */}
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-auto flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:justify-between">
           {isApproved ? (
             <>
               <span className="text-base font-black text-white sm:text-lg">
@@ -98,7 +98,7 @@ export default function ProductCard({
               {inStock ? (
                 <Button
                   size="sm"
-                  className="min-h-10 flex-1 text-white font-bold text-[0.68rem] uppercase tracking-wide px-3 sm:h-9 sm:min-h-0 sm:flex-none"
+                  className="min-h-10 w-full text-white font-bold text-[0.68rem] uppercase tracking-wide px-3 sm:h-9 sm:min-h-0 sm:w-auto sm:flex-none"
                   style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
                   onClick={() => addToCart.mutate({ productId: product.id, quantity: 1 })}
                   disabled={addToCart.isPending}
@@ -110,7 +110,7 @@ export default function ProductCard({
             </>
           ) : (
             <>
-              <div className="flex min-w-0 items-center gap-1.5 text-[#64748B]">
+              <div className="flex min-w-0 items-center justify-center gap-1.5 text-[#64748B]">
                 <Lock className="h-3.5 w-3.5" />
                 <span className="text-xs font-medium">Approval required</span>
               </div>
