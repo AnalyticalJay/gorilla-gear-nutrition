@@ -477,3 +477,10 @@
 - [x] Apply only clean, exact high-confidence matches through managed storage.
 - [x] Document uncertain and unmatched products, then verify updated catalogue coverage.
 - [x] Save and deliver the remaining catalogue image research checkpoint.
+
+## Active Implementation — OT and KH Image Sourcing Follow-up
+- [x] Refresh the exact OT and KH records still missing a primary image.
+- [x] Research official brand and authorised distributor product imagery with confidence scoring.
+- [x] Apply clean, exact high-confidence OT and KH matches through managed storage.
+- [x] Verify updated coverage and document uncertain or unresolved OT and KH records.
+- [x] Save and deliver the OT and KH image-sourcing checkpoint.
