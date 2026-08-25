@@ -571,3 +571,10 @@
 - [x] Create the R350 white and black premium T-shirt products with sizes S–4XL and concise product copy.
 - [x] Verify product-gallery, mobile presentation, and size-selection behavior.
 - [x] Save and deliver the premium apparel products checkpoint.
+
+## Active Implementation — Per-Size T-Shirt Inventory
+- [x] Audit the apparel stock model and identify the smallest safe per-size inventory extension.
+- [x] Add per-size inventory validation to T-shirt cart and quote workflows.
+- [x] Set 50 units for every size S–4XL of each white and black T-shirt.
+- [x] Verify product, cart, quote, and inventory regression behavior.
+- [x] Save and deliver the per-size inventory checkpoint.

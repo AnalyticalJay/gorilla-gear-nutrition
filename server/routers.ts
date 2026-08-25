@@ -95,6 +95,17 @@ const PRODUCT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 const APPAREL_SIZES = ["S", "M", "L", "XL", "2XL", "3XL", "4XL"] as const;
 
+function normalizeSizeInventory(value: unknown): Record<string, number> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.entries(value as Record<string, unknown>).reduce<Record<string, number>>((inventory, [size, quantity]) => {
+    const normalizedQuantity = Number(quantity);
+    if (Number.isFinite(normalizedQuantity) && normalizedQuantity >= 0) {
+      inventory[size] = Math.floor(normalizedQuantity);
+    }
+    return inventory;
+  }, {});
+}
+
 function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
   const req = ctx.req as { ip?: string; socket?: { remoteAddress?: string }; headers?: Record<string, string | string[] | undefined> };
   const forwarded = req.headers?.["x-forwarded-for"];
@@ -592,6 +603,16 @@ export const appRouter = router({
           if (!availableSizes.includes(input.selectedSize)) {
             throw new TRPCError({ code: "BAD_REQUEST", message: "The selected size is not available for this product." });
           }
+          const sizeInventory = normalizeSizeInventory(product.sizeInventory);
+          if (Object.keys(sizeInventory).length > 0) {
+            const sizeStock = sizeInventory[input.selectedSize] ?? 0;
+            if (sizeStock === 0) {
+              throw new TRPCError({ code: "BAD_REQUEST", message: `Size ${input.selectedSize} is currently out of stock.` });
+            }
+            if (input.quantity > sizeStock) {
+              throw new TRPCError({ code: "BAD_REQUEST", message: `Only ${sizeStock} units are available in size ${input.selectedSize}.` });
+            }
+          }
         } else if (input.selectedSize) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "This product does not have size options." });
         }
@@ -641,6 +662,10 @@ export const appRouter = router({
           }
           if (item.selectedSize && !availableSizes.includes(item.selectedSize)) {
             throw new TRPCError({ code: "BAD_REQUEST", message: `The selected size for ${item.productName} is no longer available.` });
+          }
+          const sizeInventory = normalizeSizeInventory(item.sizeInventory);
+          if (item.selectedSize && Object.keys(sizeInventory).length > 0 && item.quantity > (sizeInventory[item.selectedSize] ?? 0)) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: `Only ${sizeInventory[item.selectedSize] ?? 0} units are available in size ${item.selectedSize} for ${item.productName}.` });
           }
         }
 

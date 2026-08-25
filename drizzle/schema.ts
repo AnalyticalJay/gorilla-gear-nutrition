@@ -123,6 +123,7 @@ export const products = mysqlTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   stockQuantity: int("stockQuantity").default(0).notNull(),
   availableSizes: json("availableSizes").$type<string[] | null>(),
+  sizeInventory: json("sizeInventory").$type<Record<string, number> | null>(),
   isActive: boolean("isActive").default(true).notNull(),
   isFeatured: boolean("isFeatured").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

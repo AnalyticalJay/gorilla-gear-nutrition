@@ -10,6 +10,13 @@ import { motion } from "framer-motion";
 
 type ApparelSize = "S" | "M" | "L" | "XL" | "2XL" | "3XL" | "4XL";
 
+function getCartLineAvailability(item: { productStock: number; selectedSize?: string | null; sizeInventory?: Record<string, number> | null }) {
+  if (item.selectedSize && item.sizeInventory && typeof item.sizeInventory[item.selectedSize] === "number") {
+    return item.sizeInventory[item.selectedSize];
+  }
+  return item.productStock;
+}
+
 export default function Cart() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
@@ -123,7 +130,7 @@ export default function Cart() {
                       <button
                         onClick={() => upsert.mutate({ productId: item.productId, quantity: item.quantity + 1, selectedSize: (item.selectedSize ?? undefined) as ApparelSize | undefined })}
                         className="flex h-11 w-11 items-center justify-center rounded-md border border-border transition-colors hover:bg-accent sm:h-8 sm:w-8"
-                        disabled={item.quantity >= item.productStock}
+                        disabled={item.quantity >= getCartLineAvailability(item)}
                       >
                         <Plus className="h-3 w-3" />
                       </button>

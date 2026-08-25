@@ -80,6 +80,12 @@ export default function ProductDetail() {
   const currentImage = images[imgIndex];
   const availableSizes = Array.isArray(product.availableSizes) ? product.availableSizes : [];
   const requiresSize = availableSizes.length > 0;
+  const sizeInventory = product.sizeInventory && typeof product.sizeInventory === "object" && !Array.isArray(product.sizeInventory)
+    ? product.sizeInventory as Record<string, number>
+    : {};
+  const hasTrackedSizeInventory = Object.keys(sizeInventory).length > 0;
+  const selectedSizeStock = selectedSize ? sizeInventory[selectedSize] ?? 0 : 0;
+  const maximumQuantity = requiresSize && selectedSize && hasTrackedSizeInventory ? selectedSizeStock : product.stockQuantity;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
@@ -175,7 +181,23 @@ export default function ProductDetail() {
 
               {/* Stock */}
               <div className="mb-6">
-                {product.stockQuantity > 0 ? (
+                {requiresSize && hasTrackedSizeInventory ? (
+                  selectedSize ? (
+                    selectedSizeStock > 0 ? (
+                      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#4ADE80" }}>
+                        ✓ In Stock ({selectedSizeStock} available in {selectedSize})
+                      </span>
+                    ) : (
+                      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#F87171" }}>
+                        ✗ {selectedSize} is Out of Stock
+                      </span>
+                    )
+                  ) : (
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#f0c65e" }}>
+                      Select a size to see availability
+                    </span>
+                  )
+                ) : product.stockQuantity > 0 ? (
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#4ADE80" }}>
                     ✓ In Stock ({product.stockQuantity} available)
                   </span>
@@ -238,7 +260,9 @@ export default function ProductDetail() {
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                     {availableSizes.map((size) => {
                       const selected = selectedSize === size;
-                      return <button key={size} type="button" aria-pressed={selected} onClick={() => setSelectedSize(size as ApparelSize)} className={`min-h-11 rounded-md border px-3 text-sm font-black transition-colors ${selected ? "border-[#f0c65e] bg-[#a8751c]/20 text-[#f0c65e]" : "border-[#3c3730] bg-[#151515] text-white hover:border-[#a8751c]/65 hover:bg-[#a8751c]/10"}`}>{size}</button>;
+                      const remaining = hasTrackedSizeInventory ? sizeInventory[size] ?? 0 : null;
+                      const unavailable = remaining === 0;
+                      return <button key={size} type="button" aria-pressed={selected} disabled={unavailable} onClick={() => { if (!unavailable) { setSelectedSize(size as ApparelSize); setQuantity(1); } }} className={`min-h-11 rounded-md border px-3 text-sm font-black transition-colors disabled:cursor-not-allowed disabled:border-[#3c3730] disabled:bg-[#151515]/50 disabled:text-[#777] ${selected ? "border-[#f0c65e] bg-[#a8751c]/20 text-[#f0c65e]" : "border-[#3c3730] bg-[#151515] text-white hover:border-[#a8751c]/65 hover:bg-[#a8751c]/10"}`}>{size}{remaining !== null && <span className="ml-1 text-[10px] font-medium opacity-70">({remaining})</span>}</button>;
                     })}
                   </div>
                   {!selectedSize && <p className="mt-3 text-xs font-medium text-[#f0c65e]">Select a size to add this T-shirt to your quote.</p>}
@@ -257,7 +281,7 @@ export default function ProductDetail() {
                     </button>
                     <span className="flex h-11 min-w-12 items-center justify-center border-x border-[#1E293B] px-4 py-2 text-sm font-bold text-white sm:h-9">{quantity}</span>
                     <button
-                      onClick={() => setQuantity((q) => Math.min(product.stockQuantity, q + 1))}
+                      onClick={() => setQuantity((q) => Math.min(maximumQuantity, q + 1))}
                       className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#1E293B] sm:h-9 sm:w-10"
                     >
                       +
@@ -267,7 +291,7 @@ export default function ProductDetail() {
                     className="min-h-11 w-full text-white font-bold uppercase tracking-wide sm:flex-1"
                     style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
                     onClick={() => addToCart.mutate({ productId: product.id, quantity, selectedSize: selectedSize ?? undefined })}
-                    disabled={addToCart.isPending || (requiresSize && !selectedSize)}
+                    disabled={addToCart.isPending || (requiresSize && (!selectedSize || selectedSizeStock === 0))}
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     {addToCart.isPending ? "Adding..." : "Add to Quote"}

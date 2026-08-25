@@ -163,6 +163,49 @@ describe("quote workflow router", () => {
     expect(dbMocks.upsertCartItem).toHaveBeenCalledWith(7, 12, 1, "XL");
   });
 
+  it("enforces the configured inventory limit for the selected apparel size", async () => {
+    const apparelInventory = { S: 50, M: 50, L: 50, XL: 50, "2XL": 50, "3XL": 50, "4XL": 50 };
+    dbMocks.getProductById.mockResolvedValue({
+      id: 12,
+      availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+      sizeInventory: apparelInventory,
+    });
+    const caller = appRouter.createCaller(makeContext());
+
+    await expect(caller.cart.upsert({ productId: 12, quantity: 51, selectedSize: "XL" })).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+      message: "Only 50 units are available in size XL.",
+    });
+
+    await caller.cart.upsert({ productId: 12, quantity: 50, selectedSize: "XL" });
+    expect(dbMocks.upsertCartItem).toHaveBeenCalledWith(7, 12, 50, "XL");
+
+    dbMocks.getCartItems.mockResolvedValue([{
+      productId: 12,
+      productName: "Gorilla Gear Primal Standard — Black 220gsm Tee",
+      quantity: 51,
+      productPrice: "350.00",
+      productStock: 350,
+      availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+      sizeInventory: apparelInventory,
+      selectedSize: "XL",
+    }]);
+
+    await expect(caller.orders.submitQuote({
+      shipping: {
+        fullName: "Quote Member",
+        phone: "+27123456789",
+        addressLine1: "1 Main Road",
+        city: "Port Elizabeth",
+        postalCode: "6001",
+        country: "South Africa",
+      },
+    })).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+      message: "Only 50 units are available in size XL for Gorilla Gear Primal Standard — Black 220gsm Tee.",
+    });
+  });
+
   it("allows an admin to approve or reject a quote with review notes", async () => {
     const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
 

@@ -816,6 +816,7 @@ export async function getCartItems(userId: number) {
       productPrice: products.price,
       productStock: products.stockQuantity,
       availableSizes: products.availableSizes,
+      sizeInventory: products.sizeInventory,
     })
     .from(cartItems)
     .innerJoin(products, eq(cartItems.productId, products.id))
