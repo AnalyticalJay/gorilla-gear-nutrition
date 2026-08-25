@@ -158,7 +158,7 @@ export default function OrderDetail() {
             <QuoteConversation orderId={order.id} comments={order.comments} viewerRole={user?.role === "admin" ? "admin" : "user"} />
 
             <div className="glass-card rounded-xl p-4 sm:p-6">
-              <div className="flex items-center gap-2 mb-4"><Package className="h-4 w-4 text-primary" /><h2 className="font-bold">Products in Quote</h2></div>
+              <div className="flex items-center justify-between gap-3 mb-4"><div className="flex items-center gap-2"><Package className="h-4 w-4 text-primary" /><h2 className="font-bold">Products in Quote</h2></div><Badge variant="outline" className="border-[#a8751c]/30 bg-[#f6f0e4] text-[#7c5a20]">{order.items.length} {order.items.length === 1 ? "item" : "items"}</Badge></div>
               <div className="space-y-3">{order.items.length > 0 ? order.items.map((item) => <div key={item.id} className="flex flex-col gap-2 border-b border-border/20 py-3 last:border-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4"><div className="min-w-0"><p className="font-medium text-sm">{item.productName}</p>{item.strength && <p className="text-xs text-primary/80 mt-1">{item.strength}</p>}<p className="text-xs text-muted-foreground mt-1">Qty: {item.quantity} × R{parseFloat(item.priceAtPurchase).toFixed(2)}</p></div><p className="self-end font-bold text-sm text-primary sm:self-auto">R{(parseFloat(item.priceAtPurchase) * item.quantity).toFixed(2)}</p></div>) : <p className="text-sm text-muted-foreground">Product details are being prepared for this quote.</p>}</div>
             </div>
 

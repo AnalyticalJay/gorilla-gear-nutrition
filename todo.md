@@ -495,3 +495,9 @@
 - [x] Reapply dependency, login, upload, session, header, and request-size safeguards.
 - [x] Verify security regression coverage, production build, and dependency audit state.
 - [x] Save and deliver the security-hardening checkpoint.
+
+## Active Fix — Quote and Order Item Visibility
+- [x] Trace the missing line-item data across order detail queries and both customer/admin views.
+- [x] Restore itemised product, strength, quantity, unit-price, and line-total display for quotes and orders.
+- [x] Verify responsive item lists, calculated totals, and regression coverage.
+- [x] Save and deliver the quote-item visibility checkpoint.

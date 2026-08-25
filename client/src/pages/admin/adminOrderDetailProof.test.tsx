@@ -76,6 +76,10 @@ describe("AdminOrderDetail proof review", () => {
     render(<AdminOrderDetail />);
 
     expect(screen.getByText("Pending review")).toBeTruthy();
+    expect(screen.getByText("Test Product")).toBeTruthy();
+    expect(screen.getByText("10mg")).toBeTruthy();
+    expect(screen.getByText(/Qty: 1 × R1450\.00/)).toBeTruthy();
+    expect(screen.getByText("1 item")).toBeTruthy();
     fireEvent.change(screen.getByPlaceholderText(/optional rejection reason/i), { target: { value: "Receipt is not legible." } });
     fireEvent.click(screen.getByRole("button", { name: /reject pop/i }));
 

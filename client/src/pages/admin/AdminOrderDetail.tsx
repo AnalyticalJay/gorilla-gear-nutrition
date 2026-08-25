@@ -380,12 +380,15 @@ export default function AdminOrderDetail() {
 
       {/* Order Items */}
       <div className="glass-card rounded-xl p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Package className="h-4 w-4 text-primary" />
-          <h2 className="font-bold">Items Ordered</h2>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-primary" />
+            <h2 className="font-bold">Items Ordered</h2>
+          </div>
+          <Badge variant="outline" className="border-[#a8751c]/30 bg-[#f6f0e4] text-[#7c5a20]">{order.items.length} {order.items.length === 1 ? "item" : "items"}</Badge>
         </div>
         <div className="space-y-3">
-          {order.items.map((item) => (
+          {order.items.length > 0 ? order.items.map((item) => (
             <div key={item.id} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
               <div>
                 <p className="font-medium text-sm">{item.productName}</p>
@@ -398,7 +401,7 @@ export default function AdminOrderDetail() {
                 R{(parseFloat(item.priceAtPurchase) * item.quantity).toFixed(2)}
               </p>
             </div>
-          ))}
+          )) : <p className="rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] p-3 text-sm text-[#7c5a20]">No product line items were saved for this legacy order. Please contact support before progressing fulfilment.</p>}
           <div className="flex justify-between font-bold pt-2">
             <span>Total</span>
             <span className="text-primary">R{parseFloat(order.totalAmount).toFixed(2)}</span>
