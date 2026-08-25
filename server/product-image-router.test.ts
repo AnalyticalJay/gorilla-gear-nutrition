@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { storagePutMock, addProductImageMock } = vi.hoisted(() => ({
+const { storagePutMock, addProductImageMock, getProductByIdMock } = vi.hoisted(() => ({
   storagePutMock: vi.fn(),
   addProductImageMock: vi.fn(),
+  getProductByIdMock: vi.fn(),
 }));
 
 vi.mock("./storage", () => ({
@@ -14,6 +15,7 @@ vi.mock("./db", async () => {
   return {
     ...actual,
     addProductImage: addProductImageMock,
+    getProductById: getProductByIdMock,
   };
 });
 
@@ -46,6 +48,8 @@ describe("admin product image router", () => {
   beforeEach(() => {
     storagePutMock.mockReset();
     addProductImageMock.mockReset();
+    getProductByIdMock.mockReset();
+    getProductByIdMock.mockResolvedValue({ id: 123, name: "Sample product" });
     storagePutMock.mockResolvedValue({ key: "products/1/image.jpg", url: "/manus-storage/products/1/image.jpg" });
   });
 
@@ -75,7 +79,7 @@ describe("admin product image router", () => {
     await caller.products.uploadImage({
       productId: 123,
       fileName: "sample-product.jpg",
-      fileData: Buffer.from("image-bytes").toString("base64"),
+      fileData: Buffer.from([0xff, 0xd8, 0xff, 0xd9]).toString("base64"),
       mimeType: "image/jpeg",
       isPrimary: true,
     });
@@ -91,5 +95,17 @@ describe("admin product image router", () => {
       imageKey: expect.stringMatching(/^products\/123\/\d+-sample-product\.jpg$/),
       isPrimary: true,
     });
+  });
+
+  it("rejects an image declaration when its bytes do not match the claimed type", async () => {
+    const caller = appRouter.createCaller(makeAdminContext());
+    await expect(caller.products.uploadImage({
+      productId: 123,
+      fileName: "not-a-real-png.png",
+      fileData: Buffer.from([0xff, 0xd8, 0xff, 0xd9]).toString("base64"),
+      mimeType: "image/png",
+      isPrimary: false,
+    })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    expect(storagePutMock).not.toHaveBeenCalled();
   });
 });

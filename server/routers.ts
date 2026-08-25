@@ -91,6 +91,48 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 const passwordResetRequestTimes = new Map<string, number>();
 const PASSWORD_RESET_COOLDOWN_MS = 60_000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
+const LOGIN_FAILURE_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_FAILURE_LIMIT = 5;
+const loginFailures = new Map<string, { count: number; firstFailedAt: number }>();
+const PRODUCT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+const PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
+function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
+  const req = ctx.req as { ip?: string; socket?: { remoteAddress?: string }; headers?: Record<string, string | string[] | undefined> };
+  const forwarded = req.headers?.["x-forwarded-for"];
+  const forwardedIp = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
+  const client = (forwardedIp || req.ip || req.socket?.remoteAddress || "unknown").trim().slice(0, 128);
+  return `${email.trim().toLowerCase()}|${client}`;
+}
+
+function assertLoginAllowed(key: string) {
+  const attempt = loginFailures.get(key);
+  if (!attempt) return;
+  if (Date.now() - attempt.firstFailedAt >= LOGIN_FAILURE_WINDOW_MS) {
+    loginFailures.delete(key);
+    return;
+  }
+  if (attempt.count >= LOGIN_FAILURE_LIMIT) {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many sign-in attempts. Please try again in a few minutes." });
+  }
+}
+
+function recordLoginFailure(key: string) {
+  const now = Date.now();
+  const attempt = loginFailures.get(key);
+  if (!attempt || now - attempt.firstFailedAt >= LOGIN_FAILURE_WINDOW_MS) {
+    loginFailures.set(key, { count: 1, firstFailedAt: now });
+    return;
+  }
+  loginFailures.set(key, { ...attempt, count: attempt.count + 1 });
+}
+
+function detectProductImageMime(buffer: Buffer): (typeof PRODUCT_IMAGE_TYPES)[number] | null {
+  if (buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return "image/png";
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return "image/jpeg";
+  if (buffer.length >= 12 && buffer.subarray(0, 4).toString("ascii") === "RIFF" && buffer.subarray(8, 12).toString("ascii") === "WEBP") return "image/webp";
+  return null;
+}
 
 function buildPasswordResetAuditIdentity(email: string, userId?: number | null) {
   const normalizedEmail = email.trim().toLowerCase();
@@ -158,17 +200,23 @@ export const appRouter = router({
     login: publicProcedure
       .input(z.object({ email: z.string().email(), password: z.string() }))
       .mutation(async ({ input, ctx }) => {
+        const loginKey = getLoginAttemptKey(ctx, input.email);
+        assertLoginAllowed(loginKey);
         const user = await getUserByEmail(input.email);
         if (!user || !user.passwordHash) {
+          recordLoginFailure(loginKey);
           throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
         }
         const valid = await bcrypt.compare(input.password, user.passwordHash);
         if (!valid) {
+          recordLoginFailure(loginKey);
           throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
         }
         if (!user.isActive) {
+          recordLoginFailure(loginKey);
           throw new TRPCError({ code: "FORBIDDEN", message: "Account is deactivated" });
         }
+        loginFailures.delete(loginKey);
 
         // Create session token
         const { sdk } = await import("./_core/sdk");
@@ -410,15 +458,31 @@ export const appRouter = router({
     uploadImage: adminProcedure
       .input(z.object({
         productId: z.number(),
-        fileName: z.string(),
-        fileData: z.string(), // base64
-        mimeType: z.string(),
+        fileName: z.string().trim().min(1).max(128),
+        fileData: z.string().min(4).max(7_000_000), // base64
+        mimeType: z.string().min(1).max(64),
         isPrimary: z.boolean().default(false),
       }))
       .mutation(async ({ input }) => {
+        const product = await getProductById(input.productId);
+        if (!product) throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
+        if (!/^[A-Za-z0-9+/]+={0,2}$/.test(input.fileData)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Product image data is invalid" });
+        }
         const buffer = Buffer.from(input.fileData, "base64");
-        const key = `products/${input.productId}/${Date.now()}-${input.fileName}`;
-        const { url } = await storagePut(key, buffer, input.mimeType);
+        if (buffer.length === 0 || buffer.length > PRODUCT_IMAGE_MAX_BYTES) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Product images must be 5 MB or smaller" });
+        }
+        const declaredMime = PRODUCT_IMAGE_TYPES.includes(input.mimeType as (typeof PRODUCT_IMAGE_TYPES)[number])
+          ? input.mimeType as (typeof PRODUCT_IMAGE_TYPES)[number]
+          : null;
+        const detectedMime = detectProductImageMime(buffer);
+        if (!declaredMime || !detectedMime || detectedMime !== declaredMime) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Upload a valid JPG, PNG, or WEBP product image" });
+        }
+        const safeFileName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-128) || "product-image";
+        const key = `products/${input.productId}/${Date.now()}-${safeFileName}`;
+        const { url } = await storagePut(key, buffer, detectedMime);
         await addProductImage({ productId: input.productId, imageUrl: url, imageKey: key, isPrimary: input.isPrimary });
         return { url, key };
       }),

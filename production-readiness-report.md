@@ -9,7 +9,7 @@
 
 The application is **functionally mature but not yet ready for an unrestricted production launch**. The restored release builds successfully and its automated suite passes **171 tests across 54 test files**. The gated-access model, admin roles, quote workflow, manual EFT proof flow, iKhokha payment-link workflow, callback reconciliation, customer tracking, and admin audit tools have automated coverage.
 
-The principal launch blockers are operational and dependency-related. The current production dependency scan reports **1 critical, 23 high, 49 moderate, and 10 low** advisories. In addition, the production SMTP mailbox previously returned a live authentication failure (`535`), and iKhokha still requires one real low-value payment and one cancellation/failed-payment exercise to prove its external callback behaviour. Security hardening was prepared during the prior audit session, but the workspace was restored to revision `baff72f` before those changes were checkpointed; the report distinguishes those prepared remediations from controls present in the current release.
+The principal remaining launch blockers are operational. The re-applied dependency remediation now returns **zero production dependency advisories**. In addition, the production SMTP mailbox previously returned a live authentication failure (`535`), and iKhokha still requires one real low-value payment and one cancellation/failed-payment exercise to prove its external callback behaviour.
 
 > **Go-live decision:** Use a controlled internal/UAT launch only until the P0 items in this report are complete. Proceed to public launch after the dependency remediation, SMTP validation, iKhokha live validation, and final regression checkpoint are completed.
 
@@ -18,7 +18,7 @@ The principal launch blockers are operational and dependency-related. The curren
 | Area | Evidence reviewed | Current result |
 |---|---|---|
 | Build and automated regression | `pnpm check` and `pnpm test` on revision `baff72f` | TypeScript passes; **171/171 tests pass**. |
-| Production dependency health | `pnpm audit --prod --json` | **1 critical, 23 high, 49 moderate, 10 low** advisories remain. |
+| Production dependency health | Final `pnpm audit --prod --json` after remediation | **0 critical, 0 high, 0 moderate, 0 low** advisories. |
 | Authentication and roles | Auth procedures, approval gates, admin-only procedures, email password reset tests | Role and approval boundaries are implemented and regression-tested. |
 | Payments | iKhokha request, callback, audit, failure/retry, and customer payment tests | Server-side payment reconciliation is implemented; real provider delivery remains unproven. |
 | Order integrity | Quote creation, line-item persistence, delivery details, quote workflow tests | Quote creation is transaction-safe and has regression coverage for the earlier insert-ID defect. |
@@ -40,30 +40,33 @@ The payment workflow does not accept a browser callback body as proof of payment
 | Payment audit trail | Admin payment-attempt audit view available | Confirm a genuine iKhokha callback produces the expected audit record. |
 | Password reset audit | Implemented and tested | Renew SMTP credentials and complete a delivered-email reset test. |
 | Product image sourcing | High-confidence sources applied; uncertain sources excluded | Obtain supplier media packs for unresolved products. |
+| Login throttling | Five invalid attempts per email/client window are limited | Confirm expected behaviour from the production proxy/client IP path. |
+| Product image upload validation | MIME, file-signature, filename, product-existence, and 5 MB limits are enforced | Test one valid and one rejected admin upload in UAT. |
+| Browser and session policy | SameSite=Lax HTTP-only session cookies, security headers, trusted proxy, and 12 MB request bounds are configured | Verify production headers after publication. |
 
-## Security Remediations Prepared During the Prior Audit
+## Security Remediations Reapplied and Verified
 
-The following security changes were implemented and tested in the prior audit workspace. **They are not present in the currently restored `baff72f` revision because that workspace was reset before a checkpoint was saved.** They should be reapplied, tested, and checkpointed before public launch.
+The following security changes have been reapplied to the restored release, covered by targeted regression tests, and validated by the full automated suite.
 
-| Prepared remediation | Security benefit | Required production action |
+| Remediation | Security benefit | Required production action |
 |---|---|---|
-| Login throttling after five failed attempts per email/client window | Reduces credential-stuffing and password-guessing risk | Reapply and verify accepted client/proxy IP handling. |
-| Strict product-image type, magic-byte, filename, product-existence, and 5 MB validation | Prevents misleading MIME uploads, oversized payloads, and orphaned media | Reapply server and client validation, then test JPG/PNG/WEBP rejection paths. |
-| SameSite=Lax, HTTP-only session cookie policy | Reduces cross-site cookie use while retaining standard top-level sign-in flow | Reapply and verify email/OAuth sign-in in production. |
-| Browser security headers and a 12 MB body limit | Reduces framing, MIME-sniffing, browser capability, and oversized-request exposure | Reapply headers, inspect the deployed response, and verify POP upload remains supported. |
-| Removal/upgrade of unused vulnerable packages | Reduces dependency attack surface | Reapply after resolving the current audit baseline. |
+| Login throttling after five failed attempts per email/client window | Reduces credential-stuffing and password-guessing risk | Verify accepted client/proxy IP handling in production. |
+| Strict product-image type, magic-byte, filename, product-existence, and 5 MB validation | Prevents misleading MIME uploads, oversized payloads, and orphaned media | Test accepted JPG/PNG/WEBP and rejected malformed files in UAT. |
+| SameSite=Lax, HTTP-only session cookie policy | Reduces cross-site cookie use while retaining standard top-level sign-in flow | Verify email and OAuth sign-in in production. |
+| Browser security headers and a 12 MB body limit | Reduces framing, MIME-sniffing, browser capability, and oversized-request exposure | Inspect deployed response headers and verify POP upload remains supported. |
+| Dependency remediation | Removes unused markdown code, updates tRPC, SheetJS, AWS SDK, Drizzle, Express, Nano ID, Axios, and Lodash dependency paths | Maintain routine audit checks on each release. |
 
 ## Dependency Risk Register
 
-The dependency scan is the primary technical release blocker. The findings include direct or transitive paths through `xlsx`, `@trpc/server`, `streamdown`/Mermaid, Axios, Express, and the AWS SDK. Some findings may be unreachable in the application’s current feature set, but they must be remediated or formally accepted before a public release.
+The dependency scan is no longer a current release blocker. The final production audit returns zero advisories after upgrading direct and transitive paths through `xlsx`, `@trpc/server`, AWS SDK, Drizzle, Express, Nano ID, Axios, and Lodash.
 
 | Priority | Current finding | Recommended resolution |
 |---|---|---|
-| P0 | `xlsx` 0.18.5 has high-severity prototype-pollution and ReDoS advisories when parsing untrusted workbook content. | Replace with the current SheetJS CE vendor distribution, or remove spreadsheet import until the patched package is installed. [1] |
-| P0 | `@trpc/server` 11.6.0 is below the advised patched release. | Upgrade the complete tRPC package family to **11.8.0 or later**, then run the full suite. [2] |
-| P0 | Production audit reports 1 critical and 23 high advisories. | Re-run the dependency remediation from the restored revision and require a clean or formally risk-accepted audit result. |
-| P1 | Streamdown/Mermaid is not needed by a currently exposed customer route. | Remove the unused component/dependency path or upgrade the complete dependency chain. |
-| P1 | AWS SDK advisory includes a configuration-validation enhancement. | Upgrade direct AWS SDK packages and retain fixed-region configuration. |
+| Resolved | SheetJS import path | Updated to the current SheetJS CE vendor distribution. [1] |
+| Resolved | tRPC advisory | Updated the complete tRPC package family to 11.18.0. [2] |
+| Resolved | Production audit baseline | Final audit reports zero advisories. |
+| Resolved | Unused Streamdown/Mermaid component chain | Removed from the production source tree. |
+| Resolved | AWS SDK, Drizzle, Express, Nano ID, Axios, and Lodash paths | Updated to patched releases and revalidated. |
 
 ## Remaining Live-Product Validation
 
@@ -90,11 +93,11 @@ The production build has previously completed successfully, with a large client 
 
 ## Recommended Go-Live Sequence
 
-1. **Reapply and checkpoint the prepared security hardening**, then rerun TypeScript, the complete test suite, production build, and production dependency audit.
-2. **Resolve the SMTP credential issue** and validate password-reset, payment-approved, packing, and dispatch email delivery to real inboxes.
-3. **Run one controlled iKhokha completed payment and one cancellation/decline**, monitoring the Admin Payment Audit and the customer dashboard after each outcome.
-4. **Complete operator UAT** for account approval, quote approval, Manual EFT proof review, dispatch tracking, password reset, and role separation.
-5. **Create a final go-live checkpoint** only after all P0 checks are evidenced, then publish from that checkpoint.
+1. **Resolve the SMTP credential issue** and validate password-reset, payment-approved, packing, and dispatch email delivery to real inboxes.
+2. **Run one controlled iKhokha completed payment and one cancellation/decline**, monitoring the Admin Payment Audit and the customer dashboard after each outcome.
+3. **Complete operator UAT** for account approval, quote approval, Manual EFT proof review, dispatch tracking, password reset, and role separation.
+4. **Inspect deployed security headers and session behaviour** after publishing this checkpoint.
+5. **Create a final public-launch checkpoint** only after all P0 checks are evidenced.
 
 ## Launch Decision
 

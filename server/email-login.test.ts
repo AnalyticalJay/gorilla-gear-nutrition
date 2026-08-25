@@ -56,4 +56,21 @@ describe("email/password login session handoff", () => {
     const session = await sdk.verifySession(cookies[0]?.value);
     expect(session).toMatchObject({ openId: "321", name: "321" });
   });
+
+  it("throttles repeated invalid sign-in attempts for the same account and client", async () => {
+    dbMocks.getUserByEmail.mockResolvedValue(undefined);
+    const ctx = {
+      user: null,
+      req: { protocol: "https", headers: { "x-forwarded-for": "203.0.113.10" } },
+      res: { cookie: vi.fn(), clearCookie: vi.fn() },
+    } as unknown as TrpcContext;
+    const caller = appRouter.createCaller(ctx);
+    const input = { email: "throttle-check@example.com", password: "not-the-password" };
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await expect(caller.auth.login(input)).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    }
+
+    await expect(caller.auth.login(input)).rejects.toMatchObject({ code: "TOO_MANY_REQUESTS" });
+  });
 });
