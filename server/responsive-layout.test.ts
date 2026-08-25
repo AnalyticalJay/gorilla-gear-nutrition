@@ -49,9 +49,8 @@ describe("responsive layout contracts", () => {
     expect(productDetail).toContain("h-11 w-11");
     expect(orderDetail).toContain("pb-24 sm:py-12 sm:pb-12");
     expect(orderDetail).toContain("flex flex-col gap-2");
-    expect(orderDetail).toContain('aria-label="Upload proof of payment"');
-    expect(orderDetail).toContain("accept=\"image/*,application/pdf\"");
-    expect(orderDetail).toContain("block w-full text-xs");
+    expect(orderDetail).not.toContain('aria-label="Upload proof of payment"');
+    expect(orderDetail).toContain("min-h-11 w-full");
   });
 
   it("adds global bottom safe-area space and mobile navigation touch targets", () => {

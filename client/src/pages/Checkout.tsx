@@ -261,7 +261,7 @@ export default function Checkout() {
                 <ClipboardCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#a8751c]" aria-hidden="true" />
                 <div className="text-sm leading-relaxed text-[#684713]">
                   <p className="font-bold text-[#5f4210]">What happens next</p>
-                  <p className="mt-1">We’ll review your availability and final quote. Once approved, you’ll receive an email and can choose iKhokha or Manual EFT from your quote status page.</p>
+                  <p className="mt-1">We’ll review your availability and final quote. Once approved, you’ll receive an email and can complete payment securely through iKhokha from your quote status page.</p>
                 </div>
               </div>
             </div>

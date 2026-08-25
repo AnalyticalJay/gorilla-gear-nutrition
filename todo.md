@@ -520,3 +520,10 @@
 - [x] Verify database persistence, SMTP acceptance, and item detail rendering in customer/admin views.
 - [x] Produce a final deployment-readiness report with verified controls and external prerequisites.
 - [x] Save and deliver the final readiness checkpoint and report.
+
+## Active Implementation — iKhokha-Only Payment Workflow
+- [x] Audit Manual EFT and proof-of-payment paths across customer, admin, server, and notifications.
+- [x] Remove new Manual EFT selection and proof uploads while enforcing iKhokha-only payment requests server-side.
+- [x] Update payment messaging and preserve historical EFT audit visibility.
+- [x] Verify iKhokha-only payment flow and regression coverage without initiating payment.
+- [x] Save and deliver the iKhokha-only payment checkpoint.
