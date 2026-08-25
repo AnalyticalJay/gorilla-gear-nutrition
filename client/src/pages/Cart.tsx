@@ -8,6 +8,8 @@ import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
+type ApparelSize = "S" | "M" | "L" | "XL" | "2XL" | "3XL" | "4XL";
+
 export default function Cart() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
@@ -101,6 +103,7 @@ export default function Cart() {
                       <Link href={`/products/${item.productSlug}`} className="no-underline">
                         <h3 className="font-semibold text-sm hover:text-primary transition-colors truncate">{item.productName}</h3>
                       </Link>
+                      {item.selectedSize && <p className="mt-1 text-xs font-bold uppercase tracking-wide text-[#a8751c]">Size: {item.selectedSize}</p>}
                       <p className="text-primary font-bold mt-1">R{parseFloat(item.productPrice).toFixed(2)}</p>
                     </div>
                     <div className="order-3 flex min-h-11 items-center gap-2 pl-[4.75rem] sm:order-none sm:min-h-0 sm:pl-0">
@@ -109,7 +112,7 @@ export default function Cart() {
                           if (item.quantity <= 1) {
                             remove.mutate({ cartItemId: item.id });
                           } else {
-                            upsert.mutate({ productId: item.productId, quantity: item.quantity - 1 });
+                            upsert.mutate({ productId: item.productId, quantity: item.quantity - 1, selectedSize: (item.selectedSize ?? undefined) as ApparelSize | undefined });
                           }
                         }}
                         className="flex h-11 w-11 items-center justify-center rounded-md border border-border transition-colors hover:bg-accent sm:h-8 sm:w-8"
@@ -118,7 +121,7 @@ export default function Cart() {
                       </button>
                       <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                       <button
-                        onClick={() => upsert.mutate({ productId: item.productId, quantity: item.quantity + 1 })}
+                        onClick={() => upsert.mutate({ productId: item.productId, quantity: item.quantity + 1, selectedSize: (item.selectedSize ?? undefined) as ApparelSize | undefined })}
                         className="flex h-11 w-11 items-center justify-center rounded-md border border-border transition-colors hover:bg-accent sm:h-8 sm:w-8"
                         disabled={item.quantity >= item.productStock}
                       >

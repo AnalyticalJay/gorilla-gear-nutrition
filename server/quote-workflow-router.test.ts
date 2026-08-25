@@ -12,6 +12,8 @@ const dbMocks = vi.hoisted(() => ({
   recordFailedIkhokhaPaymentAttempt: vi.fn(),
   resetFailedIkhokhaPaymentAttempt: vi.fn(),
   reviewQuote: vi.fn(),
+  getProductById: vi.fn(),
+  upsertCartItem: vi.fn(),
 }));
 
 const ikhokhaMocks = vi.hoisted(() => ({
@@ -111,6 +113,54 @@ describe("quote workflow router", () => {
       total: 340,
       items: [{ productName: "Test Product", quantity: 2, lineTotal: 200 }],
     }));
+  });
+
+  it("preserves an approved apparel size in the immutable quote item and confirmation email", async () => {
+    dbMocks.getCartItems.mockResolvedValue([
+      {
+        productId: 12,
+        productName: "Gorilla Gear Primal Standard — Black 220gsm Tee",
+        quantity: 1,
+        productPrice: "350.00",
+        productStock: 5,
+        availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+        selectedSize: "XL",
+      },
+    ]);
+    dbMocks.createOrder.mockResolvedValue(56);
+    dbMocks.clearCart.mockResolvedValue(undefined);
+
+    const caller = appRouter.createCaller(makeContext());
+    await caller.orders.submitQuote({
+      shipping: {
+        fullName: "Quote Member",
+        phone: "+27123456789",
+        addressLine1: "1 Main Road",
+        city: "Port Elizabeth",
+        postalCode: "6001",
+        country: "South Africa",
+      },
+    });
+
+    expect(dbMocks.createOrder).toHaveBeenCalledWith(expect.objectContaining({
+      items: [{ productId: 12, quantity: 1, priceAtPurchase: "350.00", selectedSize: "XL" }],
+    }));
+    expect(sendQuoteConfirmationEmail).toHaveBeenCalledWith(expect.objectContaining({
+      items: [{ productName: "Gorilla Gear Primal Standard — Black 220gsm Tee", selectedSize: "XL", quantity: 1, lineTotal: 350 }],
+    }));
+  });
+
+  it("requires a selected size when adding a product configured with apparel sizes", async () => {
+    dbMocks.getProductById.mockResolvedValue({ id: 12, availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"] });
+    const caller = appRouter.createCaller(makeContext());
+
+    await expect(caller.cart.upsert({ productId: 12, quantity: 1 })).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+      message: "Please select a size before adding this apparel item to your quote.",
+    });
+
+    await caller.cart.upsert({ productId: 12, quantity: 1, selectedSize: "XL" });
+    expect(dbMocks.upsertCartItem).toHaveBeenCalledWith(7, 12, 1, "XL");
   });
 
   it("allows an admin to approve or reject a quote with review notes", async () => {

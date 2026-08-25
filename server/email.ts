@@ -4,6 +4,7 @@ import { getTrackingUrl } from "../shared/orderTracking";
 
 export type QuoteConfirmationItem = {
   productName: string;
+  selectedSize?: string | null;
   quantity: number;
   lineTotal: number;
 };
@@ -88,10 +89,10 @@ export function buildQuoteConfirmationEmail(input: QuoteConfirmationInput) {
   const itemRows = input.items
     .map(
       (item) =>
-        `<tr><td style="padding:10px 0;border-bottom:1px solid #e5e7eb;color:#111827;">${escapeHtml(item.productName)} ×${item.quantity}</td><td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:right;color:#111827;">${formatZar(item.lineTotal)}</td></tr>`,
+        `<tr><td style="padding:10px 0;border-bottom:1px solid #e5e7eb;color:#111827;">${escapeHtml(item.productName)}${item.selectedSize ? `<br><span style="font-size:12px;color:#6b7280;">Size: ${escapeHtml(item.selectedSize)}</span>` : ""} ×${item.quantity}</td><td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:right;color:#111827;">${formatZar(item.lineTotal)}</td></tr>`,
     )
     .join("");
-  const itemText = input.items.map((item) => `${item.productName} ×${item.quantity}: ${formatZar(item.lineTotal)}`).join("\n");
+  const itemText = input.items.map((item) => `${item.productName}${item.selectedSize ? ` (Size: ${item.selectedSize})` : ""} ×${item.quantity}: ${formatZar(item.lineTotal)}`).join("\n");
 
   return {
     from: ENV.smtpFrom,

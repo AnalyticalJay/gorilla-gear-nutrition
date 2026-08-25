@@ -3,11 +3,23 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ShoppingCart, Lock, ArrowLeft, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+
+const SIZE_GUIDE_CM: Record<string, { chest: number; length: number }> = {
+  S: { chest: 52, length: 70 },
+  M: { chest: 55, length: 73 },
+  L: { chest: 58, length: 76 },
+  XL: { chest: 61, length: 79 },
+  "2XL": { chest: 64, length: 82 },
+  "3XL": { chest: 67, length: 85 },
+  "4XL": { chest: 70, length: 88 },
+};
+type ApparelSize = "S" | "M" | "L" | "XL" | "2XL" | "3XL" | "4XL";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -15,6 +27,7 @@ export default function ProductDetail() {
   const isApproved = (user as any)?.status === "approved";
   const [quantity, setQuantity] = useState(1);
   const [imgIndex, setImgIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<ApparelSize | null>(null);
 
   const utils = trpc.useUtils();
   const productQuery = trpc.products.bySlug.useQuery({ slug: slug ?? "" }, { enabled: !!slug });
@@ -65,6 +78,8 @@ export default function ProductDetail() {
 
   const images = product.images ?? [];
   const currentImage = images[imgIndex];
+  const availableSizes = Array.isArray(product.availableSizes) ? product.availableSizes : [];
+  const requiresSize = availableSizes.length > 0;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
@@ -182,9 +197,52 @@ export default function ProductDetail() {
               {/* Dosage */}
               {product.dosageInfo && (
                 <div className="mb-6 p-4 rounded border border-[#1E293B] bg-[#111111]">
-                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] mb-2">Dosage Information</h3>
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] mb-2">{requiresSize ? "Product Details" : "Dosage Information"}</h3>
                   <p className="text-sm text-[#94A3B8] leading-relaxed">{product.dosageInfo}</p>
                 </div>
+              )}
+
+              {requiresSize && (
+                <section className="mb-6 rounded-xl border border-[#3c3730] bg-[#111111] p-4 sm:p-5" aria-labelledby="size-heading">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 id="size-heading" className="text-xs font-black uppercase tracking-[0.16em] text-white">Size</h3>
+                      <p className="mt-1 text-xs text-[#a9a39b]">Choose the size you would like on your quote.</p>
+                    </div>
+                    <Dialog>
+                      <Button type="button" variant="outline" className="min-h-10 border-[#a8751c]/60 bg-transparent px-3 text-xs font-bold text-[#f0c65e] hover:bg-[#a8751c]/15 hover:text-[#f0c65e]">
+                        Size Guide
+                      </Button>
+                      <DialogContent className="border-[#e5dfd4] bg-white text-[#1f1f1f] sm:max-w-lg">
+                        <DialogHeader>
+                          <DialogTitle className="pr-7 text-left text-xl font-black uppercase tracking-tight">T-shirt size guide</DialogTitle>
+                          <DialogDescription className="text-left text-[#6b665e]">General fit reference in centimetres.</DialogDescription>
+                        </DialogHeader>
+                        <div className="overflow-x-auto rounded-lg border border-[#e5dfd4]">
+                          <table className="w-full min-w-[360px] text-left text-sm">
+                            <thead className="bg-[#f6f0e4] text-[11px] font-black uppercase tracking-wider text-[#7c5a20]">
+                              <tr><th className="px-4 py-3">Size</th><th className="px-4 py-3">Chest width</th><th className="px-4 py-3">Body length</th></tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#e5dfd4]">
+                              {availableSizes.map((size) => {
+                                const measurement = SIZE_GUIDE_CM[size];
+                                return <tr key={size}><td className="px-4 py-3 font-bold text-[#1f1f1f]">{size}</td><td className="px-4 py-3 text-[#454545]">{measurement ? `${measurement.chest} cm` : "Contact us"}</td><td className="px-4 py-3 text-[#454545]">{measurement ? `${measurement.length} cm` : "Contact us"}</td></tr>;
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                        <p className="text-xs leading-relaxed text-[#6b665e]">Chest width is measured flat across the garment. This general guide uses centimetres only and is not a manufacturing-specification chart; allow a tolerance of approximately 1–2 cm between production batches.</p>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                    {availableSizes.map((size) => {
+                      const selected = selectedSize === size;
+                      return <button key={size} type="button" aria-pressed={selected} onClick={() => setSelectedSize(size as ApparelSize)} className={`min-h-11 rounded-md border px-3 text-sm font-black transition-colors ${selected ? "border-[#f0c65e] bg-[#a8751c]/20 text-[#f0c65e]" : "border-[#3c3730] bg-[#151515] text-white hover:border-[#a8751c]/65 hover:bg-[#a8751c]/10"}`}>{size}</button>;
+                    })}
+                  </div>
+                  {!selectedSize && <p className="mt-3 text-xs font-medium text-[#f0c65e]">Select a size to add this T-shirt to your quote.</p>}
+                </section>
               )}
 
               {/* Add to Quote */}
@@ -208,8 +266,8 @@ export default function ProductDetail() {
                   <Button
                     className="min-h-11 w-full text-white font-bold uppercase tracking-wide sm:flex-1"
                     style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
-                    onClick={() => addToCart.mutate({ productId: product.id, quantity })}
-                    disabled={addToCart.isPending}
+                    onClick={() => addToCart.mutate({ productId: product.id, quantity, selectedSize: selectedSize ?? undefined })}
+                    disabled={addToCart.isPending || (requiresSize && !selectedSize)}
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     {addToCart.isPending ? "Adding..." : "Add to Quote"}

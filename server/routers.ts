@@ -93,6 +93,7 @@ const LOGIN_FAILURE_LIMIT = 5;
 const loginFailures = new Map<string, { count: number; firstFailedAt: number }>();
 const PRODUCT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+const APPAREL_SIZES = ["S", "M", "L", "XL", "2XL", "3XL", "4XL"] as const;
 
 function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
   const req = ctx.req as { ip?: string; socket?: { remoteAddress?: string }; headers?: Record<string, string | string[] | undefined> };
@@ -572,8 +573,31 @@ export const appRouter = router({
     get: approvedProcedure.query(({ ctx }) => getCartItems(ctx.user.id)),
 
     upsert: approvedProcedure
-      .input(z.object({ productId: z.number(), quantity: z.number().min(1) }))
-      .mutation(({ ctx, input }) => upsertCartItem(ctx.user.id, input.productId, input.quantity)),
+      .input(z.object({
+        productId: z.number(),
+        quantity: z.number().min(1),
+        selectedSize: z.enum(APPAREL_SIZES).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const product = await getProductById(input.productId);
+        if (!product) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
+        }
+
+        const availableSizes = Array.isArray(product.availableSizes) ? product.availableSizes : [];
+        if (availableSizes.length > 0) {
+          if (!input.selectedSize) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Please select a size before adding this apparel item to your quote." });
+          }
+          if (!availableSizes.includes(input.selectedSize)) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "The selected size is not available for this product." });
+          }
+        } else if (input.selectedSize) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "This product does not have size options." });
+        }
+
+        return upsertCartItem(ctx.user.id, input.productId, input.quantity, input.selectedSize ?? null);
+      }),
 
     remove: approvedProcedure
       .input(z.object({ cartItemId: z.number() }))
@@ -611,6 +635,13 @@ export const appRouter = router({
           if (item.quantity > item.productStock) {
             throw new TRPCError({ code: "BAD_REQUEST", message: `Insufficient stock for ${item.productName}` });
           }
+          const availableSizes = Array.isArray(item.availableSizes) ? item.availableSizes : [];
+          if (availableSizes.length > 0 && !item.selectedSize) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: `Please select a size for ${item.productName} before submitting your quote.` });
+          }
+          if (item.selectedSize && !availableSizes.includes(item.selectedSize)) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: `The selected size for ${item.productName} is no longer available.` });
+          }
         }
 
         const subtotal = cartRows.reduce((sum, item) => sum + parseFloat(item.productPrice) * item.quantity, 0);
@@ -618,7 +649,12 @@ export const appRouter = router({
         const total = subtotal + delivery.fee;
         const quoteId = await createOrder({
           userId: ctx.user.id,
-          items: cartRows.map((item) => ({ productId: item.productId, quantity: item.quantity, priceAtPurchase: String(item.productPrice ?? "0") })),
+          items: cartRows.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            priceAtPurchase: String(item.productPrice ?? "0"),
+            selectedSize: item.selectedSize,
+          })),
           totalAmount: total.toFixed(2),
           deliveryFee: delivery.fee.toFixed(2),
           deliveryType: delivery.type,
@@ -639,6 +675,7 @@ export const appRouter = router({
           customerEmail: ctx.user.email,
           items: cartRows.map((item) => ({
             productName: item.productName,
+            ...(item.selectedSize ? { selectedSize: item.selectedSize } : {}),
             quantity: item.quantity,
             lineTotal: parseFloat(item.productPrice) * item.quantity,
           })),

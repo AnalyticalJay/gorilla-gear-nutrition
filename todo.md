@@ -564,3 +564,10 @@
 - [x] Apply the new image through managed storage while preserving coaching copy readability.
 - [x] Verify the coaching collection across phone and desktop layouts.
 - [x] Save and deliver the realistic coaching-background checkpoint.
+
+## Active Implementation — Premium White and Black T-Shirts
+- [x] Audit catalogue category, image-gallery, and size-variant support for the new apparel records.
+- [x] Prepare main and secondary product images from the supplied white and black T-shirt mockups.
+- [x] Create the R350 white and black premium T-shirt products with sizes S–4XL and concise product copy.
+- [x] Verify product-gallery, mobile presentation, and size-selection behavior.
+- [x] Save and deliver the premium apparel products checkpoint.

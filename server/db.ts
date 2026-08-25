@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql, lt } from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, inArray, isNull, like, lte, or, sql, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -645,7 +645,7 @@ export async function getProductBySlug(slug: string) {
     .select()
     .from(productImages)
     .where(eq(productImages.productId, result[0].products.id))
-    .orderBy(productImages.isPrimary);
+    .orderBy(desc(productImages.isPrimary));
 
   return { ...result[0].products, category: result[0].categories, images };
 }
@@ -809,11 +809,13 @@ export async function getCartItems(userId: number) {
     .select({
       id: cartItems.id,
       quantity: cartItems.quantity,
+      selectedSize: cartItems.selectedSize,
       productId: products.id,
       productName: products.name,
       productSlug: products.slug,
       productPrice: products.price,
       productStock: products.stockQuantity,
+      availableSizes: products.availableSizes,
     })
     .from(cartItems)
     .innerJoin(products, eq(cartItems.productId, products.id))
@@ -831,21 +833,22 @@ export async function getCartItems(userId: number) {
   return items.map((i) => ({ ...i, primaryImage: imageMap.get(i.productId) ?? null }));
 }
 
-export async function upsertCartItem(userId: number, productId: number, quantity: number) {
+export async function upsertCartItem(userId: number, productId: number, quantity: number, selectedSize: string | null = null) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  const selectedSizeCondition = selectedSize ? eq(cartItems.selectedSize, selectedSize) : isNull(cartItems.selectedSize);
   const existing = await db
     .select()
     .from(cartItems)
-    .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)))
+    .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId), selectedSizeCondition))
     .limit(1);
   if (existing[0]) {
     await db
       .update(cartItems)
       .set({ quantity })
-      .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)));
+      .where(eq(cartItems.id, existing[0].id));
   } else {
-    await db.insert(cartItems).values({ userId, productId, quantity });
+    await db.insert(cartItems).values({ userId, productId, quantity, selectedSize });
   }
 }
 
@@ -873,7 +876,7 @@ export function calculateDelivery(_city: string): { type: "flat_rate"; fee: numb
 
 export async function createOrder(data: {
   userId: number;
-  items: Array<{ productId: number; quantity: number; priceAtPurchase: string }>;
+  items: Array<{ productId: number; quantity: number; priceAtPurchase: string; selectedSize?: string | null }>;
   totalAmount: string;
   deliveryFee: string;
   deliveryType: "free" | "flat_rate";
@@ -918,6 +921,7 @@ export async function createOrder(data: {
         productId: item.productId,
         productNameSnapshot: product?.name ?? `Product #${item.productId}`,
         strengthSnapshot: product?.dosageInfo ?? null,
+        selectedSizeSnapshot: item.selectedSize ?? null,
         quantity: item.quantity,
         priceAtPurchase: typeof item.priceAtPurchase === "number" ? (item.priceAtPurchase as number).toFixed(2) : String(item.priceAtPurchase ?? "0"),
       });
@@ -1055,6 +1059,7 @@ export async function getOrderById(orderId: number) {
       productId: orderItems.productId,
       productNameSnapshot: orderItems.productNameSnapshot,
       strengthSnapshot: orderItems.strengthSnapshot,
+      selectedSizeSnapshot: orderItems.selectedSizeSnapshot,
       productName: products.name,
       strength: products.dosageInfo,
       productSlug: products.slug,
@@ -1069,6 +1074,7 @@ export async function getOrderById(orderId: number) {
     productId: item.productId,
     productName: item.productName ?? item.productNameSnapshot ?? `Product #${item.productId}`,
     strength: item.strength ?? item.strengthSnapshot ?? null,
+    selectedSize: item.selectedSizeSnapshot ?? null,
     productSlug: item.productSlug ?? null,
   }));
 

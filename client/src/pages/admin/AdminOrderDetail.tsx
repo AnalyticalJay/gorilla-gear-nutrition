@@ -357,6 +357,7 @@ export default function AdminOrderDetail() {
               <div>
                 <p className="font-medium text-sm">{item.productName}</p>
                 {item.strength && <p className="text-xs text-primary/80 mt-1">{item.strength}</p>}
+                {item.selectedSize && <p className="mt-1 text-xs font-bold uppercase tracking-wide text-[#a8751c]">Size: {item.selectedSize}</p>}
                 <p className="text-xs text-muted-foreground">
                   Qty: {item.quantity} × R{parseFloat(item.priceAtPurchase).toFixed(2)}
                 </p>

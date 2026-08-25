@@ -197,7 +197,10 @@ export default function Checkout() {
                 <div className="space-y-3 mb-4">
                   {items.map((item) => (
                     <div key={item.id} className="flex flex-wrap items-start justify-between gap-2 text-sm">
-                      <span className="min-w-0 flex-1 text-muted-foreground">{item.productName} ×{item.quantity}</span>
+                      <div className="min-w-0 flex-1 text-muted-foreground">
+                        <p>{item.productName} ×{item.quantity}</p>
+                        {item.selectedSize && <p className="mt-1 text-xs font-bold uppercase tracking-wide text-[#a8751c]">Size: {item.selectedSize}</p>}
+                      </div>
                       <span className="shrink-0">R{(parseFloat(item.productPrice) * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}

@@ -122,6 +122,7 @@ export const products = mysqlTable("products", {
   categoryId: int("categoryId").references(() => categories.id),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   stockQuantity: int("stockQuantity").default(0).notNull(),
+  availableSizes: json("availableSizes").$type<string[] | null>(),
   isActive: boolean("isActive").default(true).notNull(),
   isFeatured: boolean("isFeatured").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -148,6 +149,7 @@ export const cartItems = mysqlTable("cart_items", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id),
   productId: int("productId").notNull().references(() => products.id),
+  selectedSize: varchar("selectedSize", { length: 8 }),
   quantity: int("quantity").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -236,6 +238,7 @@ export const orderItems = mysqlTable("order_items", {
   productId: int("productId").notNull().references(() => products.id),
   productNameSnapshot: varchar("productNameSnapshot", { length: 255 }),
   strengthSnapshot: varchar("strengthSnapshot", { length: 255 }),
+  selectedSizeSnapshot: varchar("selectedSizeSnapshot", { length: 8 }),
   quantity: int("quantity").notNull(),
   priceAtPurchase: decimal("priceAtPurchase", { precision: 10, scale: 2 }).notNull(),
 });
