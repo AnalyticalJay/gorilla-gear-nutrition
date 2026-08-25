@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Coaching from "./pages/Coaching";
+import ApparelShop from "./pages/ApparelShop";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
@@ -46,6 +47,7 @@ function Router() {
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
         <Route path="/coaching" component={Coaching} />
+        <Route path="/apparel" component={ApparelShop} />
         <Route path="/products" component={Products} />
         <Route path="/products/:slug" component={ProductDetail} />
 

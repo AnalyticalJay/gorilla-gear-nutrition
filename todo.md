@@ -578,3 +578,10 @@
 - [x] Set 50 units for every size S–4XL of each white and black T-shirt.
 - [x] Verify product, cart, quote, and inventory regression behavior.
 - [x] Save and deliver the per-size inventory checkpoint.
+
+## Active Implementation — Apparel Category Shop
+- [x] Audit category filtering, routes, and the homepage Clothing collection block link.
+- [x] Build a dedicated responsive Apparel Shop page that displays Clothing category products.
+- [x] Link the homepage Clothing block to the Apparel Shop page.
+- [x] Verify filtered apparel rendering, navigation, mobile layout, and regression coverage.
+- [x] Save and deliver the Apparel Shop checkpoint.
