@@ -585,3 +585,18 @@
 - [x] Link the homepage Clothing block to the Apparel Shop page.
 - [x] Verify filtered apparel rendering, navigation, mobile layout, and regression coverage.
 - [x] Save and deliver the Apparel Shop checkpoint.
+
+## Active Audit — Uploaded Inventory and Website Price Reconciliation
+- [x] Inspect and profile the uploaded inventory price list fields and record counts.
+- [x] Extract and normalize the live website product catalogue for comparison.
+- [x] Compare brand, product, product type, strength, dosage, and supplied prices; retain unpriced source rows as informational only.
+- [x] Prepare a reconciliation report and detailed exceptions workbook.
+- [x] Deliver the audit findings and supporting files.
+
+## Active Implementation — Catalogue Primary-Image Coverage
+- [x] Audit every live catalogue product for a main image and create the exact unresolved worklist.
+- [x] Review the supplied Drive brand folders and match only verified product imagery.
+- [x] Research safe official or authorised-source images for remaining product gaps.
+- [x] Upload and assign verified main images with provenance records.
+- [x] Verify coverage and representative rendering; document every unresolved record.
+- [x] Save and deliver the image-coverage checkpoint and audit files.
