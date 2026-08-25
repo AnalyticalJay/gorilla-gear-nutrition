@@ -484,3 +484,8 @@
 - [x] Apply clean, exact high-confidence OT and KH matches through managed storage.
 - [x] Verify updated coverage and document uncertain or unresolved OT and KH records.
 - [x] Save and deliver the OT and KH image-sourcing checkpoint.
+
+## Active Reporting — Production Readiness
+- [x] Reconcile current project state with verified security and workflow audit evidence.
+- [x] Prepare a production-readiness report covering remediations, blockers, and live validation requirements.
+- [x] Deliver the readiness report with a go-live validation sequence.
