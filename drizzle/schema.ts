@@ -164,6 +164,7 @@ export const orders = mysqlTable("orders", {
   status: mysqlEnum("status", ["pending", "quote_pending", "quote_approved", "quote_rejected", "awaiting_payment", "paid", "processing", "shipped", "completed", "cancelled"]).default("quote_pending").notNull(),
   paymentStatus: mysqlEnum("paymentStatus", ["pending", "awaiting_eft", "proof_uploaded", "paid", "failed"]).default("pending").notNull(),
   paymentMethod: mysqlEnum("paymentMethod", ["eft", "payfast", "ikhokha"]),
+  isTestOrder: boolean("isTestOrder").default(false).notNull(),
   payfastReference: varchar("payfastReference", { length: 255 }),
   ikhokhaReference: varchar("ikhokhaReference", { length: 255 }),
   ikhokhaPaylinkId: varchar("ikhokhaPaylinkId", { length: 255 }),

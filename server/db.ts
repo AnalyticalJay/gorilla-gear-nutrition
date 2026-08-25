@@ -366,11 +366,11 @@ export async function getAdminAnalytics() {
       .innerJoin(products, eq(productImages.productId, products.id))
       .where(eq(products.isActive, true)),
     db.select({ count: count() }).from(categories).where(eq(categories.isActive, true)),
-    db.select({ status: orders.status, count: count() }).from(orders).groupBy(orders.status),
+    db.select({ status: orders.status, count: count() }).from(orders).where(eq(orders.isTestOrder, false)).groupBy(orders.status),
     db
       .select({ count: count(), revenue: sql<string>`coalesce(sum(${orders.totalAmount}), 0)` })
       .from(orders)
-      .where(eq(orders.paymentStatus, "paid")),
+      .where(and(eq(orders.paymentStatus, "paid"), eq(orders.isTestOrder, false))),
     db
       .select({ id: users.id, fullName: users.fullName, status: users.status, createdAt: users.createdAt })
       .from(users)
@@ -387,6 +387,7 @@ export async function getAdminAnalytics() {
       })
       .from(orders)
       .innerJoin(users, eq(orders.userId, users.id))
+      .where(eq(orders.isTestOrder, false))
       .orderBy(desc(orders.createdAt))
       .limit(5),
   ]);
@@ -981,7 +982,7 @@ export async function getUserOrders(userId: number) {
   return db
     .select()
     .from(orders)
-    .where(eq(orders.userId, userId))
+    .where(and(eq(orders.userId, userId), eq(orders.isTestOrder, false)))
     .orderBy(orders.createdAt);
 }
 
@@ -1136,6 +1137,7 @@ export async function getAllOrders() {
     })
     .from(orders)
     .innerJoin(users, eq(orders.userId, users.id))
+    .where(eq(orders.isTestOrder, false))
     .orderBy(orders.createdAt);
 }
 

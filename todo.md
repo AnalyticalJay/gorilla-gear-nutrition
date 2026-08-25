@@ -533,3 +533,27 @@
 - [x] Remove the redundant mobile footer navigation and reclaim its reserved page spacing.
 - [x] Verify mobile header navigation and page layouts after footer removal.
 - [x] Save and deliver the simplified mobile navigation checkpoint.
+
+## Active Verification — iKhokha-Only Payment Option
+- [x] Prepare an approved controlled quote eligible for payment.
+- [x] Trigger iKhokha payment-link creation and verify no Manual EFT route is available.
+- [x] Verify payment-attempt state, hosted link, and no-charge outcome.
+- [x] Report the controlled payment-option test and live settlement condition.
+
+## Active Verification — Live iKhokha Settlement Test
+- [x] Prepare a controlled approved quote and confirm the iKhokha hosted checkout handoff.
+- [x] Obtain explicit confirmation before an authorised cardholder completes the live payment.
+- [x] Verify payment callback reconciliation, paid status, email notification, and audit record.
+- [x] Report the live payment test outcome and deployment implications.
+
+## Active Verification — R10 iKhokha Gateway Test
+- [x] Create a clearly labelled non-shippable R10 test product and controlled approved quote.
+- [x] Create and verify the secure R10 iKhokha hosted checkout handoff.
+- [x] Hand checkout to the authorised cardholder and verify callback reconciliation after payment.
+- [x] Report the test result and clean up the controlled test data.
+
+## Active Maintenance — Controlled Payment Test Archive
+- [x] Audit dashboard query filters and test-record state for safe archival.
+- [x] Archive the test product and hide the paid test order from operational dashboard views while preserving audit records.
+- [x] Verify dashboard cleanup and confirm mobile sticky footer navigation remains removed.
+- [x] Save and deliver the archive and mobile-navigation verification checkpoint.

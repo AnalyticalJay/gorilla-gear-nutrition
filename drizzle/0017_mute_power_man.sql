@@ -1,0 +1,1 @@
+ALTER TABLE `orders` ADD `isTestOrder` boolean DEFAULT false NOT NULL;
