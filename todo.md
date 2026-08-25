@@ -501,3 +501,22 @@
 - [x] Restore itemised product, strength, quantity, unit-price, and line-total display for quotes and orders.
 - [x] Verify responsive item lists, calculated totals, and regression coverage.
 - [x] Save and deliver the quote-item visibility checkpoint.
+
+## Active Verification — End-to-End Quote Submission
+- [x] Select an approved test account and in-stock catalogue product.
+- [x] Submit a controlled quote through the application workflow without payment.
+- [x] Verify saved items, delivery details, customer/admin visibility, and payment readiness.
+- [x] Report the end-to-end test outcome and any remaining external conditions.
+
+## Active Verification — Live SMTP Quote Confirmation
+- [x] Inspect SMTP transport configuration and the quote-confirmation email trigger path.
+- [x] Correct any SMTP configuration or trigger issues.
+- [x] Verify authenticated SMTP delivery with a controlled quote-confirmation email.
+- [x] Report the live delivery result and remaining external prerequisites.
+
+## Active Verification — Final Frontend Journey and Deployment Readiness
+- [x] Prepare an approved frontend test account and controlled in-stock product cart.
+- [x] Submit a controlled quote through the customer-facing frontend.
+- [x] Verify database persistence, SMTP acceptance, and item detail rendering in customer/admin views.
+- [x] Produce a final deployment-readiness report with verified controls and external prerequisites.
+- [x] Save and deliver the final readiness checkpoint and report.
