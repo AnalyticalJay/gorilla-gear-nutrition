@@ -21,7 +21,7 @@ const artwork = {
   hero: "/manus-storage/ggn-hero-branded-apparel-model_38e5ef90.png",
   supplements: "/manus-storage/ggn-collection-supplements-v2_e5318894.jpg",
   clothing: "/manus-storage/ggn-clothing-mannequin_b7e2bdb6.png",
-  coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
+  coaching: "/manus-storage/ggn-realistic-coaching-gym-background_ac3902d7.jpg",
 };
 
 const collections = [

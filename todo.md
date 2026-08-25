@@ -557,3 +557,10 @@
 - [x] Archive the test product and hide the paid test order from operational dashboard views while preserving audit records.
 - [x] Verify dashboard cleanup and confirm mobile sticky footer navigation remains removed.
 - [x] Save and deliver the archive and mobile-navigation verification checkpoint.
+
+## Active Implementation — Realistic Coaching Background
+- [x] Inspect the coaching collection component and determine the text-safe image composition.
+- [x] Generate a realistic Gorilla Gear coaching background with a coach and client in a blurred gym.
+- [x] Apply the new image through managed storage while preserving coaching copy readability.
+- [x] Verify the coaching collection across phone and desktop layouts.
+- [x] Save and deliver the realistic coaching-background checkpoint.
