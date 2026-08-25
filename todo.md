@@ -527,3 +527,9 @@
 - [x] Update payment messaging and preserve historical EFT audit visibility.
 - [x] Verify iKhokha-only payment flow and regression coverage without initiating payment.
 - [x] Save and deliver the iKhokha-only payment checkpoint.
+
+## Active Implementation — Simplified Mobile Navigation
+- [x] Inspect the mobile bottom navigation integration and its layout spacing dependencies.
+- [x] Remove the redundant mobile footer navigation and reclaim its reserved page spacing.
+- [x] Verify mobile header navigation and page layouts after footer removal.
+- [x] Save and deliver the simplified mobile navigation checkpoint.
