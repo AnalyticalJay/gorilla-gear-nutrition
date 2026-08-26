@@ -22,6 +22,7 @@ const artwork = {
   supplements: "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg",
   clothing: "/manus-storage/ggn-clothing-mannequin_b7e2bdb6.png",
   coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
+  privateCatalogue: "/manus-storage/ggn-private-member-catalogue_7bf8756b.jpg",
 };
 
 const collections = [
@@ -39,7 +40,7 @@ const collections = [
     eyebrow: "Performance apparel",
     description: "Train hard. Live ready. Show up with intent.",
     action: "Explore member range",
-    href: "#membership",
+    href: "/apparel",
     image: artwork.clothing,
     imageClass: "object-[center_16%]",
   },
@@ -72,7 +73,7 @@ export default function Home() {
   const isApproved = (user as any)?.status === "approved";
 
   return (
-    <div className="min-h-screen bg-[#070707] pb-[calc(5.35rem+env(safe-area-inset-bottom))] text-white selection:bg-[#c99a3d] selection:text-black lg:pb-0">
+    <div className="min-h-screen bg-[#070707] text-white selection:bg-[#c99a3d] selection:text-black">
       <Navbar />
 
       <main>
@@ -177,6 +178,34 @@ export default function Home() {
                 const className = "group relative block min-h-[390px] overflow-hidden border border-white/10 bg-[#111111] no-underline transition-all duration-300 hover:-translate-y-1 hover:border-[#c99a3d]/60 sm:min-h-[540px]";
                 return collection.href.startsWith("/") ? <Link key={collection.title} href={collection.href} className={className}>{content}</Link> : <a key={collection.title} href={collection.href} className={className}>{content}</a>;
               })}
+            </div>
+          </div>
+        </section>
+
+        <section id="member-catalogue" className="scroll-mt-24 border-y border-white/10 bg-[#090909] py-16 sm:py-20 lg:py-24">
+          <div className="container">
+            <div className="relative isolate overflow-hidden border border-[#c99a3d]/35 bg-[#111111]">
+              <img src={artwork.privateCatalogue} alt="Private member catalogue collection" className="absolute inset-0 h-full w-full object-cover object-right opacity-75" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,7,7,0.98)_0%,rgba(7,7,7,0.92)_42%,rgba(7,7,7,0.48)_100%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_35%,rgba(201,154,61,0.23),transparent_30%)]" />
+              <div className="relative grid min-h-[430px] items-center px-6 py-12 sm:min-h-[480px] sm:px-12 lg:grid-cols-[0.9fr_1.1fr] lg:px-16">
+                <div className="max-w-xl text-center sm:text-left">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center border border-[#c99a3d]/60 bg-black/35 text-[#c99a3d] sm:mx-0">
+                    <LockKeyhole className="h-6 w-6" strokeWidth={1.5} />
+                  </div>
+                  <p className="mt-7 text-[10px] font-black uppercase tracking-[0.26em] text-[#c99a3d]">Private member catalogue</p>
+                  <h2 className="mt-3 text-4xl font-black uppercase leading-[0.88] tracking-[-0.055em] text-white sm:text-5xl">The full range is unlocked by approval.</h2>
+                  <p className="mx-auto mt-5 max-w-lg text-sm leading-6 text-white/72 sm:mx-0 sm:text-base sm:leading-7">All enhanced product brands, categories and member catalogue details are reserved for approved Gorilla Gear members.</p>
+                  {isApproved ? (
+                    <Link href="/products" className="mt-8 inline-flex no-underline"><Button className="h-12 rounded-none bg-[#c99a3d] px-6 text-[10px] font-black uppercase tracking-[0.16em] text-black hover:bg-[#e0b35a]">Browse all brands & categories <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+                  ) : isAuthenticated ? (
+                    <Link href="/account" className="mt-8 inline-flex no-underline"><Button variant="outline" className="h-12 rounded-none border-white/40 bg-transparent px-6 text-[10px] font-black uppercase tracking-[0.16em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">View approval status <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+                  ) : (
+                    <Link href="/register" className="mt-8 inline-flex no-underline"><Button className="h-12 rounded-none bg-[#c99a3d] px-6 text-[10px] font-black uppercase tracking-[0.16em] text-black hover:bg-[#e0b35a]">Apply for member access <ArrowUpRight className="ml-2 h-4 w-4" /></Button></Link>
+                  )}
+                </div>
+              </div>
+              <div className="absolute bottom-5 right-5 hidden items-center gap-3 text-[9px] font-black uppercase tracking-[0.18em] text-white/55 sm:flex"><LockKeyhole className="h-3.5 w-3.5 text-[#c99a3d]" /> Member access only</div>
             </div>
           </div>
         </section>

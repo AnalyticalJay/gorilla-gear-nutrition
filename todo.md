@@ -561,3 +561,10 @@
 - [x] Refine mobile header labels and accessible navigation cues.
 - [x] Test shop, cart, account, and menu navigation with an approved member session.
 - [x] Save and deliver the mobile header refinement checkpoint.
+
+## Active Implementation — Locked Private Member Catalogue
+- [x] Audit the homepage collection layout, existing Shop links, and approved catalogue access.
+- [x] Prepare a managed visual asset for the locked private catalogue block.
+- [x] Build the responsive locked catalogue block and member-aware Shop navigation.
+- [x] Verify visitor and approved-member states across homepage, header, and mobile layouts.
+- [x] Save and deliver the locked catalogue homepage checkpoint.

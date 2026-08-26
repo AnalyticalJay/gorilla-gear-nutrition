@@ -5,8 +5,9 @@ import React from "react";
 import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const { listPageQuery } = vi.hoisted(() => ({
+const { listPageQuery, authState } = vi.hoisted(() => ({
   listPageQuery: vi.fn(),
+  authState: { current: {} as { user: { status: string; role: string } | null; isAuthenticated: boolean } },
 }));
 
 vi.mock("@/lib/trpc", () => ({
@@ -18,7 +19,7 @@ vi.mock("@/lib/trpc", () => ({
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({
-  useAuth: () => ({ user: { status: "approved", role: "user" }, isAuthenticated: true }),
+  useAuth: () => authState.current,
 }));
 
 vi.mock("@/components/Navbar", () => ({ default: () => <nav aria-label="Primary navigation">Navigation</nav> }));
@@ -31,6 +32,7 @@ vi.mock("wouter", () => ({
 import Home from "@/pages/Home";
 
 beforeEach(() => {
+  authState.current = { user: { status: "approved", role: "user" }, isAuthenticated: true };
   listPageQuery.mockReturnValue({
     data: { items: [], total: 0, limit: 4, offset: 0 },
     isLoading: false,
@@ -88,5 +90,21 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByRole("link", { name: /shop supplements/i }).getAttribute("href")).toBe("/supplements");
     expect(screen.getByText("Supplements").closest("a")?.getAttribute("href")).toBe("/supplements");
     expect(screen.getByAltText("Supplements").getAttribute("src")).toBe("/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg");
+  });
+
+  it("shows the locked private catalogue block and routes approved members to the full catalogue", () => {
+    render(<Home />);
+
+    expect(screen.getByText("Private member catalogue")).toBeTruthy();
+    expect(screen.getByText("The full range is unlocked by approval.")).toBeTruthy();
+    expect(screen.getByRole("link", { name: /browse all brands & categories/i }).getAttribute("href")).toBe("/products");
+    expect(screen.getByAltText("Private member catalogue collection").getAttribute("src")).toBe("/manus-storage/ggn-private-member-catalogue_7bf8756b.jpg");
+  });
+
+  it("guides non-members from the locked catalogue block to application", () => {
+    authState.current = { user: null, isAuthenticated: false };
+    render(<Home />);
+
+    expect(screen.getAllByRole("link", { name: /apply for member access/i }).some((link) => link.getAttribute("href") === "/register")).toBe(true);
   });
 });
