@@ -611,3 +611,9 @@
 - [x] Replace legacy non-semantic colors with Gorilla Gear white, charcoal, and restrained gold.
 - [x] Verify Products, customer flows, admin views, and responsive styling for palette consistency.
 - [x] Save and deliver the global Gorilla Gear palette consistency checkpoint.
+
+## Active Implementation — Simplified Homepage Hero
+- [x] Locate the hero member-benefit block and evaluate surrounding spacing.
+- [x] Remove the three hero member-benefit blocks and rebalance the layout.
+- [x] Verify the simplified hero across desktop and mobile with regression coverage.
+- [x] Save and deliver the simplified hero checkpoint.

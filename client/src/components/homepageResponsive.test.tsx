@@ -43,7 +43,7 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe("Homepage responsive structure", () => {
-  it("renders the responsive premium hero, collection cards, member CTA, and no public catalogue grid", () => {
+  it("renders the simplified premium hero, collection cards, member CTA, and no public catalogue grid", () => {
     const { container } = render(<Home />);
 
     expect(screen.getByText("Discipline")).toBeTruthy();
@@ -54,9 +54,8 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByText("Clothing")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Coaching" })).toBeTruthy();
     expect(screen.getByText("Become a member")).toBeTruthy();
-    expect(screen.getByText("Admin-approved")).toBeTruthy();
-    expect(screen.getByText("Secure account")).toBeTruthy();
-    expect(screen.getAllByText("Member support").length).toBeGreaterThan(1);
+    expect(screen.queryByText("Admin-approved")).toBeNull();
+    expect(screen.queryByText("Secure account")).toBeNull();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
     expect(screen.queryByText(/trusted brands/i)).toBeNull();
     expect(screen.queryByText(/anabolics/i)).toBeNull();
