@@ -541,3 +541,11 @@
 - [x] Add accessible quick-view modals and hover interactions to Supplements shop product cards.
 - [x] Verify inventory, quick-view behavior, responsive presentation, and regression coverage.
 - [x] Save and deliver the Supplements inventory and quick-view checkpoint.
+
+## Active Implementation — Verified Supplements Imagery
+- [x] Audit the remaining supplement-card image gaps and existing managed assets.
+- [x] Research and validate official or authorised imagery for each unresolved supplement product.
+- [x] Leave Alpha Pro Workout without an image until the client uploads approved artwork.
+- [x] Upload and assign verified main images with provenance retained.
+- [x] Verify image rendering, coverage, and regression behaviour on the Supplements shop.
+- [x] Save and deliver the verified supplement imagery checkpoint.
