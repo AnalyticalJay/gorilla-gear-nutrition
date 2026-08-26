@@ -70,7 +70,7 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <Navbar />
-      <div className="pt-20 pb-24 sm:pb-8">
+      <div className="pt-20 pb-10 sm:pb-8">
         <div className="container px-4 py-6 sm:py-8">
           {/* Breadcrumb */}
           <Link href="/products" className="inline-flex items-center gap-2 text-sm text-[#64748B] hover:text-[#0EA5E9] mb-8 no-underline transition-colors">

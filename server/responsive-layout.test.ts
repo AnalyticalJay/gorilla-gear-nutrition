@@ -30,12 +30,12 @@ describe("responsive layout contracts", () => {
     expect(adminLayout).toContain("overflow-x-hidden");
   });
 
-  it("protects quote cart and checkout actions from mobile bottom-nav overlap", () => {
+  it("keeps quote cart and checkout actions clear without a fixed bottom navigation", () => {
     const cart = source("client/src/pages/Cart.tsx");
     const checkout = source("client/src/pages/Checkout.tsx");
-    expect(cart).toContain("pb-24 sm:pb-8");
+    expect(cart).toContain("pb-10 sm:pb-8");
     expect(cart).toContain("sm:flex-nowrap");
-    expect(checkout).toContain("pb-24 sm:pb-8");
+    expect(checkout).toContain("pb-10 sm:pb-8");
     expect(checkout).toContain("flex-wrap items-start justify-between");
   });
 
@@ -47,19 +47,18 @@ describe("responsive layout contracts", () => {
     expect(account).toContain("min-h-11 w-full");
     expect(productDetail).toContain("flex flex-col gap-3 sm:flex-row");
     expect(productDetail).toContain("h-11 w-11");
-    expect(orderDetail).toContain("pb-24 sm:py-12 sm:pb-12");
+    expect(orderDetail).toContain("pb-10 sm:py-12 sm:pb-12");
     expect(orderDetail).toContain("flex flex-col gap-2");
     expect(orderDetail).toContain('aria-label="Upload proof of payment"');
     expect(orderDetail).toContain("accept=\"image/*,application/pdf\"");
     expect(orderDetail).toContain("block w-full text-xs");
   });
 
-  it("adds global bottom safe-area space and mobile navigation touch targets", () => {
+  it("uses header controls as the only mobile navigation system", () => {
     const app = source("client/src/App.tsx");
-    const mobileNav = source("client/src/components/MobileBottomNav.tsx");
-    expect(app).toContain("pb-24 md:pb-0");
-    expect(mobileNav).toContain("min-h-11");
-    expect(mobileNav).toContain("safe-area-inset-bottom");
+    expect(app).not.toContain("MobileBottomNav");
+    expect(app).not.toContain("shouldShowMobileNav");
+    expect(app).not.toContain("pb-24 md:pb-0");
   });
 
   it("uses mobile card layouts for admin quote and product management instead of forcing table overflow", () => {

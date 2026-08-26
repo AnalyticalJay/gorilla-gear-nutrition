@@ -2,7 +2,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -35,16 +35,10 @@ import AdminMemberPreview from "./pages/admin/AdminMemberPreview";
 import AdminResetAudit from "./pages/admin/AdminResetAudit";
 import AdminCoachingEnquiries from "./pages/admin/AdminCoachingEnquiries";
 import AdminIkhokhaPaymentAudit from "./pages/admin/AdminIkhokhaPaymentAudit";
-import MobileBottomNav from "./components/MobileBottomNav";
-import { shouldShowMobileNav } from "@shared/mobileNav";
 
 function Router() {
-  const [location] = useLocation();
-  const showMobileNav = shouldShowMobileNav(location);
-
   return (
     <>
-      <div className={showMobileNav ? "pb-24 md:pb-0" : ""}>
       <Switch>
         {/* Public */}
         <Route path="/" component={Home} />
@@ -177,8 +171,6 @@ function Router() {
         {/* Fallback */}
         <Route component={NotFound} />
       </Switch>
-      </div>
-      {showMobileNav && <MobileBottomNav />}
     </>
   );
 }

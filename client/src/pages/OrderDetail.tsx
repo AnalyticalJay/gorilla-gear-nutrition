@@ -122,7 +122,7 @@ export default function OrderDetail() {
   };
 
   if (orderQuery.isLoading) {
-    return <div className="min-h-screen flex flex-col bg-background"><Navbar /><main className="flex-1 container px-4 py-8 pb-24 sm:py-12 sm:pb-12"><div className="max-w-3xl mx-auto space-y-4">{[...Array(4)].map((_, i) => <div key={i} className="h-24 bg-accent/20 rounded-xl animate-pulse" />)}</div></main><Footer /></div>;
+    return <div className="min-h-screen flex flex-col bg-background"><Navbar /><main className="flex-1 container px-4 py-8 pb-10 sm:py-12 sm:pb-12"><div className="max-w-3xl mx-auto space-y-4">{[...Array(4)].map((_, i) => <div key={i} className="h-24 bg-accent/20 rounded-xl animate-pulse" />)}</div></main><Footer /></div>;
   }
 
   if (!order) {
@@ -139,7 +139,7 @@ export default function OrderDetail() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="flex-1 container px-4 py-8 pb-24 sm:py-12 sm:pb-12">
+      <main className="flex-1 container px-4 py-8 pb-10 sm:py-12 sm:pb-12">
         <div className="max-w-3xl mx-auto">
           <div className="flex flex-wrap items-start gap-3 mb-6 sm:mb-8">
             <Link href="/account"><button className="p-1.5 rounded-md hover:bg-accent"><ArrowLeft className="h-4 w-4" /></button></Link>

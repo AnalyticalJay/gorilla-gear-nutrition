@@ -549,3 +549,9 @@
 - [x] Upload and assign verified main images with provenance retained.
 - [x] Verify image rendering, coverage, and regression behaviour on the Supplements shop.
 - [x] Save and deliver the verified supplement imagery checkpoint.
+
+## Active Implementation — Mobile Footer Navigation Removal
+- [x] Locate the fixed mobile footer navigation and related reserved layout space.
+- [x] Remove the redundant fixed footer navigation from mobile views.
+- [x] Verify header-based mobile navigation, page layout, and regression coverage.
+- [x] Save and deliver the mobile navigation cleanup checkpoint.
