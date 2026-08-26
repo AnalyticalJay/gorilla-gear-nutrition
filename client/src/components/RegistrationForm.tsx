@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const fieldClassName =
-  "mt-1.5 bg-[#111111] border-[#1E293B] text-white placeholder:text-[#334155] focus:border-[#0EA5E9]/50";
+  "mt-1.5 border-[#d8d1c2] bg-white text-[#1c1c1c] placeholder:text-[#9a9285] shadow-sm focus-visible:border-[#a8751c] focus-visible:ring-[#a8751c]/20";
 
 export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -51,7 +51,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <div>
-        <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wide text-[#94A3B8]">
+        <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wide text-[#4c463d]">
           Full Name
         </Label>
         <Input
@@ -67,7 +67,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
       </div>
 
       <div>
-        <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wide text-[#94A3B8]">
+        <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wide text-[#4c463d]">
           Email Address
         </Label>
         <Input
@@ -85,7 +85,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-wide text-[#94A3B8]">
+          <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-wide text-[#4c463d]">
             Phone
           </Label>
           <Input
@@ -101,7 +101,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
           {errors.phone && <p id="phone-error" className="mt-1 text-xs text-[#FB7185]">{errors.phone.message}</p>}
         </div>
         <div>
-          <Label htmlFor="city" className="text-xs font-bold uppercase tracking-wide text-[#94A3B8]">
+          <Label htmlFor="city" className="text-xs font-bold uppercase tracking-wide text-[#4c463d]">
             City
           </Label>
           <Input
@@ -118,7 +118,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
       </div>
 
       <div>
-        <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wide text-[#94A3B8]">
+        <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wide text-[#4c463d]">
           Password
         </Label>
         <div className="relative mt-1.5">
@@ -135,7 +135,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
           <button
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] transition-colors hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a806f] transition-colors hover:text-[#a8751c]"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -145,7 +145,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
       </div>
 
       <div>
-        <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-wide text-[#94A3B8]">
+        <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-wide text-[#4c463d]">
           Confirm Password
         </Label>
         <div className="relative mt-1.5">
@@ -162,7 +162,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
           <button
             type="button"
             onClick={() => setShowConfirmPassword((visible) => !visible)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] transition-colors hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a806f] transition-colors hover:text-[#a8751c]"
             aria-label={showConfirmPassword ? "Hide confirmation password" : "Show confirmation password"}
           >
             {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -176,11 +176,11 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
           id="isOver18"
           checked={isOver18}
           onCheckedChange={(checked) => setValue("isOver18", checked === true, { shouldValidate: true })}
-          className="mt-0.5 border-[#1E293B] data-[state=checked]:border-[#0EA5E9] data-[state=checked]:bg-[#0EA5E9]"
+          className="mt-0.5 border-[#b9ad99] data-[state=checked]:border-[#a8751c] data-[state=checked]:bg-[#a8751c]"
           aria-describedby={errors.isOver18 ? "age-error" : undefined}
         />
-        <Label htmlFor="isOver18" className="cursor-pointer text-sm leading-relaxed text-[#64748B]">
-          I confirm that I am <strong className="text-white">18 years of age or older</strong> and agree to the private catalogue terms.
+        <Label htmlFor="isOver18" className="cursor-pointer text-sm leading-relaxed text-[#6a6257]">
+          I confirm that I am <strong className="text-[#1c1c1c]">18 years of age or older</strong> and agree to the private catalogue terms.
         </Label>
       </div>
       {errors.isOver18 && <p id="age-error" className="text-xs text-[#FB7185]">{errors.isOver18.message}</p>}
@@ -188,8 +188,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="mt-2 h-11 w-full font-bold uppercase tracking-widest text-white"
-        style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
+        className="mt-2 h-11 w-full bg-[#c99a3d] font-bold uppercase tracking-widest text-black hover:bg-[#e0b35a]"
       >
         {isSubmitting ? (
           <>
@@ -206,13 +205,13 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
 
 export function RegistrationSubmitted() {
   return (
-    <div className="w-full max-w-md rounded-lg border border-[#1E293B] bg-[#111111] p-10 text-center">
-      <div className="mx-auto mb-8 h-[3px] w-24 bg-gradient-to-r from-[#E11D48] via-[#E11D48] via-50% to-[#0EA5E9] to-50%" />
-      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#0EA5E9] to-[#0284C7]">
-        <CheckCircle2 className="h-8 w-8 text-white" />
+    <div className="w-full max-w-md border border-[#d8d1c2] bg-white p-10 text-center shadow-[0_18px_45px_rgba(52,45,35,0.1)]">
+      <div className="mx-auto mb-8 h-[3px] w-24 bg-[#c99a3d]" />
+      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#c99a3d]/15 text-[#a8751c]">
+        <CheckCircle2 className="h-8 w-8" />
       </div>
-      <h2 className="mb-3 text-2xl font-black uppercase tracking-tight text-white">Application Submitted</h2>
-      <p className="mb-6 text-sm leading-relaxed text-[#64748B]">
+      <h2 className="mb-3 text-2xl font-black uppercase tracking-tight text-[#1c1c1c]">Application Submitted</h2>
+      <p className="mb-6 text-sm leading-relaxed text-[#6a6257]">
         Your application is under review. We will notify you once Gorilla Gear Nutrition has approved your private catalogue access.
       </p>
     </div>

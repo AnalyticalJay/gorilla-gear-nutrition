@@ -575,3 +575,9 @@
 - [x] Refine navigation and product-action guidance for visitors, pending members, and approved members.
 - [x] Verify public shop browsing and protected quote/dashboard flows across desktop and mobile.
 - [x] Save and deliver the public-shops and protected-purchase checkpoint.
+
+## Active Implementation — Branded Membership Application Page
+- [x] Audit registration-page layout, legacy color usage, and application safeguards.
+- [x] Apply the Gorilla Gear white, charcoal, and gold system to the page and form states.
+- [x] Verify responsive presentation, accessibility, and registration regression coverage.
+- [x] Save and deliver the branded application-page checkpoint.
