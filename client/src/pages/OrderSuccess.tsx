@@ -35,7 +35,7 @@ export default function OrderSuccess() {
             transition={{ delay: 0.3 }}
           >
             <h1 className="text-4xl font-black mb-3" >
-              Order <span style={{ color: "#0EA5E9" }}>Confirmed!</span>
+              Order <span style={{ color: "#a8751c" }}>Confirmed!</span>
             </h1>
             <p className="text-muted-foreground mb-2">
               Thank you for your order. Your payment has been processed successfully.

@@ -24,7 +24,7 @@ export default function ApprovalPending() {
                 <Clock className="h-10 w-10 text-black" />
               </div>
               <h1 className="text-3xl font-black mb-4" >
-                Application <span style={{ color: "#0EA5E9" }}>Under Review</span>
+                Application <span style={{ color: "#a8751c" }}>Under Review</span>
               </h1>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 Thank you for registering with Gorilla Gear Nutrition. Your application is currently being reviewed by our team.
@@ -73,7 +73,7 @@ export default function ApprovalPending() {
                 <CheckCircle className="h-10 w-10 text-green-400" />
               </div>
               <h1 className="text-3xl font-black mb-4" >
-                Account <span style={{ color: "#0EA5E9" }}>Approved!</span>
+                Account <span style={{ color: "#a8751c" }}>Approved!</span>
               </h1>
               <p className="text-muted-foreground mb-8">
                 Your account has been approved. You now have full access to pricing and can place orders.

@@ -158,7 +158,7 @@ export default function AdminOrderDetail() {
         </Link>
         <div>
           <h1 className="text-2xl font-black" >
-            Order <span style={{ color: "#0EA5E9" }}>#{order.id}</span>
+            Order <span style={{ color: "#a8751c" }}>#{order.id}</span>
           </h1>
           <p className="text-sm text-muted-foreground">
             {format(new Date(order.createdAt), "d MMMM yyyy, HH:mm")}
@@ -200,7 +200,7 @@ export default function AdminOrderDetail() {
       <div className="glass-card rounded-xl p-4 sm:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="flex items-center gap-2"><Package className="h-4 w-4 text-[#38BDF8]" /><h2 className="font-bold">Fulfilment Checklist</h2></div>
+            <div className="flex items-center gap-2"><Package className="h-4 w-4 text-[#f0c65e]" /><h2 className="font-bold">Fulfilment Checklist</h2></div>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">Track order preparation, Courier Guy booking, and waybill assignment before dispatch.</p>
           </div>
           <div className="flex items-center gap-2">
@@ -210,12 +210,12 @@ export default function AdminOrderDetail() {
           </div>
         </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <label className="flex items-center gap-3 rounded-lg border border-[#1E293B] bg-[#0A0A0A] p-3.5 cursor-pointer hover:border-[#334155]">
+          <label className="flex items-center gap-3 rounded-lg border border-[#454545] bg-[#101010] p-3.5 cursor-pointer hover:border-[#5c5852]">
             <input
               type="checkbox"
               checked={isPacked}
               onChange={(event) => setIsPacked(event.target.checked)}
-              className="h-4 w-4 rounded border-[#334155] bg-[#111111] text-[#38BDF8] focus:ring-[#38BDF8]"
+              className="h-4 w-4 rounded border-[#5c5852] bg-[#111111] text-[#f0c65e] focus:ring-[#f0c65e]"
             />
             <div>
               <p className="text-sm font-bold text-white">Order Packed</p>
@@ -223,12 +223,12 @@ export default function AdminOrderDetail() {
             </div>
           </label>
 
-          <label className="flex items-center gap-3 rounded-lg border border-[#1E293B] bg-[#0A0A0A] p-3.5 cursor-pointer hover:border-[#334155]">
+          <label className="flex items-center gap-3 rounded-lg border border-[#454545] bg-[#101010] p-3.5 cursor-pointer hover:border-[#5c5852]">
             <input
               type="checkbox"
               checked={isCourierBooked}
               onChange={(event) => setIsCourierBooked(event.target.checked)}
-              className="h-4 w-4 rounded border-[#334155] bg-[#111111] text-[#38BDF8] focus:ring-[#38BDF8]"
+              className="h-4 w-4 rounded border-[#5c5852] bg-[#111111] text-[#f0c65e] focus:ring-[#f0c65e]"
             />
             <div>
               <p className="text-sm font-bold text-white">Courier Booked</p>
@@ -250,7 +250,7 @@ export default function AdminOrderDetail() {
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">Save completion steps before updating the main tracking number and shipping status.</p>
           <Button
-            className="min-h-10 text-white font-bold bg-[#38BDF8] text-slate-950 hover:bg-[#38BDF8]/90"
+            className="min-h-10 text-white font-bold bg-[#f0c65e] text-slate-950 hover:bg-[#f0c65e]/90"
             disabled={updateFulfilment.isPending}
             onClick={() => updateFulfilment.mutate({
               orderId: order.id,

@@ -54,21 +54,21 @@ export default function Login() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex">
+    <div className="min-h-screen bg-[#101010] flex">
       {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#080808]">
         {/* Hex pattern */}
         <div className="absolute inset-0 hex-pattern opacity-80" />
         {/* Blue glow */}
         <div className="absolute top-1/4 right-0 w-[400px] h-[400px] rounded-full opacity-15 blur-3xl pointer-events-none"
-          style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)" }} />
+          style={{ background: "radial-gradient(circle, #a8751c 0%, transparent 70%)" }} />
         {/* Red glow */}
         <div className="absolute bottom-1/4 left-0 w-[300px] h-[300px] rounded-full opacity-10 blur-3xl pointer-events-none"
-          style={{ background: "radial-gradient(circle, #E11D48 0%, transparent 70%)" }} />
+          style={{ background: "radial-gradient(circle, #a8751c 0%, transparent 70%)" }} />
 
         <div className="relative z-10 flex flex-col justify-center p-16">
           <Link href="/" className="flex items-center gap-2.5 mb-16 no-underline">
-            <div className="w-10 h-10 rounded flex items-center justify-center overflow-hidden border border-[#1E293B] bg-black">
+            <div className="w-10 h-10 rounded flex items-center justify-center overflow-hidden border border-[#454545] bg-black">
               <img src="/manus-storage/logo_2d6e0f20.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
             </div>
             <div>
@@ -80,9 +80,9 @@ export default function Login() {
           <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tight leading-tight mb-4 break-words">
             <span className="text-white">Welcome</span>
             <br />
-            <span style={{ color: "#0EA5E9" }}>Back</span>
+            <span style={{ color: "#a8751c" }}>Back</span>
           </h2>
-          <p className="text-[#64748B] leading-relaxed max-w-xs">
+          <p className="text-[#9b9388] leading-relaxed max-w-xs">
             Sign in to access your approved account and browse the Gorilla Gear Nutrition member catalogue.
           </p>
 
@@ -92,8 +92,8 @@ export default function Login() {
               { icon: Shield, text: "Verified Gorilla Gear range" },
               { icon: Lock, text: "Gated access — approved members only" },
             ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-3 text-[#64748B]">
-                <Icon className="h-4 w-4 text-[#0EA5E9]" />
+              <div key={text} className="flex items-center gap-3 text-[#9b9388]">
+                <Icon className="h-4 w-4 text-[#a8751c]" />
                 <span className="text-sm">{text}</span>
               </div>
             ))}
@@ -102,22 +102,22 @@ export default function Login() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-[#0A0A0A]">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-[#101010]">
         <div className="w-full max-w-md">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#64748B] hover:text-white mb-8 no-underline transition-colors">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#9b9388] hover:text-white mb-8 no-underline transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
 
           {/* Gorilla Gear accent stripe */}
-          <div className="h-[3px] w-16 mb-6" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
+          <div className="h-[3px] w-16 mb-6" style={{ background: "linear-gradient(90deg, #a8751c 0%, #a8751c 50%, #a8751c 50%, #a8751c 100%)" }} />
 
           <h1 className="text-3xl font-black uppercase tracking-tight text-white mb-2">
             Sign In
           </h1>
-          <p className="text-[#64748B] text-sm mb-8">
+          <p className="text-[#9b9388] text-sm mb-8">
             Don't have an account?{" "}
-            <Link href="/register" className="font-bold no-underline hover:underline" style={{ color: "#0EA5E9" }}>
+            <Link href="/register" className="font-bold no-underline hover:underline" style={{ color: "#a8751c" }}>
               Apply for access
             </Link>
           </p>
@@ -128,7 +128,7 @@ export default function Login() {
               aria-live="polite"
               className={`mb-5 flex items-start gap-3 rounded-lg border px-3.5 py-3 text-sm ${
                 statusMessage.kind === "loading"
-                  ? "border-[#0EA5E9]/30 bg-[#0EA5E9]/10 text-[#BAE6FD]"
+                  ? "border-[#a8751c]/30 bg-[#a8751c]/10 text-[#f6e4af]"
                   : statusMessage.kind === "success"
                     ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
                     : statusMessage.kind === "error"
@@ -143,45 +143,45 @@ export default function Login() {
 
           <form onSubmit={handleSubmit((data) => login.mutate(data))} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="text-sm font-bold uppercase tracking-wide text-[#94A3B8]">Email Address</Label>
+              <Label htmlFor="email" className="text-sm font-bold uppercase tracking-wide text-[#c9c2b6]">Email Address</Label>
               <Input
                 id="email"
                 type="email"
                 {...register("email")}
                 placeholder="john@example.com"
-                className="mt-1.5 bg-[#111111] border-[#1E293B] text-white placeholder:text-[#334155] focus:border-[#0EA5E9]/50"
+                className="mt-1.5 bg-[#111111] border-[#454545] text-white placeholder:text-[#5c5852] focus:border-[#a8751c]/50"
               />
-              {errors.email && <p className="text-[#E11D48] text-xs mt-1">{errors.email.message}</p>}
+              {errors.email && <p className="text-[#a8751c] text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-sm font-bold uppercase tracking-wide text-[#94A3B8]">Password</Label>
+              <Label htmlFor="password" className="text-sm font-bold uppercase tracking-wide text-[#c9c2b6]">Password</Label>
               <div className="relative mt-1.5">
                 <Input
                   id="password"
                   type={showPass ? "text" : "password"}
                   {...register("password")}
                   placeholder="Your password"
-                  className="bg-[#111111] border-[#1E293B] text-white placeholder:text-[#334155] focus:border-[#0EA5E9]/50 pr-10"
+                  className="bg-[#111111] border-[#454545] text-white placeholder:text-[#5c5852] focus:border-[#a8751c]/50 pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9b9388] hover:text-white transition-colors"
                 >
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              {errors.password && <p className="text-[#E11D48] text-xs mt-1">{errors.password.message}</p>}
+              {errors.password && <p className="text-[#a8751c] text-xs mt-1">{errors.password.message}</p>}
               <div className="mt-2 text-right">
-                <Link href="/forgot-password" className="text-xs font-bold text-[#7DD3FC] no-underline hover:text-white hover:underline">Forgot password?</Link>
+                <Link href="/forgot-password" className="text-xs font-bold text-[#e7c979] no-underline hover:text-white hover:underline">Forgot password?</Link>
               </div>
             </div>
 
             <Button
               type="submit"
               className="w-full text-white font-bold uppercase tracking-widest mt-2 h-11 transition-transform active:scale-[0.98]"
-              style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
+              style={{ background: "linear-gradient(135deg, #a8751c, #7c5a20)" }}
               disabled={login.isPending}
               aria-busy={login.isPending}
             >
@@ -190,10 +190,10 @@ export default function Login() {
 
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#1E293B]"></div>
+                <div className="w-full border-t border-[#454545]"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-[#111111] text-[#64748B]">or</span>
+                <span className="px-2 bg-[#111111] text-[#9b9388]">or</span>
               </div>
             </div>
 
@@ -201,7 +201,7 @@ export default function Login() {
               <Button
                 type="button"
                 className="w-full text-white font-bold uppercase tracking-widest h-11"
-                style={{ background: "linear-gradient(135deg, #E11D48, #DC2626)" }}
+                style={{ background: "linear-gradient(135deg, #a8751c, #7c5a20)" }}
               >
                 Sign In with Manus
               </Button>

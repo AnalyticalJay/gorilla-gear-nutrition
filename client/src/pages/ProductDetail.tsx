@@ -31,11 +31,11 @@ export default function ProductDetail() {
 
   if (productQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A]">
+      <div className="min-h-screen bg-[#101010]">
         <Navbar />
         <div className="pt-24 container">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            <div className="aspect-square bg-[#111111] rounded-lg border border-[#1E293B] animate-pulse" />
+            <div className="aspect-square bg-[#111111] rounded-lg border border-[#454545] animate-pulse" />
             <div className="space-y-4">
               <div className="h-8 bg-[#111111] rounded animate-pulse w-3/4" />
               <div className="h-4 bg-[#111111] rounded animate-pulse w-1/2" />
@@ -49,13 +49,13 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A]">
+      <div className="min-h-screen bg-[#101010]">
         <Navbar />
         <div className="pt-24 container text-center py-24">
-          <Package className="h-16 w-16 mx-auto mb-4 text-[#334155]" />
+          <Package className="h-16 w-16 mx-auto mb-4 text-[#5c5852]" />
           <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-4">Product Not Found</h2>
           <Link href="/products" className="no-underline">
-            <Button variant="outline" className="border-[#1E293B] text-[#94A3B8] hover:text-white hover:border-[#0EA5E9]/40 bg-transparent">
+            <Button variant="outline" className="border-[#454545] text-[#c9c2b6] hover:text-white hover:border-[#a8751c]/40 bg-transparent">
               Back to Products
             </Button>
           </Link>
@@ -68,12 +68,12 @@ export default function ProductDetail() {
   const currentImage = images[imgIndex];
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-[#101010]">
       <Navbar />
       <div className="pt-20 pb-10 sm:pb-8">
         <div className="container px-4 py-6 sm:py-8">
           {/* Breadcrumb */}
-          <Link href="/products" className="inline-flex items-center gap-2 text-sm text-[#64748B] hover:text-[#0EA5E9] mb-8 no-underline transition-colors">
+          <Link href="/products" className="inline-flex items-center gap-2 text-sm text-[#9b9388] hover:text-[#a8751c] mb-8 no-underline transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to Products
           </Link>
@@ -81,7 +81,7 @@ export default function ProductDetail() {
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Images */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-              <div className="relative aspect-square rounded-lg overflow-hidden border border-[#1E293B] bg-[#111111] mb-4">
+              <div className="relative aspect-square rounded-lg overflow-hidden border border-[#454545] bg-[#111111] mb-4">
                 {currentImage ? (
                   <img
                     src={currentImage.imageUrl}
@@ -91,8 +91,8 @@ export default function ProductDetail() {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="w-24 h-24 rounded-full flex items-center justify-center"
-                      style={{ background: "#0EA5E915", border: "1px solid #0EA5E930" }}>
-                      <span className="font-black text-3xl" style={{ color: "#0EA5E9" }}>AC</span>
+                      style={{ background: "#a8751c15", border: "1px solid #a8751c30" }}>
+                      <span className="font-black text-3xl" style={{ color: "#a8751c" }}>AC</span>
                     </div>
                   </div>
                 )}
@@ -120,7 +120,7 @@ export default function ProductDetail() {
                       key={img.id}
                       onClick={() => setImgIndex(i)}
                       className="h-16 w-16 shrink-0 rounded border-2 overflow-hidden transition-colors sm:h-20 sm:w-20"
-                      style={{ borderColor: i === imgIndex ? "#0EA5E9" : "#1E293B" }}
+                      style={{ borderColor: i === imgIndex ? "#a8751c" : "#454545" }}
                     >
                       <img src={img.imageUrl} alt="" className="w-full h-full object-cover" />
                     </button>
@@ -133,9 +133,9 @@ export default function ProductDetail() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               {/* Category + stripe */}
               <div className="flex items-center gap-3 mb-3">
-                <div className="h-[3px] w-8" style={{ background: "linear-gradient(90deg, #E11D48 0%, #E11D48 50%, #0EA5E9 50%, #0EA5E9 100%)" }} />
+                <div className="h-[3px] w-8" style={{ background: "linear-gradient(90deg, #a8751c 0%, #a8751c 50%, #a8751c 50%, #a8751c 100%)" }} />
                 {(product as any).category && (
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#0EA5E9" }}>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#a8751c" }}>
                     {(product as any).category?.name}
                   </span>
                 )}
@@ -149,16 +149,16 @@ export default function ProductDetail() {
               <div className="mb-6">
                 {isApproved && hasPrice ? (
                   <div className="text-4xl font-black text-white">
-                    R<span style={{ color: "#0EA5E9" }}>{parseFloat(product.price ?? "0").toFixed(2)}</span>
+                    R<span style={{ color: "#a8751c" }}>{parseFloat(product.price ?? "0").toFixed(2)}</span>
                   </div>
                 ) : isApproved ? (
                   <div className="inline-flex rounded border border-[#c99a3d]/35 bg-[#c99a3d]/10 px-4 py-3 text-sm font-bold text-[#c99a3d]">
                     Price on request
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 py-3 px-4 rounded border border-[#0EA5E9]/20 bg-[#0EA5E9]/5 inline-flex">
-                    <Lock className="h-4 w-4 flex-shrink-0" style={{ color: "#0EA5E9" }} />
-                    <span className="text-sm text-[#64748B]">Login & Get Approved to View Pricing</span>
+                  <div className="flex items-center gap-2 py-3 px-4 rounded border border-[#a8751c]/20 bg-[#a8751c]/5 inline-flex">
+                    <Lock className="h-4 w-4 flex-shrink-0" style={{ color: "#a8751c" }} />
+                    <span className="text-sm text-[#9b9388]">Login & Get Approved to View Pricing</span>
                   </div>
                 )}
               </div>
@@ -183,40 +183,40 @@ export default function ProductDetail() {
               {/* Description */}
               {product.description && (
                 <div className="mb-6">
-                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] mb-2">Description</h3>
-                  <p className="text-sm text-[#94A3B8] leading-relaxed">{product.description}</p>
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#9b9388] mb-2">Description</h3>
+                  <p className="text-sm text-[#c9c2b6] leading-relaxed">{product.description}</p>
                 </div>
               )}
 
               {/* Dosage */}
               {product.dosageInfo && (
-                <div className="mb-6 p-4 rounded border border-[#1E293B] bg-[#111111]">
-                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] mb-2">Dosage Information</h3>
-                  <p className="text-sm text-[#94A3B8] leading-relaxed">{product.dosageInfo}</p>
+                <div className="mb-6 p-4 rounded border border-[#454545] bg-[#111111]">
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#9b9388] mb-2">Dosage Information</h3>
+                  <p className="text-sm text-[#c9c2b6] leading-relaxed">{product.dosageInfo}</p>
                 </div>
               )}
 
               {/* Add to Quote */}
               {isApproved && hasPrice && product.stockQuantity > 0 && (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                  <div className="flex items-center self-start border border-[#1E293B] rounded overflow-hidden bg-[#111111]">
+                  <div className="flex items-center self-start border border-[#454545] rounded overflow-hidden bg-[#111111]">
                     <button
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#1E293B] sm:h-9 sm:w-10"
+                      className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#454545] sm:h-9 sm:w-10"
                     >
                       −
                     </button>
-                    <span className="flex h-11 min-w-12 items-center justify-center border-x border-[#1E293B] px-4 py-2 text-sm font-bold text-white sm:h-9">{quantity}</span>
+                    <span className="flex h-11 min-w-12 items-center justify-center border-x border-[#454545] px-4 py-2 text-sm font-bold text-white sm:h-9">{quantity}</span>
                     <button
                       onClick={() => setQuantity((q) => Math.min(product.stockQuantity, q + 1))}
-                      className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#1E293B] sm:h-9 sm:w-10"
+                      className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#454545] sm:h-9 sm:w-10"
                     >
                       +
                     </button>
                   </div>
                   <Button
                     className="min-h-11 w-full text-white font-bold uppercase tracking-wide sm:flex-1"
-                    style={{ background: "linear-gradient(135deg, #0EA5E9, #0284C7)" }}
+                    style={{ background: "linear-gradient(135deg, #a8751c, #7c5a20)" }}
                     onClick={() => addToCart.mutate({ productId: product.id, quantity })}
                     disabled={addToCart.isPending}
                   >

@@ -115,9 +115,9 @@
   background: linear-gradient(135deg, #c89536 0%, #a8751c 100%);
 }
 
-/* Red gradient (accent / danger) */
+/* Legacy danger-gradient alias uses the brand accent for non-semantic surfaces. */
 .red-gradient {
-  background: linear-gradient(135deg, #c8473e 0%, #9f241d 100%);
+  background: linear-gradient(135deg, #c89536 0%, #a8751c 100%);
 }
 
 /* Gold gradient for primary CTA treatments. */
@@ -141,9 +141,9 @@
   background-clip: text;
 }
 
-/* Red text */
+/* Legacy text alias uses the brand accent outside semantic alerts. */
 .red-text {
-  color: #b42318;
+  color: #a8751c;
 }
 
 /* Warm white card with a discreet gold border. */
@@ -154,10 +154,10 @@
   box-shadow: 0 12px 30px rgba(69, 69, 69, 0.06);
 }
 
-/* Red-accent glass card */
+/* Legacy accent glass card uses gold outside semantic alerts. */
 .glass-card-red {
-  background: rgba(180, 35, 24, 0.04);
-  border: 1px solid rgba(180, 35, 24, 0.20);
+  background: rgba(168, 117, 28, 0.05);
+  border: 1px solid rgba(168, 117, 28, 0.22);
   backdrop-filter: blur(8px);
 }
 
@@ -171,9 +171,9 @@
   box-shadow: 0 0 20px rgba(168, 117, 28, 0.24), 0 0 40px rgba(168, 117, 28, 0.08);
 }
 
-/* Red glow effect */
+/* Legacy glow alias uses gold outside semantic alerts. */
 .red-glow {
-  box-shadow: 0 0 20px rgba(180, 35, 24, 0.28), 0 0 40px rgba(180, 35, 24, 0.08);
+  box-shadow: 0 0 20px rgba(168, 117, 28, 0.24), 0 0 40px rgba(168, 117, 28, 0.08);
 }
 
 /* Gold top accent. */

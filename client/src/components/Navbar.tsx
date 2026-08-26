@@ -60,7 +60,7 @@ export default function Navbar() {
           {isApproved && (
             <Link href="/cart" className="relative flex h-11 w-11 items-center justify-center border border-black/15 bg-white text-black transition-colors hover:border-[#a8751c]/70 hover:text-[#a8751c] sm:h-10 sm:w-10">
               <ShoppingCart className="h-4 w-4" />
-              {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#E11D48] text-[10px] font-bold text-white">{cartCount}</span>}
+              {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#a8751c] text-[10px] font-bold text-white">{cartCount}</span>}
             </Link>
           )}
 
@@ -83,11 +83,11 @@ export default function Navbar() {
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild className="focus:bg-black/5 focus:text-black">
-                    <Link href="/admin/dashboard" className="flex w-full items-center cursor-pointer text-xs font-bold uppercase text-[#E11D48]">Admin Dashboard</Link>
+                    <Link href="/admin/dashboard" className="flex w-full items-center cursor-pointer text-xs font-bold uppercase text-[#a8751c]">Admin Dashboard</Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator className="bg-black/10" />
-                <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-xs font-bold uppercase text-[#E11D48] focus:bg-[#E11D48]/10 focus:text-[#E11D48]">
+                <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-xs font-bold uppercase text-[#a8751c] focus:bg-[#a8751c]/10 focus:text-[#a8751c]">
                   <LogOut className="mr-2 h-3.5 w-3.5" /> Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -128,7 +128,7 @@ export default function Navbar() {
               </a>
             ))}
             {isAdmin && (
-              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-[#E11D48] hover:text-black no-underline">
+              <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-[#a8751c] hover:text-black no-underline">
                 Admin Dashboard
               </Link>
             )}

@@ -16,7 +16,7 @@ export default function QuoteProgressTracker({ status, paymentStatus }: { status
     <section className="glass-card rounded-xl p-4 sm:p-6" aria-labelledby="quote-progress-heading">
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#0EA5E9]">Quote progress</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#a8751c]">Quote progress</p>
           <h2 id="quote-progress-heading" className="mt-1 text-lg font-black text-white">Track your request</h2>
         </div>
         {status === "quote_rejected" && (
@@ -39,7 +39,7 @@ export default function QuoteProgressTracker({ status, paymentStatus }: { status
               {!isLast && (
                 <span
                   aria-hidden="true"
-                  className={`absolute left-[15px] top-8 h-[calc(100%+1rem)] w-px md:left-8 md:top-4 md:h-px md:w-[calc(100%-1.5rem)] ${isComplete ? "bg-[#0EA5E9]" : "bg-[#1E293B]"}`}
+                  className={`absolute left-[15px] top-8 h-[calc(100%+1rem)] w-px md:left-8 md:top-4 md:h-px md:w-[calc(100%-1.5rem)] ${isComplete ? "bg-[#a8751c]" : "bg-[#454545]"}`}
                 />
               )}
               <span
@@ -47,19 +47,19 @@ export default function QuoteProgressTracker({ status, paymentStatus }: { status
                   isRejected
                     ? "border-red-400 bg-red-500/15 text-red-300"
                     : isComplete
-                      ? "border-[#0EA5E9] bg-[#0EA5E9] text-black"
+                      ? "border-[#a8751c] bg-[#a8751c] text-black"
                       : isCurrent
-                        ? "border-[#E11D48] bg-[#E11D48]/15 text-[#FDA4AF] shadow-[0_0_0_4px_rgba(225,29,72,0.12)]"
-                        : "border-[#334155] bg-[#0B0B0B] text-[#64748B]"
+                        ? "border-[#a8751c] bg-[#a8751c]/15 text-[#e7c979] shadow-[0_0_0_4px_rgba(225,29,72,0.12)]"
+                        : "border-[#5c5852] bg-[#101010] text-[#9b9388]"
                 }`}
               >
                 {isComplete ? <Check className="h-4 w-4" strokeWidth={3} /> : isRejected ? <XCircle className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
               </span>
               <span className="min-w-0 pt-0.5 md:mt-3 md:block md:pr-2">
-                <span className={`block text-xs font-black uppercase tracking-wide ${isRejected ? "text-red-300" : isComplete || isCurrent ? "text-white" : "text-[#64748B]"}`}>
+                <span className={`block text-xs font-black uppercase tracking-wide ${isRejected ? "text-red-300" : isComplete || isCurrent ? "text-white" : "text-[#9b9388]"}`}>
                   {step.label}
                 </span>
-                <span className="mt-1 block max-w-[14rem] text-xs leading-relaxed text-[#64748B] md:max-w-none">{step.description}</span>
+                <span className="mt-1 block max-w-[14rem] text-xs leading-relaxed text-[#9b9388] md:max-w-none">{step.description}</span>
               </span>
             </li>
           );

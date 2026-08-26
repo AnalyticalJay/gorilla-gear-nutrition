@@ -63,7 +63,7 @@ export default function Cart() {
       <div className="pt-20 pb-10 sm:pb-8">
         <div className="container px-4 py-6 sm:py-8">
           <h1 className="text-2xl font-black mb-6 sm:mb-8 sm:text-3xl" >
-            Quote <span style={{ color: "#0EA5E9" }}>Cart</span>
+            Quote <span style={{ color: "#a8751c" }}>Cart</span>
           </h1>
 
           {items.length === 0 ? (

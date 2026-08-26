@@ -47,11 +47,11 @@ export default function QuoteConversation({
   return (
     <section className="glass-card rounded-xl p-4 sm:p-6" aria-labelledby="quote-conversation-heading">
       <div className="mb-5 flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#0EA5E9]/30 bg-[#0EA5E9]/10 text-[#38BDF8]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#a8751c]/30 bg-[#a8751c]/10 text-[#f0c65e]">
           <MessageSquare className="h-4 w-4" />
         </span>
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#0EA5E9]">Quote conversation</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#a8751c]">Quote conversation</p>
           <h2 id="quote-conversation-heading" className="mt-1 text-lg font-black text-white">Message the {viewerRole === "admin" ? "customer" : "admin"}</h2>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Ask questions or share information about this quote. Your messages are visible to the other party.</p>
         </div>
@@ -62,19 +62,19 @@ export default function QuoteConversation({
           const isMine = comment.authorRole === viewerRole;
           return (
             <div key={comment.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-              <article className={`max-w-[92%] rounded-2xl border px-3.5 py-3 sm:max-w-[78%] ${isMine ? "border-[#0EA5E9]/30 bg-[#0EA5E9]/10" : "border-[#334155]/60 bg-[#111827]/70"}`}>
+              <article className={`max-w-[92%] rounded-2xl border px-3.5 py-3 sm:max-w-[78%] ${isMine ? "border-[#a8751c]/30 bg-[#a8751c]/10" : "border-[#5c5852]/60 bg-[#161616]/70"}`}>
                 <div className="mb-1.5 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wide">
-                  <span className={`font-bold ${comment.authorRole === "admin" ? "text-[#FDA4AF]" : "text-[#7DD3FC]"}`}>
+                  <span className={`font-bold ${comment.authorRole === "admin" ? "text-[#e7c979]" : "text-[#e7c979]"}`}>
                     {isMine ? "You" : comment.authorRole === "admin" ? "Gorilla Gear Nutrition Admin" : comment.authorName}
                   </span>
-                  <span className="text-[#64748B]">{format(new Date(comment.createdAt), "d MMM yyyy, HH:mm")}</span>
+                  <span className="text-[#9b9388]">{format(new Date(comment.createdAt), "d MMM yyyy, HH:mm")}</span>
                 </div>
                 <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">{comment.body}</p>
               </article>
             </div>
           );
         }) : (
-          <div className="rounded-lg border border-dashed border-[#334155] px-4 py-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-[#5c5852] px-4 py-6 text-center text-sm text-muted-foreground">
             No messages yet. Start the conversation if you have a question about this quote.
           </div>
         )}

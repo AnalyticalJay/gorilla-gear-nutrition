@@ -112,9 +112,9 @@ export default function Checkout() {
           </Link>
 
           <div className="mb-8 max-w-3xl">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0EA5E9]">Admin-reviewed pricing</p>
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#a8751c]">Admin-reviewed pricing</p>
             <h1 className="text-2xl font-black mt-2 sm:text-3xl">
-              Submit <span style={{ color: "#0EA5E9" }}>Quote Request</span>
+              Submit <span style={{ color: "#a8751c" }}>Quote Request</span>
             </h1>
             <p className="text-muted-foreground mt-3 max-w-2xl">
               Submit your selected products and delivery details. Gorilla Gear Nutrition will review the request and confirm the final quote before payment is enabled.
@@ -187,7 +187,7 @@ export default function Checkout() {
                       </p>
                       <p className="text-xs text-muted-foreground">A flat R140 delivery fee applies nationwide across South Africa.</p>
                     </div>
-                    <span className="text-xs font-semibold text-[#0EA5E9] bg-[#0EA5E9]/10 px-2 py-1 rounded sm:ml-auto">NATIONWIDE RATE</span>
+                    <span className="text-xs font-semibold text-[#a8751c] bg-[#a8751c]/10 px-2 py-1 rounded sm:ml-auto">NATIONWIDE RATE</span>
                   </div>
                 )}
               </div>
