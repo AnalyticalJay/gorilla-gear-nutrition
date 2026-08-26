@@ -629,3 +629,8 @@
 - [x] Generate a consistent four-angle white Gorilla Gear T-shirt gallery.
 - [x] Review the angle set and prepare approved images for product-gallery use.
 - [x] Deliver the white T-shirt multi-angle images.
+
+## Active Media — White T-Shirt Right-Sleeve Correction
+- [x] Confirm the duplicated side image and the required true right-sleeve composition.
+- [x] Generate and assign the corrected right-sleeve product view.
+- [x] Deliver the corrected four-angle white T-shirt gallery.
