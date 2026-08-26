@@ -587,3 +587,9 @@
 - [x] Generate and apply a text-free premium visual representing injectables, orals, SARMs, peptides, and related range formats.
 - [x] Verify desktop and mobile readability of the locked catalogue block with the new background.
 - [x] Save and deliver the private catalogue background checkpoint.
+
+## Active Implementation — Full Range Parallax and Hover Interaction
+- [x] Audit the Full Range block structure and existing background layering.
+- [x] Add reduced-motion-safe parallax and subtle hover background brightening.
+- [x] Verify motion, contrast, mobile behaviour, and regression coverage.
+- [x] Save and deliver the Full Range interaction checkpoint.

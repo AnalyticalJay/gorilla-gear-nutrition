@@ -1,4 +1,5 @@
 import React from "react";
+import { useRef } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +13,7 @@ import {
   Truck,
   Users,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -71,6 +72,17 @@ const membershipBenefits = [
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
+  const privateCatalogueRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const { scrollYProgress: privateCatalogueScrollProgress } = useScroll({
+    target: privateCatalogueRef,
+    offset: ["start end", "end start"],
+  });
+  const privateCatalogueParallaxY = useTransform(
+    privateCatalogueScrollProgress,
+    [0, 1],
+    prefersReducedMotion ? [0, 0] : [-18, 18],
+  );
 
   return (
     <div className="min-h-screen bg-[#070707] text-white selection:bg-[#c99a3d] selection:text-black">
@@ -184,10 +196,15 @@ export default function Home() {
 
         <section id="member-catalogue" className="scroll-mt-24 border-y border-white/10 bg-[#090909] py-16 sm:py-20 lg:py-24">
           <div className="container">
-            <div className="relative isolate overflow-hidden border border-[#c99a3d]/35 bg-[#111111]">
-              <img src={artwork.privateCatalogue} alt="Private member catalogue collection" className="absolute inset-0 h-full w-full object-cover object-right opacity-75" />
+            <motion.div ref={privateCatalogueRef} className="group relative isolate overflow-hidden border border-[#c99a3d]/35 bg-[#111111]">
+              <motion.img
+                src={artwork.privateCatalogue}
+                alt="Private member catalogue collection"
+                style={prefersReducedMotion ? undefined : { y: privateCatalogueParallaxY, scale: 1.05 }}
+                className="absolute -inset-4 h-[calc(100%+2rem)] w-[calc(100%+2rem)] max-w-none object-cover object-right opacity-75 transition-[filter,opacity] duration-700 ease-out will-change-transform group-hover:brightness-110 group-hover:opacity-90"
+              />
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,7,7,0.98)_0%,rgba(7,7,7,0.92)_42%,rgba(7,7,7,0.48)_100%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_35%,rgba(201,154,61,0.23),transparent_30%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_35%,rgba(201,154,61,0.23),transparent_30%)] transition-opacity duration-700 group-hover:opacity-80" />
               <div className="relative grid min-h-[430px] items-center px-6 py-12 sm:min-h-[480px] sm:px-12 lg:grid-cols-[0.9fr_1.1fr] lg:px-16">
                 <div className="max-w-xl text-center sm:text-left">
                   <div className="mx-auto flex h-14 w-14 items-center justify-center border border-[#c99a3d]/60 bg-black/35 text-[#c99a3d] sm:mx-0">
@@ -206,7 +223,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="absolute bottom-5 right-5 hidden items-center gap-3 text-[9px] font-black uppercase tracking-[0.18em] text-white/55 sm:flex"><LockKeyhole className="h-3.5 w-3.5 text-[#c99a3d]" /> Member access only</div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
