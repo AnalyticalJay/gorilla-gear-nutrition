@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
   const [quantity, setQuantity] = useState(1);
   const [imgIndex, setImgIndex] = useState(0);
@@ -227,18 +227,30 @@ export default function ProductDetail() {
               )}
 
               {!isApproved && (
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Link href="/register" className="flex-1 no-underline">
-                    <Button className="w-full text-white font-bold uppercase tracking-wide"
-                      style={{ background: "linear-gradient(135deg, #E11D48, #BE123C)" }}>
-                      Apply for Access
-                    </Button>
-                  </Link>
-                  <Link href="/login" className="no-underline">
-                    <Button variant="outline" className="min-h-11 w-full border-[#1E293B] bg-transparent text-[#94A3B8] hover:border-[#0EA5E9]/40 hover:text-white sm:w-auto">
-                      Login
-                    </Button>
-                  </Link>
+                <div className="rounded border border-[#c99a3d]/30 bg-[#c99a3d]/8 p-4">
+                  <p className="text-sm leading-6 text-[#d7c39d]">Membership approval is required to request quotes and access your customer dashboard.</p>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    {isAuthenticated ? (
+                      <Link href="/account" className="flex-1 no-underline">
+                        <Button className="w-full text-black font-bold uppercase tracking-wide" style={{ background: "#c99a3d" }}>
+                          View approval status
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link href="/register" className="flex-1 no-underline">
+                        <Button className="w-full text-black font-bold uppercase tracking-wide" style={{ background: "#c99a3d" }}>
+                          Apply to request a quote
+                        </Button>
+                      </Link>
+                    )}
+                    {!isAuthenticated && (
+                      <Link href="/login" className="no-underline">
+                        <Button variant="outline" className="min-h-11 w-full border-[#c99a3d]/45 bg-transparent text-[#d7c39d] hover:border-[#c99a3d] hover:text-white sm:w-auto">
+                          Sign in
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               )}
             </motion.div>

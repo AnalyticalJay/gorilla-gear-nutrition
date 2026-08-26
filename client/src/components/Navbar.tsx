@@ -20,12 +20,12 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const isApproved = (user as any)?.status === "approved";
   const isAdmin = (user as any)?.role === "admin";
-  const shopHref = isApproved ? "/products" : "/#member-catalogue";
+  const shopHref = isApproved ? "/products" : "/#collections";
 
   const cartQuery = trpc.cart.get.useQuery(undefined, { enabled: isApproved });
   const cartCount = cartQuery.data?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
   const navLinks = [
-    { href: shopHref, mobileHref: shopHref, desktopLabel: "Shop", mobileLabel: isApproved ? "Browse full catalogue" : "Unlock member catalogue" },
+    { href: shopHref, mobileHref: shopHref, desktopLabel: "Shop", mobileLabel: isApproved ? "Browse full catalogue" : "Shop public collections" },
     { href: "/coaching", mobileHref: "/coaching", desktopLabel: "Coaching", mobileLabel: "Coaching Plans" },
     { href: "/#membership", mobileHref: "/register", desktopLabel: "Apply", mobileLabel: "Apply for Access" },
   ];

@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Coaching from "./pages/Coaching";
 import Products from "./pages/Products";
 import SupplementsShop from "./pages/SupplementsShop";
+import ApparelShop from "./pages/ApparelShop";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -49,6 +50,7 @@ function Router() {
         <Route path="/coaching" component={Coaching} />
         <Route path="/products" component={Products} />
         <Route path="/supplements" component={SupplementsShop} />
+        <Route path="/apparel" component={ApparelShop} />
         <Route path="/products/:slug" component={ProductDetail} />
 
         {/* Authenticated */}

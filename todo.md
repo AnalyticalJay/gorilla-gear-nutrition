@@ -568,3 +568,10 @@
 - [x] Build the responsive locked catalogue block and member-aware Shop navigation.
 - [x] Verify visitor and approved-member states across homepage, header, and mobile layouts.
 - [x] Save and deliver the locked catalogue homepage checkpoint.
+
+## Active Implementation — Public Shops and Protected Purchase Flow
+- [x] Audit Supplements/Apparel public browsing, product-detail quote controls, and member gating.
+- [x] Restore the missing public Apparel shop route so Clothing browsing works without membership.
+- [x] Refine navigation and product-action guidance for visitors, pending members, and approved members.
+- [x] Verify public shop browsing and protected quote/dashboard flows across desktop and mobile.
+- [x] Save and deliver the public-shops and protected-purchase checkpoint.
