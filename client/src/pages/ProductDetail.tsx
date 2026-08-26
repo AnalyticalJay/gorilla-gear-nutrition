@@ -19,6 +19,7 @@ export default function ProductDetail() {
   const utils = trpc.useUtils();
   const productQuery = trpc.products.bySlug.useQuery({ slug: slug ?? "" }, { enabled: !!slug });
   const product = productQuery.data;
+  const hasPrice = Number(product?.price ?? 0) > 0;
 
   const addToCart = trpc.cart.upsert.useMutation({
     onSuccess: () => {
@@ -146,9 +147,13 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="mb-6">
-                {isApproved && product.price ? (
+                {isApproved && hasPrice ? (
                   <div className="text-4xl font-black text-white">
-                    R<span style={{ color: "#0EA5E9" }}>{parseFloat(product.price).toFixed(2)}</span>
+                    R<span style={{ color: "#0EA5E9" }}>{parseFloat(product.price ?? "0").toFixed(2)}</span>
+                  </div>
+                ) : isApproved ? (
+                  <div className="inline-flex rounded border border-[#c99a3d]/35 bg-[#c99a3d]/10 px-4 py-3 text-sm font-bold text-[#c99a3d]">
+                    Price on request
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 py-3 px-4 rounded border border-[#0EA5E9]/20 bg-[#0EA5E9]/5 inline-flex">
@@ -160,7 +165,11 @@ export default function ProductDetail() {
 
               {/* Stock */}
               <div className="mb-6">
-                {product.stockQuantity > 0 ? (
+                {!hasPrice ? (
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#c99a3d" }}>
+                    Price confirmation required
+                  </span>
+                ) : product.stockQuantity > 0 ? (
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#4ADE80" }}>
                     ✓ In Stock ({product.stockQuantity} available)
                   </span>
@@ -188,7 +197,7 @@ export default function ProductDetail() {
               )}
 
               {/* Add to Quote */}
-              {isApproved && product.stockQuantity > 0 && (
+              {isApproved && hasPrice && product.stockQuantity > 0 && (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                   <div className="flex items-center self-start border border-[#1E293B] rounded overflow-hidden bg-[#111111]">
                     <button

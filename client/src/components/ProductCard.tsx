@@ -34,6 +34,8 @@ export default function ProductCard({
   });
 
   const inStock = product.stockQuantity > 0;
+  const hasPrice = Number(product.price ?? 0) > 0;
+  const isQuoteReady = inStock && hasPrice;
 
   return (
     <div className="rounded-lg border border-[#1E293B] bg-[#111111] overflow-hidden group hover:border-[#0EA5E9]/40 hover:shadow-[0_0_20px_rgba(14,165,233,0.08)] transition-all duration-200 flex flex-col h-full">
@@ -64,10 +66,10 @@ export default function ProductCard({
           )}
 
           {/* Out of stock overlay */}
-          {!inStock && (
+          {!isQuoteReady && (
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
               <span className="text-xs font-bold uppercase tracking-widest text-[#64748B] border border-[#1E293B] px-3 py-1 rounded">
-                Out of Stock
+                {hasPrice ? "Out of Stock" : "Price on Request"}
               </span>
             </div>
           )}
@@ -93,9 +95,9 @@ export default function ProductCard({
           {isApproved ? (
             <>
               <span className="text-base font-black text-white sm:text-lg">
-                {product.price ? `R${parseFloat(product.price).toFixed(2)}` : "—"}
+                {hasPrice ? `R${parseFloat(product.price ?? "0").toFixed(2)}` : "Price on request"}
               </span>
-              {inStock ? (
+              {isQuoteReady ? (
                 <Button
                   size="sm"
                   className="min-h-10 w-full text-white font-bold text-[0.68rem] uppercase tracking-wide px-3 sm:h-9 sm:min-h-0 sm:w-auto sm:flex-none"

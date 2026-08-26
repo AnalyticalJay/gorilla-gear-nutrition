@@ -528,3 +528,9 @@
 - [x] Link the homepage Supplements entry points to the new category shop.
 - [x] Verify filtering, navigation, mobile presentation, and regression coverage.
 - [x] Save and deliver the Supplements category shop checkpoint.
+
+## Active Implementation — Supplements Range Import
+- [x] Inspect the supplied supplement-range screenshot and reconcile every listed item against the current catalogue.
+- [x] Create or update each listed supplement with its quantity, strength, description, price, and Supplements category mapping.
+- [x] Verify all listed supplements render on the Supplements shop across desktop and mobile.
+- [x] Save and deliver the Supplements range import checkpoint.
