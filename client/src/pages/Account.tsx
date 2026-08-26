@@ -57,7 +57,7 @@ export default function Account() {
   return (
     <div className="min-h-screen bg-[#f7f5f1]">
       <Navbar />
-      <div className="pb-8 pt-20"><div className="container px-4 py-6 sm:py-8">
+      <div className="pb-24 pt-20 sm:pb-8"><div className="container px-4 py-6 sm:py-8">
         <div className="mb-8 text-center sm:text-left"><div className="mx-auto mb-4 h-[3px] w-16 bg-[linear-gradient(90deg,#a8751c_0%,#a8751c_55%,#f0c65e_55%,#f0c65e_100%)] sm:mx-0" /><h1 className="text-2xl font-black uppercase tracking-tight text-[#1f1f1f] sm:text-3xl">My <span className="text-[#a8751c]">Account</span></h1></div>
         <div className="grid gap-6 lg:grid-cols-4 lg:gap-8">
           <aside className="h-fit rounded-lg border border-[#e5dfd4] bg-white p-4 shadow-[0_12px_30px_rgba(69,69,69,0.05)]">

@@ -54,7 +54,6 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByText("Become a member")).toBeTruthy();
     expect(screen.getByText("Admin-approved")).toBeTruthy();
     expect(screen.getByText("Secure account")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Shop clothing" }).getAttribute("href")).toBe("/apparel");
     expect(screen.getAllByText("Member support").length).toBeGreaterThan(1);
     expect(screen.getByRole("contentinfo")).toBeTruthy();
     expect(screen.queryByText(/trusted brands/i)).toBeNull();
@@ -81,5 +80,13 @@ describe("Homepage responsive structure", () => {
     render(<Home />);
 
     expect(listPageQuery).not.toHaveBeenCalled();
+  });
+
+  it("links the Supplements collection and hero action to the dedicated supplements shop with the supplied managed artwork", () => {
+    render(<Home />);
+
+    expect(screen.getByRole("link", { name: /shop supplements/i }).getAttribute("href")).toBe("/supplements");
+    expect(screen.getByText("Supplements").closest("a")?.getAttribute("href")).toBe("/supplements");
+    expect(screen.getByAltText("Supplements").getAttribute("src")).toBe("/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg");
   });
 });

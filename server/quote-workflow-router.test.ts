@@ -12,8 +12,8 @@ const dbMocks = vi.hoisted(() => ({
   recordFailedIkhokhaPaymentAttempt: vi.fn(),
   resetFailedIkhokhaPaymentAttempt: vi.fn(),
   reviewQuote: vi.fn(),
-  getProductById: vi.fn(),
-  upsertCartItem: vi.fn(),
+  confirmEftPayment: vi.fn(),
+  rejectProofOfPayment: vi.fn(),
 }));
 
 const ikhokhaMocks = vi.hoisted(() => ({
@@ -115,97 +115,6 @@ describe("quote workflow router", () => {
     }));
   });
 
-  it("preserves an approved apparel size in the immutable quote item and confirmation email", async () => {
-    dbMocks.getCartItems.mockResolvedValue([
-      {
-        productId: 12,
-        productName: "Gorilla Gear Primal Standard — Black 220gsm Tee",
-        quantity: 1,
-        productPrice: "350.00",
-        productStock: 5,
-        availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
-        selectedSize: "XL",
-      },
-    ]);
-    dbMocks.createOrder.mockResolvedValue(56);
-    dbMocks.clearCart.mockResolvedValue(undefined);
-
-    const caller = appRouter.createCaller(makeContext());
-    await caller.orders.submitQuote({
-      shipping: {
-        fullName: "Quote Member",
-        phone: "+27123456789",
-        addressLine1: "1 Main Road",
-        city: "Port Elizabeth",
-        postalCode: "6001",
-        country: "South Africa",
-      },
-    });
-
-    expect(dbMocks.createOrder).toHaveBeenCalledWith(expect.objectContaining({
-      items: [{ productId: 12, quantity: 1, priceAtPurchase: "350.00", selectedSize: "XL" }],
-    }));
-    expect(sendQuoteConfirmationEmail).toHaveBeenCalledWith(expect.objectContaining({
-      items: [{ productName: "Gorilla Gear Primal Standard — Black 220gsm Tee", selectedSize: "XL", quantity: 1, lineTotal: 350 }],
-    }));
-  });
-
-  it("requires a selected size when adding a product configured with apparel sizes", async () => {
-    dbMocks.getProductById.mockResolvedValue({ id: 12, availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"] });
-    const caller = appRouter.createCaller(makeContext());
-
-    await expect(caller.cart.upsert({ productId: 12, quantity: 1 })).rejects.toMatchObject({
-      code: "BAD_REQUEST",
-      message: "Please select a size before adding this apparel item to your quote.",
-    });
-
-    await caller.cart.upsert({ productId: 12, quantity: 1, selectedSize: "XL" });
-    expect(dbMocks.upsertCartItem).toHaveBeenCalledWith(7, 12, 1, "XL");
-  });
-
-  it("enforces the configured inventory limit for the selected apparel size", async () => {
-    const apparelInventory = { S: 50, M: 50, L: 50, XL: 50, "2XL": 50, "3XL": 50, "4XL": 50 };
-    dbMocks.getProductById.mockResolvedValue({
-      id: 12,
-      availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
-      sizeInventory: apparelInventory,
-    });
-    const caller = appRouter.createCaller(makeContext());
-
-    await expect(caller.cart.upsert({ productId: 12, quantity: 51, selectedSize: "XL" })).rejects.toMatchObject({
-      code: "BAD_REQUEST",
-      message: "Only 50 units are available in size XL.",
-    });
-
-    await caller.cart.upsert({ productId: 12, quantity: 50, selectedSize: "XL" });
-    expect(dbMocks.upsertCartItem).toHaveBeenCalledWith(7, 12, 50, "XL");
-
-    dbMocks.getCartItems.mockResolvedValue([{
-      productId: 12,
-      productName: "Gorilla Gear Primal Standard — Black 220gsm Tee",
-      quantity: 51,
-      productPrice: "350.00",
-      productStock: 350,
-      availableSizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
-      sizeInventory: apparelInventory,
-      selectedSize: "XL",
-    }]);
-
-    await expect(caller.orders.submitQuote({
-      shipping: {
-        fullName: "Quote Member",
-        phone: "+27123456789",
-        addressLine1: "1 Main Road",
-        city: "Port Elizabeth",
-        postalCode: "6001",
-        country: "South Africa",
-      },
-    })).rejects.toMatchObject({
-      code: "BAD_REQUEST",
-      message: "Only 50 units are available in size XL for Gorilla Gear Primal Standard — Black 220gsm Tee.",
-    });
-  });
-
   it("allows an admin to approve or reject a quote with review notes", async () => {
     const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
 
@@ -218,12 +127,12 @@ describe("quote workflow router", () => {
     expect(dbMocks.reviewQuote).toHaveBeenCalledWith(55, 7, "quote_approved", "Approved for payment.");
   });
 
-  it("gates payment selection until the quote is approved and supports iKhokha only", async () => {
+  it("gates payment selection until the quote is approved and supports iKhokha plus Manual EFT", async () => {
     dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_pending" });
     const caller = appRouter.createCaller(makeContext());
 
-    await expect(caller.orders.choosePayment({ orderId: 55, method: "eft" as never })).rejects.toMatchObject({
-      code: "BAD_REQUEST",
+    await expect(caller.orders.choosePayment({ orderId: 55, method: "eft" })).rejects.toMatchObject({
+      code: "PRECONDITION_FAILED",
     });
 
     dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_approved", totalAmount: "200.00" });
@@ -241,6 +150,14 @@ describe("quote workflow router", () => {
     expect(dbMocks.setOrderIkhokhaPaylink).toHaveBeenCalledWith("GGN-55", "paylink-55", "https://pay.ikhokha.example/55");
     expect(dbMocks.chooseQuotePayment).toHaveBeenLastCalledWith(55, 7, "ikhokha");
 
+    dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-55" });
+    const eft = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
+    expect(eft).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-55" });
+
+    dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "awaiting_payment", paymentMethod: null });
+    dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-56" });
+    const recovered = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
+    expect(recovered).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-56" });
   });
 
   it("restores payment selection when iKhokha rejects payment-link creation", async () => {
@@ -253,4 +170,19 @@ describe("quote workflow router", () => {
     expect(dbMocks.resetFailedIkhokhaPaymentAttempt).toHaveBeenCalledWith(55, 7);
   });
 
+  it("lets an admin confirm an EFT payment and transition the quote to paid", async () => {
+    const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
+
+    await caller.orders.confirmEft({ orderId: 55 });
+
+    expect(dbMocks.confirmEftPayment).toHaveBeenCalledWith(55);
+  });
+
+  it("lets an admin reject a proof with a customer-facing note", async () => {
+    const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
+
+    await caller.orders.rejectProof({ orderId: 55, note: "Please upload a clearer receipt." });
+
+    expect(dbMocks.rejectProofOfPayment).toHaveBeenCalledWith(55, 7, "Please upload a clearer receipt.");
+  });
 });

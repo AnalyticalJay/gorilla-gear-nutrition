@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gt, gte, inArray, isNull, like, lte, or, sql, lt } from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -366,11 +366,11 @@ export async function getAdminAnalytics() {
       .innerJoin(products, eq(productImages.productId, products.id))
       .where(eq(products.isActive, true)),
     db.select({ count: count() }).from(categories).where(eq(categories.isActive, true)),
-    db.select({ status: orders.status, count: count() }).from(orders).where(eq(orders.isTestOrder, false)).groupBy(orders.status),
+    db.select({ status: orders.status, count: count() }).from(orders).groupBy(orders.status),
     db
       .select({ count: count(), revenue: sql<string>`coalesce(sum(${orders.totalAmount}), 0)` })
       .from(orders)
-      .where(and(eq(orders.paymentStatus, "paid"), eq(orders.isTestOrder, false))),
+      .where(eq(orders.paymentStatus, "paid")),
     db
       .select({ id: users.id, fullName: users.fullName, status: users.status, createdAt: users.createdAt })
       .from(users)
@@ -387,7 +387,6 @@ export async function getAdminAnalytics() {
       })
       .from(orders)
       .innerJoin(users, eq(orders.userId, users.id))
-      .where(eq(orders.isTestOrder, false))
       .orderBy(desc(orders.createdAt))
       .limit(5),
   ]);
@@ -645,7 +644,7 @@ export async function getProductBySlug(slug: string) {
     .select()
     .from(productImages)
     .where(eq(productImages.productId, result[0].products.id))
-    .orderBy(desc(productImages.isPrimary));
+    .orderBy(productImages.isPrimary);
 
   return { ...result[0].products, category: result[0].categories, images };
 }
@@ -809,14 +808,11 @@ export async function getCartItems(userId: number) {
     .select({
       id: cartItems.id,
       quantity: cartItems.quantity,
-      selectedSize: cartItems.selectedSize,
       productId: products.id,
       productName: products.name,
       productSlug: products.slug,
       productPrice: products.price,
       productStock: products.stockQuantity,
-      availableSizes: products.availableSizes,
-      sizeInventory: products.sizeInventory,
     })
     .from(cartItems)
     .innerJoin(products, eq(cartItems.productId, products.id))
@@ -834,22 +830,21 @@ export async function getCartItems(userId: number) {
   return items.map((i) => ({ ...i, primaryImage: imageMap.get(i.productId) ?? null }));
 }
 
-export async function upsertCartItem(userId: number, productId: number, quantity: number, selectedSize: string | null = null) {
+export async function upsertCartItem(userId: number, productId: number, quantity: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const selectedSizeCondition = selectedSize ? eq(cartItems.selectedSize, selectedSize) : isNull(cartItems.selectedSize);
   const existing = await db
     .select()
     .from(cartItems)
-    .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId), selectedSizeCondition))
+    .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)))
     .limit(1);
   if (existing[0]) {
     await db
       .update(cartItems)
       .set({ quantity })
-      .where(eq(cartItems.id, existing[0].id));
+      .where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)));
   } else {
-    await db.insert(cartItems).values({ userId, productId, quantity, selectedSize });
+    await db.insert(cartItems).values({ userId, productId, quantity });
   }
 }
 
@@ -877,7 +872,7 @@ export function calculateDelivery(_city: string): { type: "flat_rate"; fee: numb
 
 export async function createOrder(data: {
   userId: number;
-  items: Array<{ productId: number; quantity: number; priceAtPurchase: string; selectedSize?: string | null }>;
+  items: Array<{ productId: number; quantity: number; priceAtPurchase: string }>;
   totalAmount: string;
   deliveryFee: string;
   deliveryType: "free" | "flat_rate";
@@ -922,7 +917,6 @@ export async function createOrder(data: {
         productId: item.productId,
         productNameSnapshot: product?.name ?? `Product #${item.productId}`,
         strengthSnapshot: product?.dosageInfo ?? null,
-        selectedSizeSnapshot: item.selectedSize ?? null,
         quantity: item.quantity,
         priceAtPurchase: typeof item.priceAtPurchase === "number" ? (item.priceAtPurchase as number).toFixed(2) : String(item.priceAtPurchase ?? "0"),
       });
@@ -987,7 +981,7 @@ export async function getUserOrders(userId: number) {
   return db
     .select()
     .from(orders)
-    .where(and(eq(orders.userId, userId), eq(orders.isTestOrder, false)))
+    .where(eq(orders.userId, userId))
     .orderBy(orders.createdAt);
 }
 
@@ -1060,7 +1054,6 @@ export async function getOrderById(orderId: number) {
       productId: orderItems.productId,
       productNameSnapshot: orderItems.productNameSnapshot,
       strengthSnapshot: orderItems.strengthSnapshot,
-      selectedSizeSnapshot: orderItems.selectedSizeSnapshot,
       productName: products.name,
       strength: products.dosageInfo,
       productSlug: products.slug,
@@ -1075,7 +1068,6 @@ export async function getOrderById(orderId: number) {
     productId: item.productId,
     productName: item.productName ?? item.productNameSnapshot ?? `Product #${item.productId}`,
     strength: item.strength ?? item.strengthSnapshot ?? null,
-    selectedSize: item.selectedSizeSnapshot ?? null,
     productSlug: item.productSlug ?? null,
   }));
 
@@ -1144,7 +1136,6 @@ export async function getAllOrders() {
     })
     .from(orders)
     .innerJoin(users, eq(orders.userId, users.id))
-    .where(eq(orders.isTestOrder, false))
     .orderBy(orders.createdAt);
 }
 
@@ -1381,7 +1372,7 @@ export async function updateOrderIkhokhaPayment(ikhokhaReference: string, paymen
   await db.update(orders).set({
     paymentStatus,
     // A decline, cancellation, or expiry should not cancel the approved quote.
-    // The customer may safely retry secure iKhokha checkout after a failed link attempt.
+    // The customer may safely select iKhokha again or switch to Manual EFT.
     status: paymentStatus === "paid" ? "paid" : "awaiting_payment",
     ...(paymentStatus === "failed" ? { paymentMethod: null } : {}),
     ...(paymentStatus === "paid" ? { paidAt: new Date() } : {}),

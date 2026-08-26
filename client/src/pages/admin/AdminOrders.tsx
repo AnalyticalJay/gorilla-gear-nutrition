@@ -57,12 +57,13 @@ export default function AdminOrders() {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("awaiting_approval");
   const updateStatus = trpc.orders.adminUpdateStatus.useMutation({ onSuccess: () => { utils.orders.adminList.invalidate(); toast.success("Quote status updated"); }, onError: (error) => toast.error(error.message) });
   const review = trpc.orders.review.useMutation({ onSuccess: (_, variables) => { utils.orders.adminList.invalidate(); toast.success(variables.decision === "quote_approved" ? "Quote approved" : "Quote rejected"); }, onError: (error) => toast.error(error.message) });
+  const confirmEft = trpc.orders.confirmEft.useMutation({ onSuccess: () => { utils.orders.adminList.invalidate(); toast.success("EFT payment confirmed"); }, onError: (error) => toast.error(error.message) });
   const orders = ordersQuery.data ?? [];
   const awaitingApprovalCount = orders.filter((order) => order.status === "quote_pending").length;
   const filteredOrders = useMemo(() => orders.filter((order) => statusFilter === "all" || (statusFilter === "awaiting_approval" ? order.status === "quote_pending" : order.status === statusFilter)), [orders, statusFilter]);
 
   const handleReview = (orderId: number, decision: "quote_approved" | "quote_rejected") => {
-    const prompt = decision === "quote_approved" ? "Approval notes for the customer (optional):" : "Reason for rejecting this quote (optional):";
+    const prompt = decision === "quote_approved" ? "Approval notes or EFT banking instructions (optional):" : "Reason for rejecting this quote (optional):";
     const notes = window.prompt(prompt) ?? undefined;
     review.mutate({ orderId, decision, notes });
   };
@@ -71,6 +72,7 @@ export default function AdminOrders() {
 
   const OrderActions = ({ order, compact = false }: { order: AdminOrder; compact?: boolean }) => {
     if (order.status === "quote_pending") return <div className={`flex flex-wrap gap-2 ${compact ? "" : "border-t border-[#ead8ad] pt-3"}`}><Button size="sm" className="min-h-10 flex-1 bg-[#1f7a45] text-white hover:bg-[#176138]" onClick={() => handleReview(order.id, "quote_approved")} disabled={review.isPending}><Check className="mr-1 h-3.5 w-3.5" />Approve</Button><Button size="sm" variant="outline" className="min-h-10 flex-1 border-[#b42318]/35 text-[#b42318] hover:bg-[#b42318]/5" onClick={() => handleReview(order.id, "quote_rejected")} disabled={review.isPending}><X className="mr-1 h-3.5 w-3.5" />Reject</Button><Link href={`/admin/orders/${order.id}`} className="no-underline"><Button size="sm" variant="outline" className="min-h-10 border-[#a8751c]/35 px-3 text-[#684713] hover:bg-[#f6f0e4]"><Eye className="h-4 w-4" /><span className="sr-only">View quote</span></Button></Link></div>;
+    if (order.status === "awaiting_payment" && order.paymentMethod === "eft") return <div className="flex flex-wrap gap-2"><Button size="sm" className="min-h-9 bg-[#1f7a45] text-white hover:bg-[#176138]" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending}><Check className="mr-1 h-3.5 w-3.5" />Confirm EFT</Button><Link href={`/admin/orders/${order.id}`} className="no-underline"><Button size="sm" variant="outline" className="min-h-9 border-[#d5c7b0] px-3 text-[#454545] hover:bg-[#f6f0e4]"><Eye className="h-4 w-4" /></Button></Link></div>;
     return <div className="flex items-center gap-2"><StatusSelect orderId={order.id} status={order.status} compact={compact} /><Link href={`/admin/orders/${order.id}`} className="no-underline"><Button size="sm" variant="outline" className="min-h-9 border-[#d5c7b0] px-3 text-[#454545] hover:bg-[#f6f0e4]"><Eye className="h-4 w-4" /></Button></Link></div>;
   };
 

@@ -120,27 +120,6 @@
       "when": 1787048170757,
       "tag": "0016_stormy_banshee",
       "breakpoints": true
-    },
-    {
-      "idx": 17,
-      "version": "5",
-      "when": 1787686221040,
-      "tag": "0017_mute_power_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 18,
-      "version": "5",
-      "when": 1787687914382,
-      "tag": "0018_complex_reptil",
-      "breakpoints": true
-    },
-    {
-      "idx": 19,
-      "version": "5",
-      "when": 1787688796966,
-      "tag": "0019_daily_moondragon",
-      "breakpoints": true
     }
   ]
 }

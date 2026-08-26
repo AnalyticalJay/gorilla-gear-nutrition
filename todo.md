@@ -521,82 +521,10 @@
 - [x] Produce a final deployment-readiness report with verified controls and external prerequisites.
 - [x] Save and deliver the final readiness checkpoint and report.
 
-## Active Implementation — iKhokha-Only Payment Workflow
-- [x] Audit Manual EFT and proof-of-payment paths across customer, admin, server, and notifications.
-- [x] Remove new Manual EFT selection and proof uploads while enforcing iKhokha-only payment requests server-side.
-- [x] Update payment messaging and preserve historical EFT audit visibility.
-- [x] Verify iKhokha-only payment flow and regression coverage without initiating payment.
-- [x] Save and deliver the iKhokha-only payment checkpoint.
-
-## Active Implementation — Simplified Mobile Navigation
-- [x] Inspect the mobile bottom navigation integration and its layout spacing dependencies.
-- [x] Remove the redundant mobile footer navigation and reclaim its reserved page spacing.
-- [x] Verify mobile header navigation and page layouts after footer removal.
-- [x] Save and deliver the simplified mobile navigation checkpoint.
-
-## Active Verification — iKhokha-Only Payment Option
-- [x] Prepare an approved controlled quote eligible for payment.
-- [x] Trigger iKhokha payment-link creation and verify no Manual EFT route is available.
-- [x] Verify payment-attempt state, hosted link, and no-charge outcome.
-- [x] Report the controlled payment-option test and live settlement condition.
-
-## Active Verification — Live iKhokha Settlement Test
-- [x] Prepare a controlled approved quote and confirm the iKhokha hosted checkout handoff.
-- [x] Obtain explicit confirmation before an authorised cardholder completes the live payment.
-- [x] Verify payment callback reconciliation, paid status, email notification, and audit record.
-- [x] Report the live payment test outcome and deployment implications.
-
-## Active Verification — R10 iKhokha Gateway Test
-- [x] Create a clearly labelled non-shippable R10 test product and controlled approved quote.
-- [x] Create and verify the secure R10 iKhokha hosted checkout handoff.
-- [x] Hand checkout to the authorised cardholder and verify callback reconciliation after payment.
-- [x] Report the test result and clean up the controlled test data.
-
-## Active Maintenance — Controlled Payment Test Archive
-- [x] Audit dashboard query filters and test-record state for safe archival.
-- [x] Archive the test product and hide the paid test order from operational dashboard views while preserving audit records.
-- [x] Verify dashboard cleanup and confirm mobile sticky footer navigation remains removed.
-- [x] Save and deliver the archive and mobile-navigation verification checkpoint.
-
-## Active Implementation — Realistic Coaching Background
-- [x] Inspect the coaching collection component and determine the text-safe image composition.
-- [x] Generate a realistic Gorilla Gear coaching background with a coach and client in a blurred gym.
-- [x] Apply the new image through managed storage while preserving coaching copy readability.
-- [x] Verify the coaching collection across phone and desktop layouts.
-- [x] Save and deliver the realistic coaching-background checkpoint.
-
-## Active Implementation — Premium White and Black T-Shirts
-- [x] Audit catalogue category, image-gallery, and size-variant support for the new apparel records.
-- [x] Prepare main and secondary product images from the supplied white and black T-shirt mockups.
-- [x] Create the R350 white and black premium T-shirt products with sizes S–4XL and concise product copy.
-- [x] Verify product-gallery, mobile presentation, and size-selection behavior.
-- [x] Save and deliver the premium apparel products checkpoint.
-
-## Active Implementation — Per-Size T-Shirt Inventory
-- [x] Audit the apparel stock model and identify the smallest safe per-size inventory extension.
-- [x] Add per-size inventory validation to T-shirt cart and quote workflows.
-- [x] Set 50 units for every size S–4XL of each white and black T-shirt.
-- [x] Verify product, cart, quote, and inventory regression behavior.
-- [x] Save and deliver the per-size inventory checkpoint.
-
-## Active Implementation — Apparel Category Shop
-- [x] Audit category filtering, routes, and the homepage Clothing collection block link.
-- [x] Build a dedicated responsive Apparel Shop page that displays Clothing category products.
-- [x] Link the homepage Clothing block to the Apparel Shop page.
-- [x] Verify filtered apparel rendering, navigation, mobile layout, and regression coverage.
-- [x] Save and deliver the Apparel Shop checkpoint.
-
-## Active Audit — Uploaded Inventory and Website Price Reconciliation
-- [x] Inspect and profile the uploaded inventory price list fields and record counts.
-- [x] Extract and normalize the live website product catalogue for comparison.
-- [x] Compare brand, product, product type, strength, dosage, and supplied prices; retain unpriced source rows as informational only.
-- [x] Prepare a reconciliation report and detailed exceptions workbook.
-- [x] Deliver the audit findings and supporting files.
-
-## Active Implementation — Catalogue Primary-Image Coverage
-- [x] Audit every live catalogue product for a main image and create the exact unresolved worklist.
-- [x] Review the supplied Drive brand folders and match only verified product imagery.
-- [x] Research safe official or authorised-source images for remaining product gaps.
-- [x] Upload and assign verified main images with provenance records.
-- [x] Verify coverage and representative rendering; document every unresolved record.
-- [x] Save and deliver the image-coverage checkpoint and audit files.
+## Active Implementation — Supplements Category Shop
+- [x] Audit supplement category records, product filtering, and the homepage collection configuration.
+- [x] Upload the supplied NutriTech lifestyle image to managed storage and apply it to the Supplements collection block.
+- [x] Build a responsive Supplements shop page that displays all Supplement-category products.
+- [x] Link the homepage Supplements entry points to the new category shop.
+- [x] Verify filtering, navigation, mobile presentation, and regression coverage.
+- [x] Save and deliver the Supplements category shop checkpoint.

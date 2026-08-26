@@ -122,8 +122,6 @@ export const products = mysqlTable("products", {
   categoryId: int("categoryId").references(() => categories.id),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   stockQuantity: int("stockQuantity").default(0).notNull(),
-  availableSizes: json("availableSizes").$type<string[] | null>(),
-  sizeInventory: json("sizeInventory").$type<Record<string, number> | null>(),
   isActive: boolean("isActive").default(true).notNull(),
   isFeatured: boolean("isFeatured").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -150,7 +148,6 @@ export const cartItems = mysqlTable("cart_items", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id),
   productId: int("productId").notNull().references(() => products.id),
-  selectedSize: varchar("selectedSize", { length: 8 }),
   quantity: int("quantity").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -167,7 +164,6 @@ export const orders = mysqlTable("orders", {
   status: mysqlEnum("status", ["pending", "quote_pending", "quote_approved", "quote_rejected", "awaiting_payment", "paid", "processing", "shipped", "completed", "cancelled"]).default("quote_pending").notNull(),
   paymentStatus: mysqlEnum("paymentStatus", ["pending", "awaiting_eft", "proof_uploaded", "paid", "failed"]).default("pending").notNull(),
   paymentMethod: mysqlEnum("paymentMethod", ["eft", "payfast", "ikhokha"]),
-  isTestOrder: boolean("isTestOrder").default(false).notNull(),
   payfastReference: varchar("payfastReference", { length: 255 }),
   ikhokhaReference: varchar("ikhokhaReference", { length: 255 }),
   ikhokhaPaylinkId: varchar("ikhokhaPaylinkId", { length: 255 }),
@@ -239,7 +235,6 @@ export const orderItems = mysqlTable("order_items", {
   productId: int("productId").notNull().references(() => products.id),
   productNameSnapshot: varchar("productNameSnapshot", { length: 255 }),
   strengthSnapshot: varchar("strengthSnapshot", { length: 255 }),
-  selectedSizeSnapshot: varchar("selectedSizeSnapshot", { length: 8 }),
   quantity: int("quantity").notNull(),
   priceAtPurchase: decimal("priceAtPurchase", { precision: 10, scale: 2 }).notNull(),
 });

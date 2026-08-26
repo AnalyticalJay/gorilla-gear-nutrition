@@ -19,9 +19,9 @@ import Footer from "@/components/Footer";
 
 const artwork = {
   hero: "/manus-storage/ggn-hero-branded-apparel-model_38e5ef90.png",
-  supplements: "/manus-storage/ggn-collection-supplements-v2_e5318894.jpg",
+  supplements: "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg",
   clothing: "/manus-storage/ggn-clothing-mannequin_b7e2bdb6.png",
-  coaching: "/manus-storage/ggn-realistic-coaching-gym-background_ac3902d7.jpg",
+  coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
 };
 
 const collections = [
@@ -30,16 +30,16 @@ const collections = [
     eyebrow: "Performance nutrition",
     description: "Purpose-built fuel for disciplined progress.",
     action: "Explore member range",
-    href: "#membership",
+    href: "/supplements",
     image: artwork.supplements,
-    imageClass: "object-center",
+    imageClass: "object-[40%_center]",
   },
   {
     title: "Clothing",
     eyebrow: "Performance apparel",
     description: "Train hard. Live ready. Show up with intent.",
     action: "Explore member range",
-    href: "/apparel",
+    href: "#membership",
     image: artwork.clothing,
     imageClass: "object-[center_16%]",
   },
@@ -98,16 +98,16 @@ export default function Home() {
                 Premium supplements, performance apparel and elite coaching. Built for those who demand more.
               </p>
               <div className="mt-6 grid gap-2.5 sm:mt-8 sm:grid-cols-3 sm:gap-3">
-                <a href="#collections" className="no-underline">
+                <Link href="/supplements" className="no-underline">
                   <Button className="h-12 w-full rounded-none bg-[#c99a3d] px-4 text-[10px] font-black uppercase tracking-[0.12em] text-black hover:bg-[#e0b35a]">
                     Shop supplements
                   </Button>
-                </a>
-                <Link href="/apparel" className="no-underline">
+                </Link>
+                <a href="#collections" className="no-underline">
                   <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
                     Shop clothing
                   </Button>
-                </Link>
+                </a>
                 <Link href="/coaching" className="no-underline">
                   <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
                     Coaching
@@ -160,8 +160,8 @@ export default function Home() {
               <div className="mx-auto mt-4 h-px w-10 bg-[#c99a3d]" />
             </div>
             <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-              {collections.map((collection, index) => (
-                <a key={collection.title} href={collection.href} className="group relative block min-h-[390px] overflow-hidden border border-white/10 bg-[#111111] no-underline transition-all duration-300 hover:-translate-y-1 hover:border-[#c99a3d]/60 sm:min-h-[540px]">
+              {collections.map((collection, index) => {
+                const content = <>
                   <img src={collection.image} alt={collection.title} className={`absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 ${collection.imageClass}`} />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.15)_0%,rgba(0,0,0,0.28)_33%,rgba(0,0,0,0.94)_100%)]" />
                   <div className="absolute left-5 right-5 top-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">Collection 0{index + 1}</span><span className="h-px w-8 bg-white/35" /></div>
@@ -173,8 +173,10 @@ export default function Home() {
                       {collection.action} <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
-                </a>
-              ))}
+                </>;
+                const className = "group relative block min-h-[390px] overflow-hidden border border-white/10 bg-[#111111] no-underline transition-all duration-300 hover:-translate-y-1 hover:border-[#c99a3d]/60 sm:min-h-[540px]";
+                return collection.href.startsWith("/") ? <Link key={collection.title} href={collection.href} className={className}>{content}</Link> : <a key={collection.title} href={collection.href} className={className}>{content}</a>;
+              })}
             </div>
           </div>
         </section>

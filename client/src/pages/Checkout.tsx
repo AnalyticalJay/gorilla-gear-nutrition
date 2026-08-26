@@ -104,7 +104,7 @@ export default function Checkout() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-20 pb-8">
+      <div className="pt-20 pb-24 sm:pb-8">
         <div className="container px-4 py-6 sm:py-8">
           <Link href="/cart" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 no-underline">
             <ArrowLeft className="h-4 w-4" />
@@ -197,10 +197,7 @@ export default function Checkout() {
                 <div className="space-y-3 mb-4">
                   {items.map((item) => (
                     <div key={item.id} className="flex flex-wrap items-start justify-between gap-2 text-sm">
-                      <div className="min-w-0 flex-1 text-muted-foreground">
-                        <p>{item.productName} ×{item.quantity}</p>
-                        {item.selectedSize && <p className="mt-1 text-xs font-bold uppercase tracking-wide text-[#a8751c]">Size: {item.selectedSize}</p>}
-                      </div>
+                      <span className="min-w-0 flex-1 text-muted-foreground">{item.productName} ×{item.quantity}</span>
                       <span className="shrink-0">R{(parseFloat(item.productPrice) * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
@@ -264,7 +261,7 @@ export default function Checkout() {
                 <ClipboardCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#a8751c]" aria-hidden="true" />
                 <div className="text-sm leading-relaxed text-[#684713]">
                   <p className="font-bold text-[#5f4210]">What happens next</p>
-                  <p className="mt-1">We’ll review your availability and final quote. Once approved, you’ll receive an email and can complete payment securely through iKhokha from your quote status page.</p>
+                  <p className="mt-1">We’ll review your availability and final quote. Once approved, you’ll receive an email and can choose iKhokha or Manual EFT from your quote status page.</p>
                 </div>
               </div>
             </div>
