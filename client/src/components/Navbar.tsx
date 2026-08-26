@@ -24,9 +24,9 @@ export default function Navbar() {
   const cartQuery = trpc.cart.get.useQuery(undefined, { enabled: isApproved });
   const cartCount = cartQuery.data?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
   const navLinks = [
-    { href: "/#collections", label: "Shop" },
-    { href: "/coaching", label: "Coaching" },
-    { href: "/#membership", label: "Apply" },
+    { href: "/#collections", mobileHref: "/products", desktopLabel: "Shop", mobileLabel: "Shop Products" },
+    { href: "/coaching", mobileHref: "/coaching", desktopLabel: "Coaching", mobileLabel: "Coaching Plans" },
+    { href: "/#membership", mobileHref: "/register", desktopLabel: "Apply", mobileLabel: "Apply for Access" },
   ];
 
   return (
@@ -44,7 +44,7 @@ export default function Navbar() {
             const active = location === link.href;
             return (
               <a key={link.href} href={link.href} className={`text-[10px] font-bold uppercase tracking-[0.16em] no-underline transition-colors ${active ? "text-[#a8751c]" : "text-black/68 hover:text-[#a8751c]"}`}>
-                {link.label}
+                {link.desktopLabel}
               </a>
             );
           })}
@@ -106,18 +106,24 @@ export default function Navbar() {
             </div>
           )}
 
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-11 w-11 items-center justify-center border border-black/15 bg-white text-black transition-colors hover:border-[#a8751c]/60 hover:text-[#a8751c] md:hidden sm:h-10 sm:w-10" aria-label="Toggle Menu">
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-11 w-11 items-center justify-center border border-black/15 bg-white text-black transition-colors hover:border-[#a8751c]/60 hover:text-[#a8751c] md:hidden sm:h-10 sm:w-10" aria-label="Open navigation menu" aria-expanded={mobileOpen} aria-controls="mobile-navigation-menu">
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="border-b border-black/10 bg-white p-4 md:hidden">
+        <div id="mobile-navigation-menu" aria-label="Mobile navigation" className="border-b border-black/10 bg-white p-4 md:hidden">
           <div className="flex flex-col items-center gap-3 text-center">
+            {isAuthenticated && (
+              <div className="grid w-full grid-cols-2 gap-2 border-b border-black/10 pb-3">
+                {isApproved && <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center justify-center gap-2 border border-[#a8751c]/30 bg-[#fffaf0] px-3 py-2 text-xs font-bold uppercase tracking-wide text-[#7c5a20] no-underline"><ShoppingCart className="h-4 w-4" />Quote Cart{cartCount > 0 ? ` (${cartCount})` : ""}</Link>}
+                <Link href="/account" onClick={() => setMobileOpen(false)} className={`${isApproved ? "" : "col-span-2"} flex min-h-11 items-center justify-center gap-2 border border-black/15 bg-white px-3 py-2 text-xs font-bold uppercase tracking-wide text-black no-underline`}><User className="h-4 w-4 text-[#a8751c]" />My Account</Link>
+              </div>
+            )}
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-black/68 hover:text-[#a8751c] no-underline">
-                {link.label}
+              <a key={link.href} href={link.mobileHref} onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-black/68 hover:text-[#a8751c] no-underline">
+                {link.mobileLabel}
               </a>
             ))}
             {isAdmin && (
@@ -131,7 +137,7 @@ export default function Navbar() {
                   <Button variant="outline" className="h-10 w-full border-black/20 bg-white text-xs font-bold uppercase tracking-wider text-black">Sign In</Button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="no-underline">
-                  <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply Access</Button>
+                  <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply for Access</Button>
                 </Link>
               </div>
             )}

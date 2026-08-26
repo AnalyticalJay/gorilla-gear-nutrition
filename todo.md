@@ -555,3 +555,9 @@
 - [x] Remove the redundant fixed footer navigation from mobile views.
 - [x] Verify header-based mobile navigation, page layout, and regression coverage.
 - [x] Save and deliver the mobile navigation cleanup checkpoint.
+
+## Active Implementation — Mobile Header Labels and Approved-Member Navigation
+- [x] Audit mobile header labels, controls, and approved-member test access.
+- [x] Refine mobile header labels and accessible navigation cues.
+- [x] Test shop, cart, account, and menu navigation with an approved member session.
+- [x] Save and deliver the mobile header refinement checkpoint.
