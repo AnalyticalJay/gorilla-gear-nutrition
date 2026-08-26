@@ -56,6 +56,7 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByText("Become a member")).toBeTruthy();
     expect(screen.queryByText("Admin-approved")).toBeNull();
     expect(screen.queryByText("Secure account")).toBeNull();
+    expect(screen.getAllByText("Scroll to collections").length).toBeGreaterThan(0);
     expect(screen.getByRole("contentinfo")).toBeTruthy();
     expect(screen.queryByText(/trusted brands/i)).toBeNull();
     expect(screen.queryByText(/anabolics/i)).toBeNull();

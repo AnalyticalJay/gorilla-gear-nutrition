@@ -617,3 +617,9 @@
 - [x] Remove the three hero member-benefit blocks and rebalance the layout.
 - [x] Verify the simplified hero across desktop and mobile with regression coverage.
 - [x] Save and deliver the simplified hero checkpoint.
+
+## Active Implementation — Hero Scroll Cue and Section Entrance
+- [x] Audit the hero-to-next-section structure and existing motion behavior.
+- [x] Add a gold-and-charcoal scroll cue and reduced-motion-safe next-section entrance animation.
+- [x] Verify scroll experience, responsive layout, reduced-motion behavior, and palette consistency.
+- [x] Save and deliver the hero transition and scroll-cue checkpoint.

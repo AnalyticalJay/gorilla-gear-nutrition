@@ -1,5 +1,5 @@
 import React from "react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useIsMobile } from "@/hooks/useMobile";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   BadgeCheck,
+  ChevronDown,
   Dumbbell,
   LockKeyhole,
   PackageCheck,
@@ -69,7 +70,25 @@ export default function Home() {
   const isApproved = (user as any)?.status === "approved";
   const isMobile = useIsMobile();
   const privateCatalogueRef = useRef<HTMLDivElement>(null);
+  const pillarsRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const [pillarsInView, setPillarsInView] = useState(false);
+  useEffect(() => {
+    const target = pillarsRef.current;
+    if (!target || typeof IntersectionObserver === "undefined") {
+      setPillarsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setPillarsInView(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "0px 0px -12% 0px" });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
   const { scrollYProgress: privateCatalogueScrollProgress } = useScroll({
     target: privateCatalogueRef,
     offset: ["start end", "end start"],
@@ -123,7 +142,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-              <div className="mt-4 flex justify-center sm:mt-5 sm:block">
+              <div className="mt-4 flex justify-center sm:mt-5 sm:items-center sm:justify-start sm:gap-7">
                 {isApproved ? (
                   <Link href="/products" className="group inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#c99a3d] no-underline">
                     Enter member catalogue <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -133,13 +152,37 @@ export default function Home() {
                     Apply for member access <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </Link>
                 ) : null}
+                <a
+                  href="#collections"
+                  className="group hidden items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-[#c99a3d] no-underline transition-colors hover:text-[#f0c65e] sm:inline-flex"
+                >
+                  Scroll to collections
+                  <span className="h-px w-5 bg-[#c99a3d]/65 transition-all duration-200 group-hover:w-8 group-hover:bg-[#f0c65e]" />
+                  <ChevronDown className="h-4 w-4 text-[#c99a3d] transition-transform duration-200 group-hover:translate-y-1 group-hover:text-[#f0c65e]" aria-hidden="true" />
+                </a>
               </div>
+              <a
+                href="#collections"
+                className="group mx-auto mt-6 flex w-fit flex-col items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-[#c99a3d] no-underline transition-colors hover:text-[#f0c65e] sm:hidden"
+              >
+                <span className="flex items-center gap-2">
+                  Scroll to collections
+                  <span className="h-px w-5 bg-[#c99a3d]/65 transition-all duration-200 group-hover:w-8 group-hover:bg-[#f0c65e]" />
+                </span>
+                <ChevronDown className="h-4 w-4 text-[#c99a3d] transition-transform duration-200 group-hover:translate-y-1 group-hover:text-[#f0c65e]" aria-hidden="true" />
+              </a>
             </motion.div>
           </div>
           <div className="absolute bottom-5 right-5 hidden items-center gap-6 border-t border-white/25 pt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/75 sm:flex lg:right-10 lg:bottom-8"><span>Built to perform</span><span className="text-[#c99a3d]">GGN / 01</span></div>
         </section>
 
-        <section className="border-b border-white/10 bg-[#0d0d0d] py-6 sm:py-7">
+        <motion.section
+          ref={pillarsRef}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+          animate={prefersReducedMotion || pillarsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.48, ease: [0.23, 1, 0.32, 1] }}
+          className="border-b border-white/10 bg-[#0d0d0d] py-6 sm:py-7"
+        >
           <div className="container grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
             {pillars.map(({ icon: Icon, title, copy }, index) => (
               <div key={title} className={`flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left ${index > 0 ? "lg:border-l lg:border-white/10 lg:pl-8" : ""} ${index < pillars.length - 1 ? "lg:pr-8" : ""}`}>
@@ -151,7 +194,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         <section id="collections" className="scroll-mt-24 bg-[#080808] py-16 sm:py-20 lg:py-24">
           <div className="container">
