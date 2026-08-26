@@ -5,7 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
+import SupplementQuickViewCard from "@/components/SupplementQuickViewCard";
 import { Button } from "@/components/ui/button";
 
 const supplementsArtwork = "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg";
@@ -74,7 +74,7 @@ export default function SupplementsShop() {
             </div>
           ) : products.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {products.map((product) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}
+              {products.map((product) => <SupplementQuickViewCard key={product.id} product={product} isApproved={isApproved} />)}
             </div>
           ) : (
             <div className="border border-dashed border-white/20 bg-white/[0.025] px-6 py-16 text-center">

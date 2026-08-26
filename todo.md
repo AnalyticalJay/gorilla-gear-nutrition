@@ -534,3 +534,10 @@
 - [x] Create or update each listed supplement with its quantity, strength, description, price, and Supplements category mapping.
 - [x] Verify all listed supplements render on the Supplements shop across desktop and mobile.
 - [x] Save and deliver the Supplements range import checkpoint.
+
+## Active Implementation — Supplements Inventory and Quick View
+- [x] Audit the Supplements records and existing product-card architecture.
+- [x] Set Blue Magic Pre Workout to R450 and all newly imported supplement products to 100 units.
+- [x] Add accessible quick-view modals and hover interactions to Supplements shop product cards.
+- [x] Verify inventory, quick-view behavior, responsive presentation, and regression coverage.
+- [x] Save and deliver the Supplements inventory and quick-view checkpoint.
