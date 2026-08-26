@@ -3,11 +3,9 @@
  */
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 
 const mocks = vi.hoisted(() => ({
-  rejectProofMutate: vi.fn(),
-  confirmEftMutate: vi.fn(),
   invalidate: vi.fn(),
   orderQuery: vi.fn(),
 }));
@@ -17,8 +15,6 @@ vi.mock("@/lib/trpc", () => ({
     useUtils: () => ({ orders: { adminDetail: { invalidate: mocks.invalidate }, adminList: { invalidate: mocks.invalidate } } }),
     orders: {
       adminDetail: { useQuery: mocks.orderQuery },
-      confirmEft: { useMutation: () => ({ isPending: false, mutate: mocks.confirmEftMutate }) },
-      rejectProof: { useMutation: () => ({ isPending: false, mutate: mocks.rejectProofMutate }) },
       adminUpdateTracking: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
       adminUpdateStatus: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
       adminSimulateCourierScans: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
@@ -68,10 +64,10 @@ function makeOrder() {
   };
 }
 
-describe("AdminOrderDetail proof review", () => {
+describe("AdminOrderDetail historical proof visibility", () => {
   afterEach(() => cleanup());
 
-  it("shows the pending badge and calls reject with the admin note", () => {
+  it("shows an existing legacy proof record without active review controls", () => {
     mocks.orderQuery.mockReturnValue({ isLoading: false, data: makeOrder() });
     render(<AdminOrderDetail />);
 
@@ -80,17 +76,8 @@ describe("AdminOrderDetail proof review", () => {
     expect(screen.getByText("10mg")).toBeTruthy();
     expect(screen.getByText(/Qty: 1 × R1450\.00/)).toBeTruthy();
     expect(screen.getByText("1 item")).toBeTruthy();
-    fireEvent.change(screen.getByPlaceholderText(/optional rejection reason/i), { target: { value: "Receipt is not legible." } });
-    fireEvent.click(screen.getByRole("button", { name: /reject pop/i }));
-
-    expect(mocks.rejectProofMutate).toHaveBeenCalledWith({ orderId: 55, note: "Receipt is not legible." });
-  });
-
-  it("calls approve and confirm when the admin accepts the uploaded proof", () => {
-    mocks.orderQuery.mockReturnValue({ isLoading: false, data: makeOrder() });
-    render(<AdminOrderDetail />);
-
-    fireEvent.click(screen.getByRole("button", { name: /approve & confirm eft/i }));
-    expect(mocks.confirmEftMutate).toHaveBeenCalledWith({ orderId: 55 });
+    expect(screen.getByText(/historical eft records are displayed for audit only/i)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /approve.*eft/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /reject pop/i })).toBeNull();
   });
 });

@@ -49,9 +49,9 @@ describe("responsive layout contracts", () => {
     expect(productDetail).toContain("h-11 w-11");
     expect(orderDetail).toContain("pb-10 sm:py-12 sm:pb-12");
     expect(orderDetail).toContain("flex flex-col gap-2");
-    expect(orderDetail).toContain('aria-label="Upload proof of payment"');
-    expect(orderDetail).toContain("accept=\"image/*,application/pdf\"");
-    expect(orderDetail).toContain("block w-full text-xs");
+    expect(orderDetail).toContain("Pay securely with iKhokha");
+    expect(orderDetail).toContain("min-h-11 w-full bg-[#a8751c]");
+    expect(orderDetail).not.toContain('aria-label="Upload proof of payment"');
   });
 
   it("uses header controls as the only mobile navigation system", () => {

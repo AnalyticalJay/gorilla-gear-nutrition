@@ -59,6 +59,9 @@ describe("Products pagination", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next page" }));
 
     expect(screen.getByText("Page 2 of 3")).toBeTruthy();
-    expect(listPageQuery).toHaveBeenLastCalledWith(expect.objectContaining({ limit: 24, offset: 24 }));
+    expect(listPageQuery).toHaveBeenLastCalledWith(
+      expect.objectContaining({ limit: 24, offset: 24 }),
+      { enabled: true },
+    );
   });
 });

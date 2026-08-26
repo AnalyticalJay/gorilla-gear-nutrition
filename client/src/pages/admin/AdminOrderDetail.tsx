@@ -22,12 +22,12 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
     quote_pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    quote_approved: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    quote_approved: "bg-[#a8751c]/10 text-[#7c5a20] border-[#a8751c]/30",
     quote_rejected: "bg-red-500/20 text-red-400 border-red-500/30",
     awaiting_payment: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-    paid: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    paid: "bg-[#1f7a45]/10 text-[#1f7a45] border-[#1f7a45]/25",
     processing: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-    shipped: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
+    shipped: "bg-[#a8751c]/10 text-[#7c5a20] border-[#a8751c]/30",
     completed: "bg-green-500/20 text-green-400 border-green-500/30",
     cancelled: "bg-destructive/20 text-destructive border-destructive/30",
   };
@@ -42,7 +42,6 @@ export default function AdminOrderDetail() {
   const [trackingCarrier, setTrackingCarrier] = useState("The Courier Guy");
   const [trackingUrl, setTrackingUrl] = useState("");
   const [trackingNotes, setTrackingNotes] = useState("");
-  const [proofReviewNote, setProofReviewNote] = useState("");
   const [isPacked, setIsPacked] = useState(false);
   const [isCourierBooked, setIsCourierBooked] = useState(false);
   const [waybillNumber, setWaybillNumber] = useState("");
@@ -64,25 +63,6 @@ export default function AdminOrderDetail() {
     setIsCourierBooked(!!order.courierBookedAt);
     setWaybillNumber(order.waybillNumber ?? "");
   }, [order?.id, order?.trackingNumber, order?.trackingCarrier, order?.trackingUrl, order?.trackingNotes, order?.packedAt, order?.courierBookedAt, order?.waybillNumber]);
-
-  const confirmEft = trpc.orders.confirmEft.useMutation({
-    onSuccess: () => {
-      toast.success("EFT payment confirmed");
-      utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
-      utils.orders.adminList.invalidate();
-    },
-    onError: (e) => toast.error(e.message),
-  });
-
-  const rejectProof = trpc.orders.rejectProof.useMutation({
-    onSuccess: () => {
-      toast.success("Proof of payment rejected and customer notified in their order view");
-      setProofReviewNote("");
-      utils.orders.adminDetail.invalidate({ orderId: parseInt(orderId ?? "0") });
-      utils.orders.adminList.invalidate();
-    },
-    onError: (e) => toast.error(e.message),
-  });
 
   const updateTracking = trpc.orders.adminUpdateTracking.useMutation({
     onSuccess: () => {
@@ -361,18 +341,8 @@ export default function AdminOrderDetail() {
                 {order.proofReviewNote && <p className="rounded border border-red-500/20 bg-red-500/5 p-2 text-xs text-red-200"><strong>Review note:</strong> {order.proofReviewNote}</p>}
               </div>
             )}
-            {order.paymentMethod === "eft" && order.proofOfPaymentUrl && resolveProofStatus(order) === "pending" && (
-              <div className="mt-3 space-y-2">
-                <Textarea value={proofReviewNote} onChange={(event) => setProofReviewNote(event.target.value)} placeholder="Optional rejection reason for the customer" className="min-h-20 bg-background/50 text-xs" />
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <Button variant="outline" className="border-red-500/40 text-red-300 hover:bg-red-500/10" onClick={() => rejectProof.mutate({ orderId: order.id, note: proofReviewNote.trim() || "Please upload a clearer proof of payment." })} disabled={rejectProof.isPending || confirmEft.isPending}>
-                    {rejectProof.isPending ? "Rejecting..." : "Reject POP"}
-                  </Button>
-                  <Button className="bg-green-600 hover:bg-green-700 text-white font-bold" onClick={() => confirmEft.mutate({ orderId: order.id })} disabled={confirmEft.isPending || rejectProof.isPending}>
-                    {confirmEft.isPending ? "Verifying..." : "Approve & Confirm EFT"}
-                  </Button>
-                </div>
-              </div>
+            {order.paymentMethod === "eft" && (
+              <p className="mt-3 rounded border border-[#a8751c]/25 bg-[#f6f0e4] p-2 text-xs text-[#7c5a20]">Historical EFT records are displayed for audit only. New customer payments are processed through iKhokha.</p>
             )}
           </div>
         </div>

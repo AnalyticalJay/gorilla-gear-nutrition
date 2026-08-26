@@ -634,3 +634,17 @@
 - [x] Confirm the duplicated side image and the required true right-sleeve composition.
 - [x] Generate and assign the corrected right-sleeve product view.
 - [x] Deliver the corrected four-angle white T-shirt gallery.
+
+## Active Audit — Final Go-Live Readiness
+- [x] Review deployed baseline, release state, and audit scope.
+- [x] Test technical quality, security controls, dependencies, and production build.
+- [x] Verify critical user, member, admin, catalogue, quote, payment, email, and mobile workflows.
+- [x] Inspect live-domain configuration, static-asset behavior, and key public routes.
+- [x] Produce and deliver the final go-live readiness report with verified pass criteria and remaining conditions.
+
+## Audit Remediation — iKhokha-Only Checkout
+- [x] Remove active manual EFT and proof-of-payment customer/server paths while retaining historical records.
+- [x] Prevent unauthenticated and unapproved users from receiving the private `/products` catalogue data or route content.
+- [x] Route the homepage Shop Clothing call to the public Apparel storefront.
+- [x] Replace residual non-semantic blue and cyan admin order-status styling with the Gorilla Gear palette.
+- [x] Re-run payment, public-access, and full regression checks after the audit remediation.

@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Banknote, CheckCircle2, CreditCard, Loader2, Lock, MapPin, Package, Send, Truck } from "lucide-react";
+import { ArrowLeft, CreditCard, Loader2, Lock, MapPin, Package, Truck } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { format } from "date-fns";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import QuoteProgressTracker from "@/components/QuoteProgressTracker";
 import QuoteConversation from "@/components/QuoteConversation";
 import OrderTrackingTimeline from "@/components/OrderTrackingTimeline";
-import { proofStatusMeta, resolveProofStatus } from "@shared/paymentProof";
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
@@ -37,7 +36,7 @@ export default function OrderDetail() {
   const { isAuthenticated, user } = useAuth();
   const utils = trpc.useUtils();
   const parsedOrderId = parseInt(orderId ?? "0");
-  const [checkoutAction, setCheckoutAction] = useState<"ikhokha" | "eft" | null>(null);
+  const [checkoutAction, setCheckoutAction] = useState<"ikhokha" | null>(null);
 
   const orderQuery = trpc.orders.detail.useQuery(
     { orderId: parsedOrderId },
@@ -82,15 +81,9 @@ export default function OrderDetail() {
   const choosePayment = trpc.orders.choosePayment.useMutation({
     onMutate: ({ method }) => setCheckoutAction(method),
     onSuccess: (data) => {
-      if (data.method === "eft") {
-        setCheckoutAction(null);
-        toast.success("Manual EFT selected. Follow the banking instructions and upload your proof of payment.");
-        utils.orders.detail.invalidate({ orderId: parsedOrderId });
-        return;
-      }
       if (!data.ikhokhaData?.paylinkUrl) {
         setCheckoutAction(null);
-        toast.error("iKhokha checkout could not be generated. Please try again or use Manual EFT & POP.");
+        toast.error("iKhokha checkout could not be generated. Please try secure checkout again.");
         return;
       }
       toast.success("Opening secure iKhokha checkout. Select your preferred payment method to continue.");
@@ -102,25 +95,6 @@ export default function OrderDetail() {
     },
   });
 
-  const uploadProof = trpc.orders.uploadProof.useMutation({
-    onSuccess: () => {
-      toast.success("Proof of payment uploaded successfully. Awaiting admin verification.");
-      utils.orders.detail.invalidate({ orderId: parsedOrderId });
-    },
-    onError: (error) => toast.error(error.message),
-  });
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      uploadProof.mutate({ orderId: parsedOrderId, dataUrl: result, fileName: file.name });
-    };
-    reader.readAsDataURL(file);
-  };
-
   if (orderQuery.isLoading) {
     return <div className="min-h-screen flex flex-col bg-background"><Navbar /><main className="flex-1 container px-4 py-8 pb-10 sm:py-12 sm:pb-12"><div className="max-w-3xl mx-auto space-y-4">{[...Array(4)].map((_, i) => <div key={i} className="h-24 bg-accent/20 rounded-xl animate-pulse" />)}</div></main><Footer /></div>;
   }
@@ -130,10 +104,7 @@ export default function OrderDetail() {
   }
 
   const canSelectPayment = order.status === "quote_approved" || (order.status === "awaiting_payment" && !order.paymentMethod);
-  const isEftAwaiting = order.status === "awaiting_payment" && order.paymentMethod === "eft";
   const isIkhokhaAwaiting = order.status === "awaiting_payment" && order.paymentMethod === "ikhokha" && order.paymentStatus === "pending";
-  const proofStatus = resolveProofStatus(order);
-  const proofMeta = proofStatusMeta[proofStatus];
   const paymentReturnState = new URLSearchParams(location.split("?")[1] ?? "").get("payment");
 
   return (
@@ -171,68 +142,19 @@ export default function OrderDetail() {
                 <div className="flex justify-between"><span className="text-muted-foreground flex items-center gap-1"><Truck className="h-3 w-3" /> Delivery</span><span>{parseFloat(order.deliveryFee) === 0 ? <span className="text-[#1f7a45]">Free</span> : `R${parseFloat(order.deliveryFee).toFixed(2)}`}</span></div>
                 <div className="flex justify-between font-bold text-base border-t border-border/40 pt-2 mt-2"><span>Quote Total</span><span className="text-primary">R{parseFloat(order.totalAmount).toFixed(2)}</span></div>
                 <div className="flex flex-wrap justify-between gap-3 text-xs mt-2"><span className="text-muted-foreground">Payment Status</span><Badge className={`text-xs ${order.paymentStatus === "paid" ? "bg-[#1f7a45]/10 text-[#1f7a45] border-[#1f7a45]/25" : "bg-[#a8751c]/10 text-[#7c5a20] border-[#a8751c]/30"}`}>{order.paymentStatus.replaceAll("_", " ")}</Badge></div>
-                {order.paymentMethod && <div className="flex flex-wrap justify-between gap-3 text-xs"><span className="text-muted-foreground">Payment Method</span><span className="uppercase">{order.paymentMethod}</span></div>}
-                {(order.paymentMethod === "eft" || order.proofOfPaymentUrl) && (
-                  <div className="mt-4 rounded-lg border border-border/40 bg-background/30 p-3 space-y-2">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Proof of payment</span>
-                      <Badge className={`text-xs ${proofMeta.className}`}>{proofMeta.label}</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{proofMeta.description}</p>
-                    {proofStatus === "rejected" && order.proofReviewNote && <p className="rounded border border-[#b42318]/20 bg-[#b42318]/5 p-2 text-xs text-[#b42318]"><strong>Admin note:</strong> {order.proofReviewNote}</p>}
-                    {order.proofOfPaymentUrl && <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="block text-xs text-primary underline">View uploaded receipt</a>}
-                  </div>
-                )}
+                {order.paymentMethod && <div className="flex flex-wrap justify-between gap-3 text-xs"><span className="text-muted-foreground">Payment Method</span><span className="uppercase">{order.paymentMethod === "eft" ? "Historical EFT record" : order.paymentMethod}</span></div>}
               </div>
 
               {order.status === "quote_pending" && <div className="mt-5 rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] p-4 text-sm text-[#7c5a20]"><Lock className="inline h-4 w-4 mr-2" />Payment will become available after an admin reviews and approves this quote.</div>}
               {order.status === "quote_rejected" && <div className="mt-5 rounded-lg border border-[#b42318]/20 bg-[#b42318]/5 p-4 text-sm text-[#b42318]">This quote was not approved. {order.rejectionReason || "Please contact the store if you need clarification."}</div>}
-              {paymentReturnState === "cancelled" && <div role="status" className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm text-[#7c5a20]"><strong>Payment cancelled.</strong> No payment was confirmed. You can try secure iKhokha checkout again or choose Manual EFT &amp; POP.</div>}
-              {paymentReturnState === "failed" && <div role="alert" className="mt-5 rounded-lg border border-[#b42318]/25 bg-[#b42318]/5 p-4 text-sm text-[#b42318]"><strong>Payment was not completed.</strong> Your approved quote remains available. Please try again or use Manual EFT &amp; POP.</div>}
+              {paymentReturnState === "cancelled" && <div role="status" className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm text-[#7c5a20]"><strong>Payment cancelled.</strong> No payment was confirmed. You can try secure iKhokha checkout again.</div>}
+              {paymentReturnState === "failed" && <div role="alert" className="mt-5 rounded-lg border border-[#b42318]/25 bg-[#b42318]/5 p-4 text-sm text-[#b42318]"><strong>Payment was not completed.</strong> Your approved quote remains available. Please retry secure iKhokha checkout.</div>}
               {canSelectPayment && <div className="mt-5 space-y-3">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "ikhokha" })} disabled={choosePayment.isPending}>{choosePayment.isPending && checkoutAction === "ikhokha" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing secure checkout…</> : <><CreditCard className="h-4 w-4 mr-2" />Pay securely with iKhokha</>}</Button>
-                  <Button variant="outline" className="min-h-11 font-bold border-[#a8751c]/40 hover:bg-[#f6f0e4]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "eft" })} disabled={choosePayment.isPending}>{choosePayment.isPending && checkoutAction === "eft" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Selecting Manual EFT…</> : <><Banknote className="h-4 w-4 mr-2" />Manual EFT &amp; POP</>}</Button>
-                </div>
+                <Button className="min-h-11 w-full bg-[#a8751c] text-[#1f1f1f] font-bold hover:bg-[#c89536]" onClick={() => choosePayment.mutate({ orderId: order.id, method: "ikhokha" })} disabled={choosePayment.isPending}>{choosePayment.isPending && checkoutAction === "ikhokha" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing secure checkout…</> : <><CreditCard className="h-4 w-4 mr-2" />Pay securely with iKhokha</>}</Button>
                 {choosePayment.isPending && checkoutAction === "ikhokha" && <div role="status" aria-live="polite" className="flex items-start gap-3 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] px-3 py-3 text-sm text-[#6b665e]"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#a8751c]/30 bg-white"><Loader2 className="h-3.5 w-3.5 animate-spin text-[#a8751c]" /></span><span><strong className="block text-[#7c5a20]">Creating your secure iKhokha payment link</strong><span className="mt-1 block text-xs leading-5">Please do not refresh or close this page. You will be redirected to iKhokha to choose your payment method.</span></span></div>}
-                <p className="rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] px-3 py-2 text-xs leading-5 text-[#6b665e]">Secure iKhokha checkout lets you select the available payment method on the payment page. <strong className="text-[#1f1f1f]">Manual EFT &amp; POP</strong> remains available if you prefer to submit a bank transfer for review.</p>
+                <p className="rounded-lg border border-[#a8751c]/20 bg-[#f6f0e4] px-3 py-2 text-xs leading-5 text-[#6b665e]">Payments are processed through the secure iKhokha checkout page, where the available payment methods are presented.</p>
               </div>}
               {isIkhokhaAwaiting && <div className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm space-y-3"><div className="flex items-center gap-2 font-bold text-[#7c5a20]"><Lock className="h-4 w-4" />Secure iKhokha payment pending</div><p className="text-[#6b665e]">Your payment link is ready. Once iKhokha confirms the payment, this quote will update automatically.</p>{order.ikhokhaPaylinkUrl && <Button className="min-h-11 bg-[#a8751c] text-[#1f1f1f] hover:bg-[#c89536]" onClick={() => { if (order.ikhokhaPaylinkUrl) window.location.assign(order.ikhokhaPaylinkUrl); }}><CreditCard className="mr-2 h-4 w-4" />Continue secure payment</Button>}</div>}
-              {isEftAwaiting && (
-                <div className="mt-5 rounded-lg border border-[#a8751c]/30 bg-[#f6f0e4] p-4 text-sm space-y-4">
-                  <div className="flex items-center gap-2 font-bold text-[#7c5a20]"><CheckCircle2 className="h-4 w-4" />EFT payment selected</div>
-                  <p className="text-muted-foreground">Please transfer R{parseFloat(order.totalAmount).toFixed(2)} to Gorilla Gear Nutrition (Bank: FNB, Acc: 62812345678, Branch: 250655) using reference <strong className="text-foreground">Quote #{order.id}</strong>.</p>
-                  {order.quoteNotes && <p className="whitespace-pre-wrap text-foreground bg-background/40 p-3 rounded">{order.quoteNotes}</p>}
-
-                  <div className="border-t border-border/40 pt-4">
-                    <h3 className="font-bold mb-2">Upload Proof of Payment (POP)</h3>
-                    {proofStatus === "pending" || proofStatus === "approved" ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-[#1f7a45] font-medium">
-                          <CheckCircle2 className="h-4 w-4" /> POP uploaded successfully
-                        </div>
-                        <p className="text-xs text-muted-foreground">{proofMeta.description}</p>
-                        {order.proofOfPaymentUrl && <a href={order.proofOfPaymentUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline block">View uploaded receipt</a>}
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <p className="text-xs text-muted-foreground">{proofStatus === "rejected" ? "Please upload a corrected bank deposit slip or POP screenshot." : "Upload your bank deposit slip or POP screenshot (PDF, PNG, JPG) for admin review."}</p>
-                        {proofStatus === "rejected" && order.proofReviewNote && <p className="rounded border border-[#b42318]/20 bg-[#b42318]/5 p-2 text-xs text-[#b42318]"><strong>Admin note:</strong> {order.proofReviewNote}</p>}
-                        <input
-                          aria-label="Upload proof of payment"
-                          type="file"
-                          accept="image/*,application/pdf"
-                          className="block w-full text-xs text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
-                          onChange={handleFileChange}
-                          disabled={uploadProof.isPending}
-                        />
-                        {uploadProof.isPending && <p className="text-xs text-primary animate-pulse">Uploading proof of payment...</p>}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
             </div>
 
             {order.quoteNotes && order.status !== "awaiting_payment" && <div className="glass-card rounded-xl p-4 sm:p-6"><h2 className="font-bold mb-2">Review Notes</h2><p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.quoteNotes}</p></div>}

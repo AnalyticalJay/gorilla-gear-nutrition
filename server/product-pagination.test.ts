@@ -15,21 +15,17 @@ function makeCtx(overrides: Partial<TrpcContext> = {}): TrpcContext {
 }
 
 describe("products.listPage", () => {
-  it("returns page metadata and no more than the requested page size", async () => {
+  it("does not return an unscoped private catalogue page to an unauthenticated caller", async () => {
     const caller = appRouter.createCaller(makeCtx());
     const page = await caller.products.listPage({ limit: 3, offset: 0 });
 
-    expect(Array.isArray(page.items)).toBe(true);
-    expect(page.items.length).toBeLessThanOrEqual(3);
-    expect(page.limit).toBe(3);
-    expect(page.offset).toBe(0);
-    expect(page.total).toBeGreaterThanOrEqual(page.items.length);
+    expect(page).toEqual({ items: [], total: 0 });
   });
 
-  it("keeps prices hidden for unauthenticated catalogue requests", async () => {
+  it("keeps the unauthenticated private-catalogue result empty", async () => {
     const caller = appRouter.createCaller(makeCtx());
     const page = await caller.products.listPage({ limit: 5, offset: 0 });
 
-    page.items.forEach((product) => expect(product.price).toBeNull());
+    expect(page.items).toHaveLength(0);
   });
 });

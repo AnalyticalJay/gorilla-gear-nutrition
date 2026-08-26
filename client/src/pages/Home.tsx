@@ -131,11 +131,11 @@ export default function Home() {
                     Shop supplements
                   </Button>
                 </Link>
-                <a href="#collections" className="no-underline">
+                <Link href="/apparel" className="no-underline">
                   <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
                     Shop clothing
                   </Button>
-                </a>
+                </Link>
                 <Link href="/coaching" className="no-underline">
                   <Button variant="outline" className="h-12 w-full rounded-none border-white/35 bg-transparent px-4 text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">
                     Coaching

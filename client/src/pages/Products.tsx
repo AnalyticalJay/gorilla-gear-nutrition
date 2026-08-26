@@ -13,7 +13,7 @@ import { BrandFilter, AVAILABLE_BRANDS } from "@/lib/productFilters";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Products() {
-  const { user } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
@@ -23,7 +23,7 @@ export default function Products() {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 24;
 
-  const categoriesQuery = trpc.categories.list.useQuery();
+  const categoriesQuery = trpc.categories.list.useQuery(undefined, { enabled: isApproved });
   const productsQuery = trpc.products.listPage.useQuery({
     categoryId: selectedCategory,
     search: search || undefined,
@@ -31,7 +31,7 @@ export default function Products() {
     maxPrice: maxPrice > 0 ? maxPrice : undefined,
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
-  });
+  }, { enabled: isApproved });
 
   const products = productsQuery.data?.items ?? [];
   const totalProducts = productsQuery.data?.total ?? 0;
@@ -57,6 +57,33 @@ export default function Products() {
     setMaxPrice(0);
     setPage(1);
   };
+
+  if (!loading && !isApproved) {
+    return (
+      <div className="min-h-screen bg-[#101010] text-white">
+        <Navbar />
+        <main className="container flex min-h-[calc(100vh-10rem)] items-center justify-center py-16">
+          <section className="max-w-2xl border border-[#a8751c]/35 bg-[#111111] p-8 text-center sm:p-12">
+            <Lock className="mx-auto h-10 w-10 text-[#c99a3d]" />
+            <p className="mt-6 text-[10px] font-black uppercase tracking-[0.24em] text-[#c99a3d]">Approved members only</p>
+            <h1 className="mt-3 text-3xl font-black uppercase tracking-[-0.05em] text-white sm:text-4xl">Private catalogue access is limited to approved members.</h1>
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-white/70">Your application must be reviewed before the full private product range, categories, and pricing can be accessed.</p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              {!isAuthenticated ? (
+                <>
+                  <Link href="/register" className="no-underline"><Button className="min-h-11 rounded-none bg-[#c99a3d] px-5 text-xs font-black uppercase tracking-[0.14em] text-black hover:bg-[#e0b35a]">Apply for access</Button></Link>
+                  <Link href="/login" className="no-underline"><Button variant="outline" className="min-h-11 rounded-none border-white/30 px-5 text-xs font-black uppercase tracking-[0.14em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">Sign in</Button></Link>
+                </>
+              ) : (
+                <Link href="/account" className="no-underline"><Button className="min-h-11 rounded-none bg-[#c99a3d] px-5 text-xs font-black uppercase tracking-[0.14em] text-black hover:bg-[#e0b35a]">View approval status</Button></Link>
+              )}
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const filterPanel = (
     <div className="space-y-6">

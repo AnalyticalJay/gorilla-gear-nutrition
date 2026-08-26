@@ -12,8 +12,6 @@ const dbMocks = vi.hoisted(() => ({
   recordFailedIkhokhaPaymentAttempt: vi.fn(),
   resetFailedIkhokhaPaymentAttempt: vi.fn(),
   reviewQuote: vi.fn(),
-  confirmEftPayment: vi.fn(),
-  rejectProofOfPayment: vi.fn(),
 }));
 
 const ikhokhaMocks = vi.hoisted(() => ({
@@ -127,12 +125,12 @@ describe("quote workflow router", () => {
     expect(dbMocks.reviewQuote).toHaveBeenCalledWith(55, 7, "quote_approved", "Approved for payment.");
   });
 
-  it("gates payment selection until the quote is approved and supports iKhokha plus Manual EFT", async () => {
+  it("gates payment selection until the quote is approved and permits only iKhokha", async () => {
     dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_pending" });
     const caller = appRouter.createCaller(makeContext());
 
-    await expect(caller.orders.choosePayment({ orderId: 55, method: "eft" })).rejects.toMatchObject({
-      code: "PRECONDITION_FAILED",
+    await expect(caller.orders.choosePayment({ orderId: 55, method: "eft" } as never)).rejects.toMatchObject({
+      code: "BAD_REQUEST",
     });
 
     dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "quote_approved", totalAmount: "200.00" });
@@ -150,14 +148,6 @@ describe("quote workflow router", () => {
     expect(dbMocks.setOrderIkhokhaPaylink).toHaveBeenCalledWith("GGN-55", "paylink-55", "https://pay.ikhokha.example/55");
     expect(dbMocks.chooseQuotePayment).toHaveBeenLastCalledWith(55, 7, "ikhokha");
 
-    dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-55" });
-    const eft = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
-    expect(eft).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-55" });
-
-    dbMocks.getOrderById.mockResolvedValue({ userId: 7, status: "awaiting_payment", paymentMethod: null });
-    dbMocks.chooseQuotePayment.mockResolvedValue({ paymentStatus: "awaiting_eft", eftReference: "EFT-56" });
-    const recovered = await caller.orders.choosePayment({ orderId: 55, method: "eft" });
-    expect(recovered).toMatchObject({ orderId: 55, method: "eft", eftReference: "EFT-56" });
   });
 
   it("restores payment selection when iKhokha rejects payment-link creation", async () => {
@@ -170,19 +160,5 @@ describe("quote workflow router", () => {
     expect(dbMocks.resetFailedIkhokhaPaymentAttempt).toHaveBeenCalledWith(55, 7);
   });
 
-  it("lets an admin confirm an EFT payment and transition the quote to paid", async () => {
-    const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
 
-    await caller.orders.confirmEft({ orderId: 55 });
-
-    expect(dbMocks.confirmEftPayment).toHaveBeenCalledWith(55);
-  });
-
-  it("lets an admin reject a proof with a customer-facing note", async () => {
-    const caller = appRouter.createCaller(makeContext(makeUser({ role: "admin" })));
-
-    await caller.orders.rejectProof({ orderId: 55, note: "Please upload a clearer receipt." });
-
-    expect(dbMocks.rejectProofOfPayment).toHaveBeenCalledWith(55, 7, "Please upload a clearer receipt.");
-  });
 });

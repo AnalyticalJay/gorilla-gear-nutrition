@@ -21,6 +21,10 @@ const legacyDecorativeTokens = [
   "#38BDF8",
   "#7DD3FC",
   "#FDA4AF",
+  "blue-500",
+  "blue-400",
+  "cyan-500",
+  "cyan-400",
 ];
 
 describe("Gorilla Gear palette consistency", () => {

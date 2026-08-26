@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
-import { sendPasswordResetEmail, sendQuoteConfirmationEmail, sendPaymentApprovedEmail, sendOrderPackedEmail, sendOrderDispatchedEmail } from "./email";
+import { sendPasswordResetEmail, sendQuoteConfirmationEmail, sendOrderPackedEmail, sendOrderDispatchedEmail } from "./email";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
@@ -13,7 +13,6 @@ import {
   addProductImage,
   calculateDelivery,
   chooseQuotePayment,
-  confirmEftPayment,
   clearCart,
   createCoachingEnquiry,
   createCategory,
@@ -65,8 +64,6 @@ import {
   updateOrderTracking,
   updateOrderFulfilment,
   setOrderIkhokhaPaylink,
-  uploadProofOfPayment,
-  rejectProofOfPayment,
   updateProduct,
   updateUserRole,
   updateUserStatus,
@@ -96,6 +93,7 @@ const LOGIN_FAILURE_LIMIT = 5;
 const loginFailures = new Map<string, { count: number; firstFailedAt: number }>();
 const PRODUCT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+const PUBLIC_COLLECTION_SLUGS = new Set(["supplements", "clothing"]);
 
 function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
   const req = ctx.req as { ip?: string; socket?: { remoteAddress?: string }; headers?: Record<string, string | string[] | undefined> };
@@ -132,6 +130,15 @@ function detectProductImageMime(buffer: Buffer): (typeof PRODUCT_IMAGE_TYPES)[nu
   if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return "image/jpeg";
   if (buffer.length >= 12 && buffer.subarray(0, 4).toString("ascii") === "RIFF" && buffer.subarray(8, 12).toString("ascii") === "WEBP") return "image/webp";
   return null;
+}
+
+function isApprovedMember(user: { status?: string } | null | undefined) {
+  return user?.status === "approved";
+}
+
+async function getPublicCollectionIds() {
+  const categories = await getCategories();
+  return new Set(categories.filter((category) => PUBLIC_COLLECTION_SLUGS.has(category.slug)).map((category) => category.id));
 }
 
 function buildPasswordResetAuditIdentity(email: string, userId?: number | null) {
@@ -311,7 +318,10 @@ export const appRouter = router({
 
   // ─── Categories ───────────────────────────────────────────────────────────
   categories: router({
-    list: publicProcedure.query(() => getCategories()),
+    list: publicProcedure.query(async ({ ctx }) => {
+      const categories = await getCategories();
+      return isApprovedMember(ctx.user) ? categories : categories.filter((category) => PUBLIC_COLLECTION_SLUGS.has(category.slug));
+    }),
     listAll: adminProcedure.query(() => getAllCategories()),
 
     create: adminProcedure
@@ -335,8 +345,12 @@ export const appRouter = router({
     list: publicProcedure
       .input(z.object({ categoryId: z.number().optional(), search: z.string().optional(), featuredOnly: z.boolean().optional() }).optional())
       .query(async ({ ctx, input }) => {
+        const isApproved = isApprovedMember(ctx.user);
+        if (!isApproved) {
+          const publicCategoryIds = await getPublicCollectionIds();
+          if (!input?.categoryId || !publicCategoryIds.has(input.categoryId)) return [];
+        }
         const rows = await getProducts({ ...input, activeOnly: true });
-        const isApproved = ctx.user && (ctx.user as any).status === "approved";
         // Strip prices for non-approved users — server-enforced
         return rows.map((p) => ({
           ...p,
@@ -355,8 +369,12 @@ export const appRouter = router({
         offset: z.number().int().min(0).default(0),
       }).optional())
       .query(async ({ ctx, input }) => {
+        const isApproved = isApprovedMember(ctx.user);
+        if (!isApproved) {
+          const publicCategoryIds = await getPublicCollectionIds();
+          if (!input?.categoryId || !publicCategoryIds.has(input.categoryId)) return { items: [], total: 0 };
+        }
         const page = await getProductsPage({ ...input, activeOnly: true });
-        const isApproved = ctx.user && (ctx.user as any).status === "approved";
         return {
           ...page,
           items: page.items.map((product) => ({
@@ -379,7 +397,10 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         const product = await getProductBySlug(input.slug);
         if (!product) throw new TRPCError({ code: "NOT_FOUND" });
-        const isApproved = ctx.user && (ctx.user as any).status === "approved";
+        const isApproved = isApprovedMember(ctx.user);
+        if (!isApproved && !PUBLIC_COLLECTION_SLUGS.has(product.category?.slug ?? "")) {
+          throw new TRPCError({ code: "NOT_FOUND" });
+        }
         return { ...product, price: isApproved ? product.price : null };
       }),
 
@@ -487,7 +508,7 @@ export const appRouter = router({
         return { url, key };
       }),
 
-    getImages: publicProcedure
+    getImages: approvedProcedure
       .input(z.object({ productId: z.number() }))
       .query(({ input }) => getProductImages(input.productId)),
 
@@ -723,7 +744,7 @@ export const appRouter = router({
       }),
 
     choosePayment: approvedProcedure
-      .input(z.object({ orderId: z.number(), method: z.enum(["eft", "ikhokha"]) }))
+      .input(z.object({ orderId: z.number(), method: z.literal("ikhokha") }))
       .mutation(async ({ ctx, input }) => {
         const quote = await getOrderById(input.orderId);
         if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
@@ -785,58 +806,6 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await reviewQuote(input.orderId, ctx.user.id, input.decision, input.notes);
         return { success: true };
-      }),
-
-    confirmEft: adminProcedure
-      .input(z.object({ orderId: z.number() }))
-      .mutation(async ({ input }) => {
-        await confirmEftPayment(input.orderId);
-        const order = await getOrderById(input.orderId);
-        const customer = order ? await getUserById(order.userId) : null;
-        if (order && customer?.email) {
-          sendPaymentApprovedEmail({
-            orderId: order.id,
-            customerName: customer.fullName ?? "Valued Customer",
-            customerEmail: customer.email,
-            total: Number(order.totalAmount ?? "0"),
-          }).catch((err) => console.error("[Email] Payment approved notification error:", err));
-        }
-        return { success: true };
-      }),
-
-    rejectProof: adminProcedure
-      .input(z.object({ orderId: z.number(), note: z.string().trim().min(1).max(2000) }))
-      .mutation(async ({ ctx, input }) => {
-        await rejectProofOfPayment(input.orderId, ctx.user.id, input.note);
-        return { success: true };
-      }),
-
-    uploadProof: protectedProcedure
-      .input(z.object({
-        orderId: z.number(),
-        dataUrl: z.string().max(11_000_000),
-        fileName: z.string().trim().min(1).max(128),
-      }))
-      .mutation(async ({ ctx, input }) => {
-        const order = await getOrderById(input.orderId);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
-        if (order.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN" });
-        if (order.paymentMethod !== "eft" || order.status !== "awaiting_payment" || !["awaiting_eft", "proof_uploaded"].includes(order.paymentStatus)) {
-          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "EFT proof can only be uploaded while the order is awaiting EFT payment" });
-        }
-        const match = input.dataUrl.match(/^data:(image\/(?:png|jpeg|webp)|application\/pdf);base64,([A-Za-z0-9+/=\r\n]+)$/);
-        if (!match) throw new TRPCError({ code: "BAD_REQUEST", message: "Upload a PNG, JPG, WEBP, or PDF proof of payment" });
-        const contentType = match[1];
-        const buffer = Buffer.from(match[2], "base64");
-        if (buffer.length === 0 || buffer.length > 8 * 1024 * 1024) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Proof of payment must be smaller than 8 MB" });
-        }
-        const safeFileName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-128) || "proof-of-payment";
-        const fileKey = `orders/${input.orderId}/pop_${Date.now()}_${safeFileName}`;
-
-        const { url, key } = await storagePut(fileKey, buffer, contentType);
-        await uploadProofOfPayment(input.orderId, ctx.user.id, url, key);
-        return { success: true, url };
       }),
 
     // Admin

@@ -1372,7 +1372,7 @@ export async function updateOrderIkhokhaPayment(ikhokhaReference: string, paymen
   await db.update(orders).set({
     paymentStatus,
     // A decline, cancellation, or expiry should not cancel the approved quote.
-    // The customer may safely select iKhokha again or switch to Manual EFT.
+    // The customer may safely start secure iKhokha checkout again.
     status: paymentStatus === "paid" ? "paid" : "awaiting_payment",
     ...(paymentStatus === "failed" ? { paymentMethod: null } : {}),
     ...(paymentStatus === "paid" ? { paidAt: new Date() } : {}),

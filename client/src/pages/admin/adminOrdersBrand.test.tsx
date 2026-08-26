@@ -33,7 +33,6 @@ vi.mock("@/lib/trpc", () => ({
       },
       adminUpdateStatus: { useMutation: () => ({ mutate: vi.fn() }) },
       review: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
-      confirmEft: { useMutation: () => ({ isPending: false, mutate: vi.fn() }) },
     },
   },
 }));
