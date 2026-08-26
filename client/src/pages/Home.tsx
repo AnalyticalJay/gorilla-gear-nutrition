@@ -20,9 +20,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const artwork = {
-  hero: "/manus-storage/ggn-hero-branded-apparel-model_38e5ef90.png",
+  hero: "/manus-storage/ggn-hero-branded-apparel-model-optimized_386b1ec5.webp",
   supplements: "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg",
-  clothing: "/manus-storage/ggn-clothing-mannequin_b7e2bdb6.png",
+  clothing: "/manus-storage/ggn-clothing-mannequin-optimized_303323aa.webp",
   coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
   privateCatalogue: "/manus-storage/ggn-private-catalogue-full-range_6449fda7.jpg",
 };
@@ -92,7 +92,7 @@ export default function Home() {
 
       <main>
         <section className="relative isolate overflow-hidden border-b border-white/10 bg-[#070707] pt-[5.9rem]">
-          <img src={artwork.hero} alt="Gorilla Gear Nutrition branded apparel model in a gym" className="absolute inset-0 h-full w-full object-cover object-[59%_center] sm:object-[62%_center]" />
+          <img src={artwork.hero} alt="Gorilla Gear Nutrition branded apparel model in a gym" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[59%_center] sm:object-[62%_center]" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#070707_0%,#070707_36%,rgba(7,7,7,0.9)_62%,rgba(7,7,7,0.48)_100%)] sm:bg-[linear-gradient(90deg,#070707_0%,#070707_30%,rgba(7,7,7,0.86)_45%,rgba(7,7,7,0.28)_71%,rgba(7,7,7,0.58)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_20%,rgba(201,154,61,0.18),transparent_27%),linear-gradient(0deg,rgba(7,7,7,0.62)_0%,transparent_42%)]" />
           <div className="container relative flex min-h-[calc(100svh-5.9rem)] items-center py-10 sm:py-16 lg:min-h-[720px] lg:py-20">
@@ -177,7 +177,7 @@ export default function Home() {
             <div className="grid gap-4 md:grid-cols-3 md:gap-5">
               {collections.map((collection, index) => {
                 const content = <>
-                  <img src={collection.image} alt={collection.title} className={`absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 ${collection.imageClass}`} />
+                  <img src={collection.image} alt={collection.title} loading="lazy" decoding="async" className={`absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 ${collection.imageClass}`} />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.15)_0%,rgba(0,0,0,0.28)_33%,rgba(0,0,0,0.94)_100%)]" />
                   <div className="absolute left-5 right-5 top-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">Collection 0{index + 1}</span><span className="h-px w-8 bg-white/35" /></div>
                   <div className="absolute inset-x-0 bottom-0 p-5 text-center sm:p-7 sm:text-left">
@@ -203,12 +203,16 @@ export default function Home() {
                 <img
                   src={artwork.privateCatalogue}
                   alt="Private member catalogue collection"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover object-right opacity-75 transition-[filter,opacity] duration-500 ease-out md:group-hover:brightness-110 md:group-hover:opacity-90"
                 />
               ) : (
                 <motion.img
                   src={artwork.privateCatalogue}
                   alt="Private member catalogue collection"
+                  loading="lazy"
+                  decoding="async"
                   style={{ y: privateCatalogueParallaxY, scale: 1.045 }}
                   className="absolute -inset-4 h-[calc(100%+2rem)] w-[calc(100%+2rem)] max-w-none object-cover object-right opacity-75 transition-[filter,opacity] duration-500 ease-out will-change-transform md:group-hover:brightness-110 md:group-hover:opacity-90"
                 />
@@ -240,7 +244,7 @@ export default function Home() {
         <section id="coaching" className="scroll-mt-24 border-y border-white/10 bg-[#0e0e0e] py-12 sm:py-20">
           <div className="container grid items-stretch gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:gap-5">
             <div className="relative min-h-[300px] overflow-hidden border border-white/10 bg-[#151515] sm:min-h-[420px]">
-              <img src={artwork.coaching} alt="Elite strength coaching in a premium training environment" className="absolute inset-0 h-full w-full object-cover" />
+              <img src={artwork.coaching} alt="Elite strength coaching in a premium training environment" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/22 to-transparent" />
               <div className="absolute bottom-6 left-5 right-5 mx-auto max-w-xs text-center sm:bottom-10 sm:left-10 sm:right-auto sm:mx-0 sm:text-left">
                 <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#c99a3d]">Coaching built for progress</p>

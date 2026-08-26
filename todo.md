@@ -599,3 +599,9 @@
 - [x] Apply mobile-safe parallax optimizations while preserving desktop quality.
 - [x] Verify optimized mobile motion, reduced-motion behavior, and regression coverage.
 - [x] Save and deliver the mobile parallax performance checkpoint.
+
+## Active Audit — Mobile Homepage Performance
+- [x] Establish a device-emulated mobile performance baseline and record the audit method.
+- [x] Analyze loading, interaction timing, and render costs for the mobile homepage and Full Range section.
+- [x] Apply and verify any evidence-based performance optimization.
+- [x] Prepare and deliver the mobile performance audit findings.

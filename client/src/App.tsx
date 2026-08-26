@@ -1,46 +1,53 @@
 import React from "react";
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Coaching from "./pages/Coaching";
-import Products from "./pages/Products";
-import SupplementsShop from "./pages/SupplementsShop";
-import ApparelShop from "./pages/ApparelShop";
-import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import OrderSuccess from "./pages/OrderSuccess";
-import Account from "./pages/Account";
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminProducts from "./pages/admin/AdminProducts";
-import AdminCategories from "./pages/admin/AdminCategories";
-import AdminOrders from "./pages/admin/AdminOrders";
-import AdminProductEdit from "./pages/admin/AdminProductEdit";
-import ApprovalPending from "./pages/ApprovalPending";
-import OrderDetail from "./pages/OrderDetail";
-import OrderCancelled from "./pages/OrderCancelled";
-import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
-import AdminBulkImport from "./pages/admin/AdminBulkImport";
-import AdminBulkImages from "./pages/admin/AdminBulkImages";
-import AdminMemberPreview from "./pages/admin/AdminMemberPreview";
-import AdminResetAudit from "./pages/admin/AdminResetAudit";
-import AdminCoachingEnquiries from "./pages/admin/AdminCoachingEnquiries";
-import AdminIkhokhaPaymentAudit from "./pages/admin/AdminIkhokhaPaymentAudit";
+
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const Register = lazy(() => import("./pages/Register"));
+const Login = lazy(() => import("./pages/Login"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Coaching = lazy(() => import("./pages/Coaching"));
+const Products = lazy(() => import("./pages/Products"));
+const SupplementsShop = lazy(() => import("./pages/SupplementsShop"));
+const ApparelShop = lazy(() => import("./pages/ApparelShop"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const Account = lazy(() => import("./pages/Account"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
+const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
+const AdminProductEdit = lazy(() => import("./pages/admin/AdminProductEdit"));
+const ApprovalPending = lazy(() => import("./pages/ApprovalPending"));
+const OrderDetail = lazy(() => import("./pages/OrderDetail"));
+const OrderCancelled = lazy(() => import("./pages/OrderCancelled"));
+const AdminOrderDetail = lazy(() => import("./pages/admin/AdminOrderDetail"));
+const AdminBulkImport = lazy(() => import("./pages/admin/AdminBulkImport"));
+const AdminBulkImages = lazy(() => import("./pages/admin/AdminBulkImages"));
+const AdminMemberPreview = lazy(() => import("./pages/admin/AdminMemberPreview"));
+const AdminResetAudit = lazy(() => import("./pages/admin/AdminResetAudit"));
+const AdminCoachingEnquiries = lazy(() => import("./pages/admin/AdminCoachingEnquiries"));
+const AdminIkhokhaPaymentAudit = lazy(() => import("./pages/admin/AdminIkhokhaPaymentAudit"));
+
+function RouteLoading() {
+  return <div role="status" className="grid min-h-screen place-items-center bg-[#070707] text-[11px] font-black uppercase tracking-[0.2em] text-[#c99a3d]">Loading Gorilla Gear</div>;
+}
 
 function Router() {
   return (
     <>
-      <Switch>
+      <Suspense fallback={<RouteLoading />}>
+        <Switch>
         {/* Public */}
         <Route path="/" component={Home} />
         <Route path="/register" component={Register} />
@@ -171,8 +178,9 @@ function Router() {
         </Route>
 
         {/* Fallback */}
-        <Route component={NotFound} />
-      </Switch>
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
     </>
   );
 }
