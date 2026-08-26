@@ -623,3 +623,9 @@
 - [x] Add a gold-and-charcoal scroll cue and reduced-motion-safe next-section entrance animation.
 - [x] Verify scroll experience, responsive layout, reduced-motion behavior, and palette consistency.
 - [x] Save and deliver the hero transition and scroll-cue checkpoint.
+
+## Active Media — White T-Shirt Multi-Angle Gallery
+- [x] Confirm the white T-shirt reference asset and define front, left-side, right-side, and back views.
+- [x] Generate a consistent four-angle white Gorilla Gear T-shirt gallery.
+- [x] Review the angle set and prepare approved images for product-gallery use.
+- [x] Deliver the white T-shirt multi-angle images.
