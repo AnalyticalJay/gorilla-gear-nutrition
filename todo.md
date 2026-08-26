@@ -593,3 +593,9 @@
 - [x] Add reduced-motion-safe parallax and subtle hover background brightening.
 - [x] Verify motion, contrast, mobile behaviour, and regression coverage.
 - [x] Save and deliver the Full Range interaction checkpoint.
+
+## Active Implementation — Mobile Parallax Performance
+- [x] Profile Full Range parallax rendering on mobile and identify avoidable rendering work.
+- [x] Apply mobile-safe parallax optimizations while preserving desktop quality.
+- [x] Verify optimized mobile motion, reduced-motion behavior, and regression coverage.
+- [x] Save and deliver the mobile parallax performance checkpoint.

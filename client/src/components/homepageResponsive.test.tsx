@@ -100,7 +100,7 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByRole("link", { name: /browse all brands & categories/i }).getAttribute("href")).toBe("/products");
     const privateCatalogueImage = screen.getByAltText("Private member catalogue collection");
     expect(privateCatalogueImage.getAttribute("src")).toBe("/manus-storage/ggn-private-catalogue-full-range_6449fda7.jpg");
-    expect(privateCatalogueImage.className).toContain("group-hover:brightness-110");
+    expect(privateCatalogueImage.className).toContain("md:group-hover:brightness-110");
   });
 
   it("guides non-members from the locked catalogue block to application", () => {
