@@ -98,7 +98,7 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByText("Private member catalogue")).toBeTruthy();
     expect(screen.getByText("The full range is unlocked by approval.")).toBeTruthy();
     expect(screen.getByRole("link", { name: /browse all brands & categories/i }).getAttribute("href")).toBe("/products");
-    expect(screen.getByAltText("Private member catalogue collection").getAttribute("src")).toBe("/manus-storage/ggn-private-member-catalogue_7bf8756b.jpg");
+    expect(screen.getByAltText("Private member catalogue collection").getAttribute("src")).toBe("/manus-storage/ggn-private-catalogue-full-range_6449fda7.jpg");
   });
 
   it("guides non-members from the locked catalogue block to application", () => {

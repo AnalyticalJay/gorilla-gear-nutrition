@@ -22,7 +22,7 @@ const artwork = {
   supplements: "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg",
   clothing: "/manus-storage/ggn-clothing-mannequin_b7e2bdb6.png",
   coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
-  privateCatalogue: "/manus-storage/ggn-private-member-catalogue_7bf8756b.jpg",
+  privateCatalogue: "/manus-storage/ggn-private-catalogue-full-range_6449fda7.jpg",
 };
 
 const collections = [

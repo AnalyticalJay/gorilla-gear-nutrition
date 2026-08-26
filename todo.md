@@ -581,3 +581,9 @@
 - [x] Apply the Gorilla Gear white, charcoal, and gold system to the page and form states.
 - [x] Verify responsive presentation, accessibility, and registration regression coverage.
 - [x] Save and deliver the branded application-page checkpoint.
+
+## Active Implementation — Private Catalogue Full-Range Background
+- [x] Define the managed background-asset requirements for the locked private catalogue block.
+- [x] Generate and apply a text-free premium visual representing injectables, orals, SARMs, peptides, and related range formats.
+- [x] Verify desktop and mobile readability of the locked catalogue block with the new background.
+- [x] Save and deliver the private catalogue background checkpoint.
