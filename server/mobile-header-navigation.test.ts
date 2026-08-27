@@ -9,7 +9,9 @@ describe("mobile header navigation", () => {
     expect(navbarSource).toContain('const shopHref = isApproved ? "/products" : "/#collections"');
     expect(navbarSource).toContain('mobileLabel: isApproved ? "Browse full catalogue" : "Shop public collections"');
     expect(navbarSource).toContain('mobileLabel: "Coaching Plans"');
-    expect(navbarSource).toContain('mobileLabel: "Apply for Access"');
+    expect(navbarSource).not.toContain('desktopLabel: "Apply"');
+    expect(navbarSource).toContain(">Apply Access</Button>");
+    expect(navbarSource).toContain('href="/register" onClick={() => setMobileOpen(false)}');
     expect(navbarSource).toContain("Quote Cart");
     expect(navbarSource).toContain("My Account");
     expect(navbarSource).toContain('aria-label="Open navigation menu"');

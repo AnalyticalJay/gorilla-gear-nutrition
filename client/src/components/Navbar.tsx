@@ -27,7 +27,6 @@ export default function Navbar() {
   const navLinks = [
     { href: shopHref, mobileHref: shopHref, desktopLabel: "Shop", mobileLabel: isApproved ? "Browse full catalogue" : "Shop public collections" },
     { href: "/coaching", mobileHref: "/coaching", desktopLabel: "Coaching", mobileLabel: "Coaching Plans" },
-    { href: "/#membership", mobileHref: "/register", desktopLabel: "Apply", mobileLabel: "Apply for Access" },
   ];
 
   return (
@@ -138,7 +137,7 @@ export default function Navbar() {
                   <Button variant="outline" className="h-10 w-full border-black/20 bg-white text-xs font-bold uppercase tracking-wider text-black">Sign In</Button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="no-underline">
-                  <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply for Access</Button>
+                  <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply Access</Button>
                 </Link>
               </div>
             )}

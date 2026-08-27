@@ -648,3 +648,8 @@
 - [x] Route the homepage Shop Clothing call to the public Apparel storefront.
 - [x] Replace residual non-semantic blue and cyan admin order-status styling with the Gorilla Gear palette.
 - [x] Re-run payment, public-access, and full regression checks after the audit remediation.
+
+## Navigation Refinement — Apply Access
+- [x] Remove the duplicated desktop Apply navigation item while retaining the header Apply Access call-to-action.
+- [x] Keep a clear Apply for Access action in the mobile hamburger menu.
+- [x] Verify desktop and mobile navigation layouts and regression coverage.
