@@ -659,3 +659,9 @@
 - [x] Add a restrained glow and colour-shift hover treatment to the desktop Apply Access button.
 - [x] Add a dynamic mobile application-status indicator for pending applicants.
 - [x] Verify interaction, accessibility, desktop/mobile visuals, and regression coverage.
+
+## Navigation Enhancement — Approval Notifications
+- [x] Add an approval-specific notification badge to the account icon.
+- [x] Add reduced-motion-safe click feedback to the Apply Access button.
+- [x] Make the mobile application-status row link directly to detailed account progress.
+- [x] Verify account-state behaviour, interaction feedback, desktop/mobile visuals, and regression coverage.

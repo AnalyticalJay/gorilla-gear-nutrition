@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const navbarSource = readFileSync(resolve(process.cwd(), "client/src/components/Navbar.tsx"), "utf8");
+const cssSource = readFileSync(resolve(process.cwd(), "client/src/index.css"), "utf8");
 
 describe("mobile header navigation", () => {
   it("uses public collection browsing for visitors and full catalogue access for approved members", () => {
@@ -16,6 +17,13 @@ describe("mobile header navigation", () => {
     expect(navbarSource).toContain("backdrop-blur-[2px]");
     expect(navbarSource).toContain("Application awaiting review");
     expect(navbarSource).toContain("Member access active");
+    expect(navbarSource).toContain("mobileStatusHref");
+    expect(navbarSource).toContain('"/approval-pending"');
+    expect(navbarSource).toContain("Application approved. Member access is active.");
+    expect(navbarSource).toContain("apply-access-button");
+    expect(cssSource).toContain("@keyframes mobile-nav-slide-down");
+    expect(cssSource).toContain("@keyframes apply-access-ripple");
+    expect(cssSource).toContain(".apply-access-button:active::after");
     expect(navbarSource).toContain("Quote Cart");
     expect(navbarSource).toContain("My Account");
     expect(navbarSource).toContain('aria-label="Open navigation menu"');

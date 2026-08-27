@@ -21,6 +21,7 @@ export default function Navbar() {
   const isApproved = (user as any)?.status === "approved";
   const isAdmin = (user as any)?.role === "admin";
   const shopHref = isApproved ? "/products" : "/#collections";
+  const mobileStatusHref = isApproved ? "/account" : "/approval-pending";
 
   const cartQuery = trpc.cart.get.useQuery(undefined, { enabled: isApproved });
   const cartCount = cartQuery.data?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
@@ -66,8 +67,9 @@ export default function Navbar() {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button aria-label="Open account menu" variant="outline" className="h-10 min-w-10 border-black/15 bg-white px-2 text-xs font-bold uppercase tracking-wider text-black hover:border-[#a8751c]/60 hover:bg-[#fffaf0] sm:px-3">
+                <Button aria-label={isApproved ? "Open account menu — member access approved" : "Open account menu"} variant="outline" className="relative h-10 min-w-10 border-black/15 bg-white px-2 text-xs font-bold uppercase tracking-wider text-black hover:border-[#a8751c]/60 hover:bg-[#fffaf0] sm:px-3">
                   <User className="h-3.5 w-3.5 text-[#a8751c] sm:mr-2" />
+                  {isApproved && <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#1f7a45] shadow-[0_0_0_2px_rgba(31,122,69,0.12)] motion-safe:animate-pulse"><span className="sr-only">Application approved. Member access is active.</span></span>}
                   <span className="hidden max-w-[100px] truncate sm:inline sm:max-w-[140px]">{(user as any)?.name || (user as any)?.email || "Account"}</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -99,7 +101,7 @@ export default function Navbar() {
                 </Button>
               </Link>
               <Link href="/register" className="no-underline">
-                <Button className="h-9 px-4 text-xs font-bold uppercase tracking-wider text-black shadow-[0_8px_18px_rgba(168,117,28,0.22)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-px hover:bg-[#e0b35a] hover:shadow-[0_10px_24px_rgba(168,117,28,0.38)] active:translate-y-0 active:scale-[0.97]" style={{ background: "#c99a3d" }}>
+                <Button className="apply-access-button h-9 px-4 text-xs font-bold uppercase tracking-wider text-black shadow-[0_8px_18px_rgba(168,117,28,0.22)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-px hover:bg-[#e0b35a] hover:shadow-[0_10px_24px_rgba(168,117,28,0.38)] active:translate-y-0 active:scale-[0.97]" style={{ background: "#c99a3d" }}>
                   Apply Access
                 </Button>
               </Link>
@@ -119,7 +121,7 @@ export default function Navbar() {
             <div className="flex flex-col items-center gap-3 text-center">
             {isAuthenticated && (
               <>
-                <Link href="/account" onClick={() => setMobileOpen(false)} className="flex w-full items-center justify-center gap-2 border border-[#a8751c]/30 bg-[#fffaf0] px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#7c5a20] no-underline transition-colors hover:bg-[#f6ecd7]">
+                <Link href={mobileStatusHref} onClick={() => setMobileOpen(false)} className="flex w-full items-center justify-center gap-2 border border-[#a8751c]/30 bg-[#fffaf0] px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#7c5a20] no-underline transition-colors hover:bg-[#f6ecd7]">
                   {isApproved ? <CircleCheck className="h-4 w-4 text-[#1f7a45]" /> : <Clock3 className="h-4 w-4 text-[#a8751c]" />}
                   <span>{isApproved ? "Member access active" : (user as any)?.status === "rejected" ? "Application needs attention" : "Application awaiting review"}</span>
                 </Link>
@@ -145,7 +147,7 @@ export default function Navbar() {
                   <Button variant="outline" className="h-10 w-full border-black/20 bg-white text-xs font-bold uppercase tracking-wider text-black">Sign In</Button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="no-underline">
-                  <Button className="h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply Access</Button>
+                  <Button className="apply-access-button h-10 w-full text-xs font-bold uppercase tracking-wider text-black" style={{ background: "#c99a3d" }}>Apply Access</Button>
                 </Link>
               </div>
             )}

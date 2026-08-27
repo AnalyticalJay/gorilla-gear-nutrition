@@ -311,4 +311,38 @@
   .mobile-nav-panel {
     animation: mobile-nav-slide-down 220ms cubic-bezier(0.23, 1, 0.32, 1);
   }
+
+  .apply-access-button {
+    isolation: isolate;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .apply-access-button::after {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.55);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  .apply-access-button:active::after {
+    animation: apply-access-ripple 420ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@keyframes apply-access-ripple {
+  0% {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(14);
+  }
 }
