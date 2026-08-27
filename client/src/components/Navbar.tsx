@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { LogOut, Menu, ShoppingCart, User, X } from "lucide-react";
+import { CircleCheck, Clock3, LogOut, Menu, ShoppingCart, User, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "./ui/button";
 import {
@@ -99,7 +99,7 @@ export default function Navbar() {
                 </Button>
               </Link>
               <Link href="/register" className="no-underline">
-                <Button className="h-9 px-4 text-xs font-bold uppercase tracking-wider text-black shadow-lg hover:bg-[#e0b35a]" style={{ background: "#c99a3d" }}>
+                <Button className="h-9 px-4 text-xs font-bold uppercase tracking-wider text-black shadow-[0_8px_18px_rgba(168,117,28,0.22)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-px hover:bg-[#e0b35a] hover:shadow-[0_10px_24px_rgba(168,117,28,0.38)] active:translate-y-0 active:scale-[0.97]" style={{ background: "#c99a3d" }}>
                   Apply Access
                 </Button>
               </Link>
@@ -113,13 +113,21 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div id="mobile-navigation-menu" aria-label="Mobile navigation" className="border-b border-black/10 bg-white p-4 md:hidden">
-          <div className="flex flex-col items-center gap-3 text-center">
+        <>
+          <button aria-label="Close navigation menu" onClick={() => setMobileOpen(false)} className="fixed inset-x-0 bottom-0 top-[5.75rem] z-0 bg-black/10 backdrop-blur-[2px] md:hidden" />
+          <div id="mobile-navigation-menu" aria-label="Mobile navigation" className="mobile-nav-panel relative z-10 border-b border-black/10 bg-white/95 p-4 shadow-[0_16px_32px_rgba(0,0,0,0.10)] backdrop-blur-xl md:hidden">
+            <div className="flex flex-col items-center gap-3 text-center">
             {isAuthenticated && (
-              <div className="grid w-full grid-cols-2 gap-2 border-b border-black/10 pb-3">
-                {isApproved && <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center justify-center gap-2 border border-[#a8751c]/30 bg-[#fffaf0] px-3 py-2 text-xs font-bold uppercase tracking-wide text-[#7c5a20] no-underline"><ShoppingCart className="h-4 w-4" />Quote Cart{cartCount > 0 ? ` (${cartCount})` : ""}</Link>}
-                <Link href="/account" onClick={() => setMobileOpen(false)} className={`${isApproved ? "" : "col-span-2"} flex min-h-11 items-center justify-center gap-2 border border-black/15 bg-white px-3 py-2 text-xs font-bold uppercase tracking-wide text-black no-underline`}><User className="h-4 w-4 text-[#a8751c]" />My Account</Link>
-              </div>
+              <>
+                <Link href="/account" onClick={() => setMobileOpen(false)} className="flex w-full items-center justify-center gap-2 border border-[#a8751c]/30 bg-[#fffaf0] px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#7c5a20] no-underline transition-colors hover:bg-[#f6ecd7]">
+                  {isApproved ? <CircleCheck className="h-4 w-4 text-[#1f7a45]" /> : <Clock3 className="h-4 w-4 text-[#a8751c]" />}
+                  <span>{isApproved ? "Member access active" : (user as any)?.status === "rejected" ? "Application needs attention" : "Application awaiting review"}</span>
+                </Link>
+                <div className="grid w-full grid-cols-2 gap-2 border-b border-black/10 pb-3">
+                  {isApproved && <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center justify-center gap-2 border border-[#a8751c]/30 bg-[#fffaf0] px-3 py-2 text-xs font-bold uppercase tracking-wide text-[#7c5a20] no-underline"><ShoppingCart className="h-4 w-4" />Quote Cart{cartCount > 0 ? ` (${cartCount})` : ""}</Link>}
+                  <Link href="/account" onClick={() => setMobileOpen(false)} className={`${isApproved ? "" : "col-span-2"} flex min-h-11 items-center justify-center gap-2 border border-black/15 bg-white px-3 py-2 text-xs font-bold uppercase tracking-wide text-black no-underline`}><User className="h-4 w-4 text-[#a8751c]" />My Account</Link>
+                </div>
+              </>
             )}
             {navLinks.map((link) => (
               <a key={link.href} href={link.mobileHref} onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center justify-center py-2 text-sm font-bold uppercase tracking-widest text-black/68 hover:text-[#a8751c] no-underline">
@@ -141,8 +149,9 @@ export default function Navbar() {
                 </Link>
               </div>
             )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </nav>
   );

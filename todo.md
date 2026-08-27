@@ -653,3 +653,9 @@
 - [x] Remove the duplicated desktop Apply navigation item while retaining the header Apply Access call-to-action.
 - [x] Keep a clear Apply for Access action in the mobile hamburger menu.
 - [x] Verify desktop and mobile navigation layouts and regression coverage.
+
+## Navigation Enhancement — Motion and Member Status
+- [x] Add reduced-motion-safe slide-down animation and backdrop blur when the mobile hamburger menu opens.
+- [x] Add a restrained glow and colour-shift hover treatment to the desktop Apply Access button.
+- [x] Add a dynamic mobile application-status indicator for pending applicants.
+- [x] Verify interaction, accessibility, desktop/mobile visuals, and regression coverage.

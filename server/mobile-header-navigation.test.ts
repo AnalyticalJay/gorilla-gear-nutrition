@@ -12,6 +12,10 @@ describe("mobile header navigation", () => {
     expect(navbarSource).not.toContain('desktopLabel: "Apply"');
     expect(navbarSource).toContain(">Apply Access</Button>");
     expect(navbarSource).toContain('href="/register" onClick={() => setMobileOpen(false)}');
+    expect(navbarSource).toContain("mobile-nav-panel");
+    expect(navbarSource).toContain("backdrop-blur-[2px]");
+    expect(navbarSource).toContain("Application awaiting review");
+    expect(navbarSource).toContain("Member access active");
     expect(navbarSource).toContain("Quote Cart");
     expect(navbarSource).toContain("My Account");
     expect(navbarSource).toContain('aria-label="Open navigation menu"');
