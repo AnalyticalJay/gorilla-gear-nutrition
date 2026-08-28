@@ -13,3 +13,11 @@ The hosting platform intercepts the reserved `/manus-storage/` URL path before t
 The repair introduces `/api/media/` as the application-owned media route. It fetches managed storage bytes server-side and returns them with extension-derived image MIME types and immutable first-party caching. Existing legacy database paths are translated at the product, gallery, and cart response boundary, and every static logo or artwork reference now uses `/api/media/`.
 
 Local verification returned direct `200` responses with `image/png`, `nosniff`, and immutable cache headers for both the logo and representative catalogue product image. The home page, catalogue, and the reported Keifei Tren E product-detail page render their images successfully. The correction is independent of customer or administrator role.
+
+## Published deployment verification
+
+After publication, the live `https://gorillagear.co.za/api/media/` endpoints returned direct `200` responses with `image/png`, a one-year public cache policy, and `X-Content-Type-Options: nosniff` for both the shared logo and a representative catalogue image. The previously intercepted `/manus-storage/` route is no longer used by the current browser markup, which now references `/api/media/` for the shared logo.
+
+The live product-detail page was also opened in a fresh anonymous session. Its shared logo rendered successfully. The private product content cannot be rendered to an anonymous session by design, so a browser-level confirmation of the product image requires an approved-member session; however, the underlying image endpoint itself is public, browser-safe, and independent of account role.
+
+The published public Supplements collection was then loaded and allowed to complete in a fresh anonymous browser session. The shared header logo, collection hero image, and every available product-card image resolved through `/api/media/`. Products intentionally awaiting artwork remained image-free, but no loaded product image showed the prior broken-resource behavior. This confirms the live route works in an unauthenticated browser; approved customers use the same media endpoint and response behavior.
