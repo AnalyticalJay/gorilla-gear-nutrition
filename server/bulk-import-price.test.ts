@@ -1,9 +1,17 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseBulkImportPrice } from "./bulkImport";
+import { normalizeBulkImportCategory, parseBulkImportPrice } from "./bulkImport";
 
 describe("bulk import price parsing", () => {
+  it("normalizes common category aliases to the active taxonomy", () => {
+    expect(normalizeBulkImportCategory("Peptide")).toBe("Peptides");
+    expect(normalizeBulkImportCategory("injectable")).toBe("Injectables");
+    expect(normalizeBulkImportCategory("ORAL STEROIDS")).toBe("Orals");
+    expect(normalizeBulkImportCategory("Weight Loss")).toBe("Fat Loss");
+    expect(normalizeBulkImportCategory("SARMs")).toBe("SARMs");
+  });
+
   it("normalizes valid ZAR prices to two decimals", () => {
     expect(parseBulkImportPrice("450")).toBe("450.00");
     expect(parseBulkImportPrice("R 1,250.50".replace(",", ""))).toBe("1250.50");
@@ -25,5 +33,7 @@ describe("bulk import price parsing", () => {
     expect(source).toContain("name,category,dosageInfo,description,brand,price");
     expect(source).toContain("price</span>");
     expect(source).toContain("Price (ZAR)");
+    expect(source).toContain("Injectables, Orals, SARMs, Peptides, Fat Loss, Healthcare, Supplements, Clothing");
+    expect(source).toContain("Not Mixed),Peptides,30mg");
   });
 });

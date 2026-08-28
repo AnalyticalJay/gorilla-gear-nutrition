@@ -731,3 +731,8 @@
 - [x] Add an admin-only product-list export using the name, category, dosageInfo, description, brand, and price columns.
 - [x] Escape CSV values safely and preserve template-compatible price formatting.
 - [x] Add regression coverage for export data and admin access.
+
+## Admin Bulk Import — Category Guidance
+- [x] Make the existing `category` template column explicit with approved category examples.
+- [x] Verify Peptides, Injectables, and other taxonomy values are accepted by import parsing.
+- [x] Add regression coverage for category guidance and parsing.

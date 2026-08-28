@@ -73,7 +73,7 @@ import {
   upsertCartItem,
 } from "./db";
 import { z } from "zod";
-import { parseBulkImportPrice } from "./bulkImport";
+import { normalizeBulkImportCategory, parseBulkImportPrice } from "./bulkImport";
 import { buildProductsCsv } from "./productExport";
 import { orders, users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -629,7 +629,7 @@ export const appRouter = router({
         const catSet = new Set<string>();
         for (let i = 1; i < lines.length; i++) {
           const parts = lines[i].split(',');
-          if (parts[categoryIdx]) catSet.add(parts[categoryIdx].trim());
+          if (parts[categoryIdx]) catSet.add(normalizeBulkImportCategory(parts[categoryIdx]));
         }
 
         const catMap: Record<string, number> = {};
@@ -651,7 +651,7 @@ export const appRouter = router({
           try {
             const parts = lines[i].split(',').map(p => p.trim());
             const name = parts[nameIdx];
-            const category = parts[categoryIdx];
+            const category = normalizeBulkImportCategory(parts[categoryIdx]);
             const dosage = dosageIdx >= 0 ? parts[dosageIdx] || '' : '';
             const desc = descIdx >= 0 ? parts[descIdx] || '' : '';
             const price = priceIdx >= 0 ? parseBulkImportPrice(parts[priceIdx]) : '0.00';
