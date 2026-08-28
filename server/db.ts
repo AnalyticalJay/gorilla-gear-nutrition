@@ -25,6 +25,12 @@ import { getInsertId } from "./insertResult";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
+function toClientMediaUrl(url: string) {
+  return url.startsWith("/manus-storage/")
+    ? `/api/media/${url.slice("/manus-storage/".length)}`
+    : url;
+}
+
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -521,7 +527,7 @@ export async function getProducts(opts?: {
     .from(productImages)
     .where(and(inArray(productImages.productId, productIds), eq(productImages.isPrimary, true)));
 
-  const imageMap = new Map(images.map((img) => [img.productId, img.imageUrl]));
+  const imageMap = new Map(images.map((img) => [img.productId, toClientMediaUrl(img.imageUrl)]));
 
   let filtered = rows;
   if (opts?.search) {
@@ -618,7 +624,7 @@ export async function getProductsPage(opts: {
     .select()
     .from(productImages)
     .where(and(inArray(productImages.productId, productIds), eq(productImages.isPrimary, true)));
-  const imageMap = new Map(images.map((image) => [image.productId, image.imageUrl]));
+  const imageMap = new Map(images.map((image) => [image.productId, toClientMediaUrl(image.imageUrl)]));
 
   return {
     items: rows.map((row) => ({ ...row, primaryImage: imageMap.get(row.id) ?? null })),
@@ -645,7 +651,11 @@ export async function getProductBySlug(slug: string) {
     .where(eq(productImages.productId, result[0].products.id))
     .orderBy(productImages.isPrimary);
 
-  return { ...result[0].products, category: result[0].categories, images };
+  return {
+    ...result[0].products,
+    category: result[0].categories,
+    images: images.map((image) => ({ ...image, imageUrl: toClientMediaUrl(image.imageUrl) })),
+  };
 }
 
 export async function getProductById(id: number) {
@@ -719,7 +729,8 @@ export async function addProductImage(data: {
 export async function getProductImages(productId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(productImages).where(eq(productImages.productId, productId));
+  const images = await db.select().from(productImages).where(eq(productImages.productId, productId));
+  return images.map((image) => ({ ...image, imageUrl: toClientMediaUrl(image.imageUrl) }));
 }
 
 export async function getProductsForImageMatching() {
@@ -825,7 +836,7 @@ export async function getCartItems(userId: number) {
     .from(productImages)
     .where(and(inArray(productImages.productId, productIds), eq(productImages.isPrimary, true)));
 
-  const imageMap = new Map(images.map((img) => [img.productId, img.imageUrl]));
+  const imageMap = new Map(images.map((img) => [img.productId, toClientMediaUrl(img.imageUrl)]));
   return items.map((i) => ({ ...i, primaryImage: imageMap.get(i.productId) ?? null }));
 }
 

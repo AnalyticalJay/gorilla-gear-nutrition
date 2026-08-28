@@ -69,7 +69,7 @@ export default function Login() {
         <div className="relative z-10 flex flex-col justify-center p-16">
           <Link href="/" className="flex items-center gap-2.5 mb-16 no-underline">
             <div className="w-10 h-10 rounded flex items-center justify-center overflow-hidden border border-[#454545] bg-black">
-              <img src="/manus-storage/logo_2d6e0f20.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
+              <img src="/api/media/logo_2d6e0f20.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
             </div>
             <div>
               <span className="font-black text-white text-base tracking-widest uppercase">Gorilla Gear</span>

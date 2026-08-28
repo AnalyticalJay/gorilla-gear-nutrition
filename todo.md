@@ -701,3 +701,8 @@
 - [x] Compare customer and administrator managed-image URLs, response behavior, and client rendering paths.
 - [x] Correct the customer-specific logo and product image delivery failure with safe fallback behavior.
 - [x] Verify approved customer and administrator image rendering on desktop and mobile.
+
+## Customer Image Delivery — Live Incident Follow-Up
+- [x] Reproduce the live logo and product-image failure and capture the production response path.
+- [x] Implement a browser-compatible image delivery repair that works for customer and administrator accounts.
+- [x] Verify image rendering on product list and detail pages before release.

@@ -50,7 +50,7 @@ describe("admin product image router", () => {
     addProductImageMock.mockReset();
     getProductByIdMock.mockReset();
     getProductByIdMock.mockResolvedValue({ id: 123, name: "Sample product" });
-    storagePutMock.mockResolvedValue({ key: "products/1/image.jpg", url: "/manus-storage/products/1/image.jpg" });
+    storagePutMock.mockResolvedValue({ key: "products/1/image.jpg", url: "/api/media/products/1/image.jpg" });
   });
 
   it("returns a product match and preserves unmatched files", async () => {
@@ -91,7 +91,7 @@ describe("admin product image router", () => {
     );
     expect(addProductImageMock).toHaveBeenCalledWith({
       productId: 123,
-      imageUrl: "/manus-storage/products/1/image.jpg",
+      imageUrl: "/api/media/products/1/image.jpg",
       imageKey: expect.stringMatching(/^products\/123\/\d+-sample-product\.jpg$/),
       isPrimary: true,
     });

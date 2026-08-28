@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 
-const apparelArtwork = "/manus-storage/ggn-clothing-mannequin_b7e2bdb6.png";
+const apparelArtwork = "/api/media/ggn-clothing-mannequin_b7e2bdb6.png";
 
 export default function ApparelShop() {
   const { user } = useAuth();

@@ -33,7 +33,7 @@ export default function Register() {
         <div className="relative z-10 flex flex-col justify-center p-16">
           <Link href="/" className="mb-16 flex items-center gap-2.5 no-underline">
             <div className="flex h-11 w-12 items-center justify-center overflow-hidden border border-white/15 bg-white">
-              <img src="/manus-storage/ggn-logo-transparent_bf4fb645.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
+              <img src="/api/media/ggn-logo-transparent_bf4fb645.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
             </div>
             <div>
               <span className="font-black text-base uppercase tracking-widest text-white">Gorilla Gear</span>

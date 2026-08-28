@@ -39,7 +39,7 @@ describe("SupplementsShop", () => {
     expect(screen.getByRole("heading", { name: /supplements shop/i })).toBeTruthy();
     expect(screen.getByText("HU - Creatine Monohydrate")).toBeTruthy();
     expect(screen.getByText(/1 product in this collection/i)).toBeTruthy();
-    expect(screen.getByAltText("Athlete holding NutriTech Premium Whey Natural").getAttribute("src")).toBe("/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg");
+    expect(screen.getByAltText("Athlete holding NutriTech Premium Whey Natural").getAttribute("src")).toBe("/api/media/ggn-supplements-nutritech-lifestyle_56a682c5.jpg");
   });
 
   it("opens an accessible quick-view modal with product details", () => {

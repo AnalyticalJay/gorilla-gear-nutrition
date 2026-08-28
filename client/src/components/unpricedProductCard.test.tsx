@@ -39,7 +39,7 @@ describe("unpriced ProductCard", () => {
       slug: "gorilla-gear-creatine",
       description: null,
       price: "350.00",
-      primaryImage: "/manus-storage/gorilla-gear-creatine.webp",
+      primaryImage: "/api/media/gorilla-gear-creatine.webp",
     }} />);
 
     const image = screen.getByRole("img", { name: "Gorilla Gear Creatine" });
@@ -54,7 +54,7 @@ describe("unpriced ProductCard", () => {
       slug: "gorilla-gear-whey",
       description: null,
       price: "450.00",
-      primaryImage: "/manus-storage/gorilla-gear-whey.webp",
+      primaryImage: "/api/media/gorilla-gear-whey.webp",
     }} />);
 
     expect(screen.getByRole("img", { name: "Gorilla Gear Whey" })).toHaveAttribute("loading", "eager");

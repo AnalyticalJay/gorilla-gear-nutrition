@@ -89,7 +89,7 @@ describe("Homepage responsive structure", () => {
 
     expect(screen.getByRole("link", { name: /shop supplements/i }).getAttribute("href")).toBe("/supplements");
     expect(screen.getByText("Supplements").closest("a")?.getAttribute("href")).toBe("/supplements");
-    expect(screen.getByAltText("Supplements").getAttribute("src")).toBe("/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg");
+    expect(screen.getByAltText("Supplements").getAttribute("src")).toBe("/api/media/ggn-supplements-nutritech-lifestyle_56a682c5.jpg");
   });
 
   it("shows the locked private catalogue block and routes approved members to the full catalogue", () => {
@@ -99,7 +99,7 @@ describe("Homepage responsive structure", () => {
     expect(screen.getByText("The full range is unlocked by approval.")).toBeTruthy();
     expect(screen.getByRole("link", { name: /browse all brands & categories/i }).getAttribute("href")).toBe("/products");
     const privateCatalogueImage = screen.getByAltText("Private member catalogue collection");
-    expect(privateCatalogueImage.getAttribute("src")).toBe("/manus-storage/ggn-private-catalogue-full-range_6449fda7.jpg");
+    expect(privateCatalogueImage.getAttribute("src")).toBe("/api/media/ggn-private-catalogue-full-range_6449fda7.jpg");
     expect(privateCatalogueImage.className).toContain("md:group-hover:brightness-110");
   });
 

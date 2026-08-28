@@ -12,7 +12,7 @@ describe("payment proof status", () => {
   });
 
   it("falls back to pending for legacy uploaded receipts", () => {
-    expect(resolveProofStatus({ proofStatus: "not_submitted", proofOfPaymentUrl: "/manus-storage/pop.png" })).toBe("pending");
+    expect(resolveProofStatus({ proofStatus: "not_submitted", proofOfPaymentUrl: "/api/media/pop.png" })).toBe("pending");
     expect(resolveProofStatus({ proofStatus: null, paymentStatus: "proof_uploaded" })).toBe("pending");
     expect(resolveProofStatus({ proofStatus: "not_submitted", paymentStatus: "awaiting_eft" })).toBe("not_submitted");
   });

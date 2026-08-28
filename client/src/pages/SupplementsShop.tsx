@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import SupplementQuickViewCard from "@/components/SupplementQuickViewCard";
 import { Button } from "@/components/ui/button";
 
-const supplementsArtwork = "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg";
+const supplementsArtwork = "/api/media/ggn-supplements-nutritech-lifestyle_56a682c5.jpg";
 
 export default function SupplementsShop() {
   const { user } = useAuth();

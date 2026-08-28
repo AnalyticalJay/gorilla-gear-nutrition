@@ -21,11 +21,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const artwork = {
-  hero: "/manus-storage/ggn-hero-branded-apparel-model-optimized_386b1ec5.webp",
-  supplements: "/manus-storage/ggn-supplements-nutritech-lifestyle_56a682c5.jpg",
-  clothing: "/manus-storage/ggn-clothing-mannequin-optimized_303323aa.webp",
-  coaching: "/manus-storage/ggn-collection-coaching-v2_87dd91b3.jpg",
-  privateCatalogue: "/manus-storage/ggn-private-catalogue-full-range_6449fda7.jpg",
+  hero: "/api/media/ggn-hero-branded-apparel-model-optimized_386b1ec5.webp",
+  supplements: "/api/media/ggn-supplements-nutritech-lifestyle_56a682c5.jpg",
+  clothing: "/api/media/ggn-clothing-mannequin-optimized_303323aa.webp",
+  coaching: "/api/media/ggn-collection-coaching-v2_87dd91b3.jpg",
+  privateCatalogue: "/api/media/ggn-private-catalogue-full-range_6449fda7.jpg",
 };
 
 const collections = [

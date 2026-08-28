@@ -46,7 +46,7 @@ function makeOrder() {
     payfastReference: null,
     proofStatus: "pending",
     proofReviewNote: null,
-    proofOfPaymentUrl: "/manus-storage/orders/55/pop.png",
+    proofOfPaymentUrl: "/api/media/orders/55/pop.png",
     createdAt: new Date("2026-08-12T08:00:00.000Z"),
     reviewedAt: new Date("2026-08-12T09:00:00.000Z"),
     paidAt: null,

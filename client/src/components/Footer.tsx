@@ -1,7 +1,7 @@
 import React from "react";
 import { LockKeyhole, Truck, Users } from "lucide-react";
 
-const footerLogoSrc = "/manus-storage/ggn-logo-transparent_bf4fb645.png";
+const footerLogoSrc = "/api/media/ggn-logo-transparent_bf4fb645.png";
 
 export default function Footer() {
   return (

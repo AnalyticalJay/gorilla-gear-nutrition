@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="border-b border-white/10 p-5">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
             <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded">
-              <img src="/manus-storage/ggn-logo-transparent-light_b806869d.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
+              <img src="/api/media/ggn-logo-transparent-light_b806869d.png" alt="Gorilla Gear Nutrition logo" className="h-full w-full object-contain" />
             </div>
             <div>
               <span className="text-sm font-black uppercase tracking-widest text-white">Gorilla Gear</span>

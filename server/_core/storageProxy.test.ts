@@ -21,6 +21,7 @@ describe("managed storage image proxy", () => {
 
     const get = vi.fn();
     registerStorageProxy({ get } as any);
+    expect(get).toHaveBeenCalledWith("/api/media/*", expect.any(Function));
     const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
     const res = {
       set: vi.fn(),

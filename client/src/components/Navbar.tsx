@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-const suppliedHeaderLogoSrc = "/manus-storage/ggn-logo-transparent_bf4fb645.png";
+const suppliedHeaderLogoSrc = "/api/media/ggn-logo-transparent_bf4fb645.png";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
