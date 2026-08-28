@@ -665,3 +665,9 @@
 - [x] Add reduced-motion-safe click feedback to the Apply Access button.
 - [x] Make the mobile application-status row link directly to detailed account progress.
 - [x] Verify account-state behaviour, interaction feedback, desktop/mobile visuals, and regression coverage.
+
+## Catalogue Data — Category Normalization
+- [x] Audit all active category names, duplicate filters, and product assignment counts.
+- [x] Map active products to Injectables, Orals, SARMs, Peptides, Fat Loss, Healthcare, Supplements, or Clothing.
+- [x] Consolidate duplicate or legacy categories without changing prices, inventory, orders, or historical records.
+- [x] Verify the private catalogue and public collection filters after normalization.
