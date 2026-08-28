@@ -73,6 +73,7 @@ import {
   upsertCartItem,
 } from "./db";
 import { z } from "zod";
+import { parseBulkImportPrice } from "./bulkImport";
 import { orders, users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { ENV } from "./_core/env";
@@ -608,6 +609,7 @@ export const appRouter = router({
         const categoryIdx = headers.indexOf('category');
         const dosageIdx = headers.indexOf('dosageinfo');
         const descIdx = headers.indexOf('description');
+        const priceIdx = headers.indexOf('price');
 
         if (nameIdx === -1 || categoryIdx === -1) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'CSV needs name and category columns' });
@@ -642,8 +644,9 @@ export const appRouter = router({
             const parts = lines[i].split(',').map(p => p.trim());
             const name = parts[nameIdx];
             const category = parts[categoryIdx];
-            const dosage = parts[dosageIdx] || '';
-            const desc = parts[descIdx] || '';
+            const dosage = dosageIdx >= 0 ? parts[dosageIdx] || '' : '';
+            const desc = descIdx >= 0 ? parts[descIdx] || '' : '';
+            const price = priceIdx >= 0 ? parseBulkImportPrice(parts[priceIdx]) : '0.00';
 
             if (!name || !category) { skipped++; continue; }
 
@@ -656,7 +659,7 @@ export const appRouter = router({
               continue;
             }
 
-            await createProduct({ name, slug, categoryId, price: '0', stockQuantity: 100, description: desc, dosageInfo: dosage, isActive: true, isFeatured: false });
+            await createProduct({ name, slug, categoryId, price, stockQuantity: 100, description: desc, dosageInfo: dosage, isActive: true, isFeatured: false });
             imported++;
           } catch (e: any) {
             if (!e.message?.includes('Duplicate')) errors.push(`Row ${i + 1}: ${e.message}`);

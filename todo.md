@@ -721,3 +721,8 @@
 
 - [x] Move ignored pnpm overrides and patches into supported workspace configuration.
 - [x] Remove remaining `framer-motion` usage from the private catalogue route.
+
+## Admin Bulk Import — Price Column
+- [x] Add a `price` column to the Product template CSV and visible format guidance.
+- [x] Parse and validate price values during bulk import while preserving existing duplicate and stock rules.
+- [x] Add regression coverage for template output, valid prices, and invalid or blank prices.
