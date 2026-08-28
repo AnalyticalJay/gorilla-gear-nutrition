@@ -696,3 +696,8 @@
 - [x] Measure product-list image payloads, loading behaviour, and customer-visible bottlenecks.
 - [x] Optimise catalogue image loading and rendering without changing managed product assets.
 - [x] Verify desktop and mobile image load behaviour and record the measured outcome.
+
+## Customer Image Delivery — Investigation
+- [x] Compare customer and administrator managed-image URLs, response behavior, and client rendering paths.
+- [x] Correct the customer-specific logo and product image delivery failure with safe fallback behavior.
+- [x] Verify approved customer and administrator image rendering on desktop and mobile.
