@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getProductBrand, matchesBrand, matchesPriceRange } from "./productFilters";
+import { AVAILABLE_BRANDS, getProductBrand, matchesBrand, matchesPriceRange } from "./productFilters";
 
 describe("product brand and price filters", () => {
   it("detects HD Labs from a product name", () => {
@@ -22,6 +22,13 @@ describe("product brand and price filters", () => {
   it("filters products to the selected brand", () => {
     expect(matchesBrand({ name: "HD Labs product" }, "HD Labs")).toBe(true);
     expect(matchesBrand({ name: "BP Pharma product" }, "HD Labs")).toBe(false);
+  });
+
+  it("does not surface retired Biolabs or Genesis suppliers in product filters", () => {
+    expect(AVAILABLE_BRANDS as string[]).not.toContain("Genesis");
+    expect(AVAILABLE_BRANDS as string[]).not.toContain("Biolab");
+    expect(getProductBrand({ name: "Genesis product" })).toBe("Other");
+    expect(getProductBrand({ name: "Biolab product" })).toBe("Other");
   });
 
   it("filters products by max price range", () => {

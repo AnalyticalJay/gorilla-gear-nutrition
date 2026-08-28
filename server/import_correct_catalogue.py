@@ -64,11 +64,8 @@ for line in lines:
     elif "UPA LABS" in upper:
         current_brand = "UPA Labs"
         continue
-    elif "GENESIS" in upper:
-        current_brand = "Genesis"
-        continue
-    elif "BIOLAB" in upper:
-        current_brand = "Biolab"
+    elif "GENESIS" in upper or "BIOLAB" in upper:
+        current_brand = None
         continue
     elif "MACTROPIN" in upper:
         current_brand = "Mactropin"
@@ -86,11 +83,13 @@ for line in lines:
 
     m = re.search(r'(R\s*[\d,]+|NA)$', line)
     if m:
+        if current_brand is None:
+            continue
         price_str = m.group(1).replace(' ', '')
         price = 0 if price_str == 'NA' else int(price_str.replace('R', '').replace(',', ''))
         
         rest = line[:m.start()].strip()
-        rest = re.sub(r'^(OL|Keifei|UPA|Gen|Bio|Mac|SP)\s+', '', rest, flags=re.IGNORECASE)
+        rest = re.sub(r'^(OL|Keifei|UPA|Mac|SP)\s+', '', rest, flags=re.IGNORECASE)
         
         # Product name is the text before quantity/strength info
         # Let's clean up product name for the Ouroboros Labs peptides shown in the screenshot:

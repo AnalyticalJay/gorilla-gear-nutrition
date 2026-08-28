@@ -676,3 +676,8 @@
 - [x] Audit all customer-facing stock quantities and availability language.
 - [x] Remove customer-facing stock counts while preserving stock validation and administrator inventory tools.
 - [x] Verify product, cart, and quote interfaces no longer reveal unit quantities.
+
+## Catalogue Data — Supplier Retirement
+- [x] Audit Biolabs and Genesis products, images, filters, and historical record relationships.
+- [x] Retire Biolabs and Genesis from active customer and administrator catalogue data without harming historical orders.
+- [x] Verify their products and brand filters are absent from customer and admin catalogue surfaces.

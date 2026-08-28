@@ -23,8 +23,7 @@ async function seed() {
     if (upper.includes("OUROBOROS LABS")) { currentBrand = "Ouroboros Labs"; continue; }
     if (upper.includes("KEIFEI")) { currentBrand = "Keifei Pharmaceuticals"; continue; }
     if (upper.includes("UPA LABS")) { currentBrand = "UPA Labs"; continue; }
-    if (upper.includes("GENESIS")) { currentBrand = "Genesis"; continue; }
-    if (upper.includes("BIOLAB")) { currentBrand = "Biolab"; continue; }
+    if (upper.includes("GENESIS") || upper.includes("BIOLAB")) { currentBrand = null; continue; }
     if (upper.includes("MACTROPIN")) { currentBrand = "Mactropin"; continue; }
     if (upper.includes("SP LABORATORIES")) { currentBrand = "SP Laboratories"; continue; }
 
@@ -37,10 +36,11 @@ async function seed() {
 
     const match = line.match(/(R\s*[\d,]+|NA)$/);
     if (match) {
+      if (!currentBrand) continue;
       const priceStr = match[1].replace(/\s+/g, '');
       const price = priceStr === 'NA' ? 0 : parseInt(priceStr.replace('R', '').replace(/,/g, ''), 10);
       const rest = line.substring(0, line.length - match[0].length).trim();
-      const cleanRest = rest.replace(/^(OL|Keifei|UPA|Gen|Bio|Mac|SP)\s+/i, '');
+      const cleanRest = rest.replace(/^(OL|Keifei|UPA|Mac|SP)\s+/i, '');
 
       if (!cleanRest || cleanRest.length < 2) continue;
 

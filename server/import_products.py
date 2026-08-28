@@ -22,11 +22,8 @@ for line in lines:
     elif "UPA LABS" in upper:
         current_brand = "UPA Labs"
         continue
-    elif "GENESIS" in upper:
-        current_brand = "Genesis"
-        continue
-    elif "BIOLAB" in upper:
-        current_brand = "Biolab"
+    elif "GENESIS" in upper or "BIOLAB" in upper:
+        current_brand = None
         continue
     elif "MACTROPIN" in upper:
         current_brand = "Mactropin"
@@ -46,11 +43,13 @@ for line in lines:
     # Match price at end
     m = re.search(r'(R\s*[\d,]+|NA)$', line)
     if m:
+        if current_brand is None:
+            continue
         price_str = m.group(1).replace(' ', '')
         price = 0 if price_str == 'NA' else int(price_str.replace('R', '').replace(',', ''))
         
         rest = line[:m.start()].strip()
-        rest = re.sub(r'^(OL|Keifei|UPA|Gen|Bio|Mac|SP)\s+', '', rest, flags=re.IGNORECASE)
+        rest = re.sub(r'^(OL|Keifei|UPA|Mac|SP)\s+', '', rest, flags=re.IGNORECASE)
         
         # In PDF text, columns are often squished together like:
         # "Retatrutide 30mg (Not Mixed) 1 Vial 30mg LY-3437943 - Treat 2 diabetes..."

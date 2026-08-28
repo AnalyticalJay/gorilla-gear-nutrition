@@ -568,14 +568,13 @@ export async function getProductsPage(opts: {
     "Ouroboros Labs": ["OL -%", "%ouroboros%"],
     "Keifei Pharmaceuticals": ["Keifei%"],
     "UPA Labs": ["UPA -%", "%UPA Labs%"],
-    Genesis: ["GEN -%", "%Genesis%"],
-    Biolab: ["BIO -%", "%Biolab%"],
     Mactropin: ["MAC -%", "%Mactropin%"],
     "SP Laboratories": ["SP -%", "%SP Laboratories%"],
     "HD Labs": ["HD -%", "%HD Labs%"],
     "BP Pharma": ["BP -%", "%BP Pharma%"],
   };
   const selectedBrandPatterns = opts.brand ? brandPatterns[opts.brand] : undefined;
+  if (opts.brand && !selectedBrandPatterns) return { items: [], total: 0, limit, offset };
   if (selectedBrandPatterns) {
     conditions.push(or(...selectedBrandPatterns.map((pattern) => like(products.name, pattern))));
   }

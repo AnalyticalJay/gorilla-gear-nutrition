@@ -30,12 +30,8 @@ async function run() {
       currentBrand = 'UPA Labs';
       continue;
     }
-    if (line.includes('GENESIS')) {
-      currentBrand = 'Genesis';
-      continue;
-    }
-    if (line.includes('BIOLAB')) {
-      currentBrand = 'Biolab';
+    if (line.includes('GENESIS') || line.includes('BIOLAB')) {
+      currentBrand = null;
       continue;
     }
     
@@ -45,6 +41,7 @@ async function run() {
     }
     
     if (line.match(/R\s*[\d,]+/)) {
+      if (!currentBrand) continue;
       parsedProducts.push({
         brand: currentBrand,
         category: currentCategory,
