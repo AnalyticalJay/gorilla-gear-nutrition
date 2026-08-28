@@ -60,6 +60,18 @@ export const passwordResetAuditEvents = mysqlTable("password_reset_audit_events"
 
 export type PasswordResetAuditEvent = typeof passwordResetAuditEvents.$inferSelect;
 
+// ─── Shared Abuse-Protection Counters ─────────────────────────────────────────
+// Keys are hashed at the application boundary; stale rows are pruned by the
+// database helper so this remains bounded across autoscaled instances.
+export const authRateLimits = mysqlTable("auth_rate_limits", {
+  key: varchar("key", { length: 128 }).primaryKey(),
+  windowStartedAt: timestamp("windowStartedAt").notNull(),
+  hitCount: int("hitCount").default(0).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AuthRateLimit = typeof authRateLimits.$inferSelect;
+
 // ─── User Approvals ───────────────────────────────────────────────────────────
 export const userApprovals = mysqlTable("user_approvals", {
   id: int("id").autoincrement().primaryKey(),

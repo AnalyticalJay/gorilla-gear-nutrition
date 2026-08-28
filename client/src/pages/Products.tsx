@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, Lock, X, RotateCcw, ChevronDown, Tag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
 import { BrandFilter, AVAILABLE_BRANDS } from "@/lib/productFilters";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -217,11 +216,11 @@ export default function Products() {
       <div className="pt-16">
         <div className="border-b border-[#454545] bg-[#080808] py-12">
           <div className="container">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center lg:text-left">
+            <div className="catalogue-header-enter text-center lg:text-left">
               <div className="mx-auto mb-5 h-[3px] w-16 lg:mx-0" style={{ background: "linear-gradient(90deg, #a8751c 0%, #a8751c 50%, #a8751c 50%, #a8751c 100%)" }} />
               <h1 className="mb-2 text-4xl font-black uppercase tracking-tight text-white">Product <span style={{ color: "#a8751c" }}>Catalog</span></h1>
               <p className="text-sm text-[#9b9388]">{isApproved ? `${totalProducts} premium products available` : "Prices hidden — get approved to view pricing and purchase"}</p>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -271,9 +270,9 @@ export default function Products() {
                 </div>
               ) : products.length > 0 ? (
                 <>
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="catalogue-grid-enter grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                     {products.map((product, index) => <ProductCard key={product.id} product={product} isApproved={isApproved} prioritizeImage={index < 3} />)}
-                  </motion.div>
+                  </div>
                   {totalPages > 1 && (
                     <nav aria-label="Product catalogue pagination" className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[#454545] pt-6 sm:flex-row">
                       <p className="text-xs font-semibold uppercase tracking-widest text-[#9b9388]">

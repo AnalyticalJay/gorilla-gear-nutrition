@@ -38,4 +38,39 @@ describe("managed storage image proxy", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(expect.any(Buffer));
   });
+
+  it("rejects keys outside the approved public media prefixes", async () => {
+    const upstreamFetch = vi.fn();
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "private/customer-document.png" } }, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith("Media not found");
+    expect(upstreamFetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects an upstream media response that exceeds the public size limit", async () => {
+    const upstreamFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ url: "https://signed-storage.example/large" }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-length": String(9 * 1024 * 1024) }),
+        arrayBuffer: async () => new ArrayBuffer(0),
+      });
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "brand/large.png" } }, res);
+
+    expect(res.status).toHaveBeenCalledWith(413);
+    expect(res.send).toHaveBeenCalledWith("Media file too large");
+  });
 });

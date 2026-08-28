@@ -711,3 +711,13 @@
 - [x] Measure current production build, route payloads, and runtime bottlenecks.
 - [x] Optimize initial load, route loading, assets, and runtime rendering with low-risk changes.
 - [x] Verify desktop/mobile performance and functional regressions.
+
+## Security Remediation — Code Review Findings
+- [x] Redact password hashes and password-reset token fields from `auth.me` responses.
+- [x] Restrict the public media proxy to approved public asset keys with safe key validation and bounded upstream handling.
+- [x] Replace process-local login and password-reset throttling with bounded, production-safe abuse controls.
+- [x] Add behavioral regression tests for sensitive-field redaction, media access boundaries, and rate-limit behavior.
+- [x] Rerun type checks, full tests, dependency audit, production build, and targeted route verification.
+
+- [x] Move ignored pnpm overrides and patches into supported workspace configuration.
+- [x] Remove remaining `framer-motion` usage from the private catalogue route.

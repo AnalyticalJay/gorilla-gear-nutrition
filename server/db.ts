@@ -14,6 +14,7 @@ import {
   productImages,
   products,
   passwordResetAuditEvents,
+  authRateLimits,
   shippingDetails,
   userApprovals,
   users,
@@ -41,6 +42,71 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+// ─── Shared Abuse Protection ─────────────────────────────────────────────────
+
+export async function getRateLimitCount(key: string, windowMs: number): Promise<number | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const [row] = await db
+      .select({ windowStartedAt: authRateLimits.windowStartedAt, hitCount: authRateLimits.hitCount })
+      .from(authRateLimits)
+      .where(eq(authRateLimits.key, key))
+      .limit(1);
+
+    if (!row) return 0;
+    if (Date.now() - row.windowStartedAt.getTime() >= windowMs) return 0;
+    return row.hitCount;
+  } catch (error) {
+    console.warn("[RateLimit] Failed to read shared counter:", error);
+    return null;
+  }
+}
+
+export async function recordRateLimitHit(key: string, windowMs: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  try {
+    const now = new Date();
+    const windowStart = new Date(now.getTime() - windowMs);
+    await db
+      .insert(authRateLimits)
+      .values({ key, windowStartedAt: now, hitCount: 1, updatedAt: now })
+      .onDuplicateKeyUpdate({
+        set: {
+          windowStartedAt: sql`IF(${authRateLimits.windowStartedAt} <= ${windowStart}, ${now}, ${authRateLimits.windowStartedAt})`,
+          hitCount: sql`IF(${authRateLimits.windowStartedAt} <= ${windowStart}, 1, ${authRateLimits.hitCount} + 1)`,
+          updatedAt: now,
+        },
+      });
+
+    // Keep this table bounded even when attackers rotate identifiers. The cleanup
+    // is opportunistic and only removes counters older than two windows.
+    if (Math.random() < 0.02) {
+      const cutoff = new Date(now.getTime() - windowMs * 2);
+      await db.delete(authRateLimits).where(lt(authRateLimits.updatedAt, cutoff));
+    }
+    return true;
+  } catch (error) {
+    console.warn("[RateLimit] Failed to write shared counter:", error);
+    return false;
+  }
+}
+
+export async function clearRateLimitHit(key: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  try {
+    await db.delete(authRateLimits).where(eq(authRateLimits.key, key));
+    return true;
+  } catch (error) {
+    console.warn("[RateLimit] Failed to clear shared counter:", error);
+    return false;
+  }
 }
 
 // ─── Auth / Users ─────────────────────────────────────────────────────────────

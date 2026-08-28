@@ -46,6 +46,9 @@ import {
   normalizeProductImageKey,
   getUserByEmail,
   getUserById,
+  getRateLimitCount,
+  recordRateLimitHit,
+  clearRateLimitHit,
   consumePasswordResetToken,
   getPasswordResetTokenOwner,
   getPasswordResetAuditEvents,
@@ -86,11 +89,15 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 });
 
 const passwordResetRequestTimes = new Map<string, number>();
+const localRateLimitHits = new Map<string, { count: number; windowStartedAt: number }>();
 const PASSWORD_RESET_COOLDOWN_MS = 60_000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 const LOGIN_FAILURE_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_FAILURE_LIMIT = 5;
-const loginFailures = new Map<string, { count: number; firstFailedAt: number }>();
+const REGISTRATION_WINDOW_MS = 15 * 60 * 1000;
+const REGISTRATION_LIMIT = 5;
+const COACHING_WINDOW_MS = 60 * 60 * 1000;
+const COACHING_LIMIT = 3;
 const PRODUCT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 const PUBLIC_COLLECTION_SLUGS = new Set(["supplements", "clothing"]);
@@ -100,34 +107,74 @@ function withoutCustomerStock<T extends { stockQuantity: unknown }>(product: T) 
   return customerProduct;
 }
 
-function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
+function getClientAddress(ctx: { req: unknown }) {
   const req = ctx.req as { ip?: string; socket?: { remoteAddress?: string }; headers?: Record<string, string | string[] | undefined> };
   const forwarded = req.headers?.["x-forwarded-for"];
   const forwardedIp = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
-  const client = (forwardedIp || req.ip || req.socket?.remoteAddress || "unknown").trim().slice(0, 128);
-  return `${email.trim().toLowerCase()}|${client}`;
+  return (forwardedIp || req.ip || req.socket?.remoteAddress || "unknown").trim().slice(0, 128);
 }
 
-function assertLoginAllowed(key: string) {
-  const attempt = loginFailures.get(key);
-  if (!attempt) return;
-  if (Date.now() - attempt.firstFailedAt >= LOGIN_FAILURE_WINDOW_MS) {
-    loginFailures.delete(key);
+function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
+  return `${email.trim().toLowerCase()}|${getClientAddress(ctx)}`;
+}
+
+function hashRateLimitKey(value: string) {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+function useLocalRateLimitFallback() {
+  return Boolean(process.env.VITEST);
+}
+
+async function getRateLimitHits(key: string, windowMs: number) {
+  if (useLocalRateLimitFallback()) {
+    const local = localRateLimitHits.get(key);
+    if (!local || Date.now() - local.windowStartedAt >= windowMs) {
+      localRateLimitHits.delete(key);
+      return 0;
+    }
+    return local.count;
+  }
+
+  const shared = await getRateLimitCount(hashRateLimitKey(key), windowMs);
+  if (shared !== null) return shared;
+
+  const local = localRateLimitHits.get(key);
+  if (!local || Date.now() - local.windowStartedAt >= windowMs) {
+    localRateLimitHits.delete(key);
+    return 0;
+  }
+  return local.count;
+}
+
+async function recordRateLimitHitForKey(key: string, windowMs: number) {
+  if (!useLocalRateLimitFallback()) {
+    const stored = await recordRateLimitHit(hashRateLimitKey(key), windowMs);
+    if (stored) return;
+  }
+
+  const now = Date.now();
+  const local = localRateLimitHits.get(key);
+  if (!local || now - local.windowStartedAt >= windowMs) {
+    localRateLimitHits.set(key, { count: 1, windowStartedAt: now });
     return;
   }
-  if (attempt.count >= LOGIN_FAILURE_LIMIT) {
+  localRateLimitHits.set(key, { count: local.count + 1, windowStartedAt: local.windowStartedAt });
+}
+
+async function clearRateLimitHitsForKey(key: string) {
+  localRateLimitHits.delete(key);
+  if (!useLocalRateLimitFallback()) await clearRateLimitHit(hashRateLimitKey(key));
+}
+
+async function assertLoginAllowed(key: string) {
+  if ((await getRateLimitHits(`login:${key}`, LOGIN_FAILURE_WINDOW_MS)) >= LOGIN_FAILURE_LIMIT) {
     throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many sign-in attempts. Please try again in a few minutes." });
   }
 }
 
-function recordLoginFailure(key: string) {
-  const now = Date.now();
-  const attempt = loginFailures.get(key);
-  if (!attempt || now - attempt.firstFailedAt >= LOGIN_FAILURE_WINDOW_MS) {
-    loginFailures.set(key, { count: 1, firstFailedAt: now });
-    return;
-  }
-  loginFailures.set(key, { ...attempt, count: attempt.count + 1 });
+async function recordLoginFailure(key: string) {
+  await recordRateLimitHitForKey(`login:${key}`, LOGIN_FAILURE_WINDOW_MS);
 }
 
 function detectProductImageMime(buffer: Buffer): (typeof PRODUCT_IMAGE_TYPES)[number] | null {
@@ -139,6 +186,26 @@ function detectProductImageMime(buffer: Buffer): (typeof PRODUCT_IMAGE_TYPES)[nu
 
 function isApprovedMember(user: { status?: string } | null | undefined) {
   return user?.status === "approved";
+}
+
+function toSafeUser(user: Awaited<ReturnType<typeof getUserById>> | null | undefined) {
+  if (!user) return null;
+  return {
+    id: user.id,
+    openId: user.openId,
+    fullName: user.fullName,
+    email: user.email,
+    phone: user.phone,
+    city: user.city,
+    loginMethod: user.loginMethod,
+    role: user.role,
+    status: user.status,
+    isActive: user.isActive,
+    isOver18: user.isOver18,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    lastSignedIn: user.lastSignedIn,
+  };
 }
 
 async function getPublicCollectionIds() {
@@ -171,9 +238,8 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(async ({ ctx }) => {
       if (!ctx.user) return null;
-      // Return full user including status
       const user = await getUserById(ctx.user.id);
-      return user ?? null;
+      return toSafeUser(user);
     }),
 
     register: publicProcedure
@@ -187,7 +253,13 @@ export const appRouter = router({
           isOver18: z.boolean().refine((v) => v === true, { message: "You must be 18+" }),
         })
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
+        const registrationKey = `register:${input.email.trim().toLowerCase()}|${getClientAddress(ctx)}`;
+        if ((await getRateLimitHits(registrationKey, REGISTRATION_WINDOW_MS)) >= REGISTRATION_LIMIT) {
+          throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many applications from this address. Please try again later." });
+        }
+        await recordRateLimitHitForKey(registrationKey, REGISTRATION_WINDOW_MS);
+
         const existing = await getUserByEmail(input.email);
         if (existing) {
           throw new TRPCError({ code: "CONFLICT", message: "Email already registered" });
@@ -213,22 +285,22 @@ export const appRouter = router({
       .input(z.object({ email: z.string().email(), password: z.string() }))
       .mutation(async ({ input, ctx }) => {
         const loginKey = getLoginAttemptKey(ctx, input.email);
-        assertLoginAllowed(loginKey);
+        await assertLoginAllowed(loginKey);
         const user = await getUserByEmail(input.email);
         if (!user || !user.passwordHash) {
-          recordLoginFailure(loginKey);
+          await recordLoginFailure(loginKey);
           throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
         }
         const valid = await bcrypt.compare(input.password, user.passwordHash);
         if (!valid) {
-          recordLoginFailure(loginKey);
+          await recordLoginFailure(loginKey);
           throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
         }
         if (!user.isActive) {
-          recordLoginFailure(loginKey);
+          await recordLoginFailure(loginKey);
           throw new TRPCError({ code: "FORBIDDEN", message: "Account is deactivated" });
         }
-        loginFailures.delete(loginKey);
+        await clearRateLimitHitsForKey(`login:${loginKey}`);
 
         // Create session token
         const { sdk } = await import("./_core/sdk");
@@ -241,16 +313,16 @@ export const appRouter = router({
 
     forgotPassword: publicProcedure
       .input(z.object({ email: z.string().email() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const normalizedEmail = input.email.trim().toLowerCase();
         const identity = buildPasswordResetAuditIdentity(normalizedEmail);
         const now = Date.now();
-        const lastRequestedAt = passwordResetRequestTimes.get(normalizedEmail) ?? 0;
-        if (now - lastRequestedAt < PASSWORD_RESET_COOLDOWN_MS) {
+        const resetRateKey = `reset:${normalizedEmail}|${getClientAddress(ctx)}`;
+        if ((await getRateLimitHits(resetRateKey, PASSWORD_RESET_COOLDOWN_MS)) >= 1) {
           await recordPasswordResetAuditEvent({ ...identity, eventType: "request_received", detail: "cooldown_active" });
           return { success: true } as const;
         }
-        passwordResetRequestTimes.set(normalizedEmail, now);
+        await recordRateLimitHitForKey(resetRateKey, PASSWORD_RESET_COOLDOWN_MS);
         await recordPasswordResetAuditEvent({ ...identity, eventType: "request_received" });
 
         const user = await getUserByEmail(normalizedEmail);
@@ -905,6 +977,12 @@ export const appRouter = router({
         availability: z.string().trim().min(4).max(255),
       }))
       .mutation(async ({ ctx, input }) => {
+        const coachingRateKey = `coaching:${getClientAddress(ctx)}`;
+        if ((await getRateLimitHits(coachingRateKey, COACHING_WINDOW_MS)) >= COACHING_LIMIT) {
+          throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many coaching enquiries. Please try again later." });
+        }
+        await recordRateLimitHitForKey(coachingRateKey, COACHING_WINDOW_MS);
+
         const enquiryId = await createCoachingEnquiry({
           ...input,
           userId: ctx.user?.id ?? null,
