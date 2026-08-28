@@ -53,6 +53,9 @@ vi.mock("@/lib/trpc", () => ({
       toggleActive: {
         useMutation: () => ({ mutateAsync: async () => {} }),
       },
+      exportCSV: {
+        useMutation: () => ({ mutateAsync: async () => "name,category,dosageInfo,description,brand,price\\r\\n" }),
+      },
     },
     admin: {
       stats: {

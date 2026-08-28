@@ -726,3 +726,8 @@
 - [x] Add a `price` column to the Product template CSV and visible format guidance.
 - [x] Parse and validate price values during bulk import while preserving existing duplicate and stock rules.
 - [x] Add regression coverage for template output, valid prices, and invalid or blank prices.
+
+## Admin Product Export — CSV
+- [x] Add an admin-only product-list export using the name, category, dosageInfo, description, brand, and price columns.
+- [x] Escape CSV values safely and preserve template-compatible price formatting.
+- [x] Add regression coverage for export data and admin access.

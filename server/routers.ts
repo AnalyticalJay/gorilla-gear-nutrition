@@ -74,6 +74,7 @@ import {
 } from "./db";
 import { z } from "zod";
 import { parseBulkImportPrice } from "./bulkImport";
+import { buildProductsCsv } from "./productExport";
 import { orders, users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { ENV } from "./_core/env";
@@ -465,6 +466,13 @@ export const appRouter = router({
     listAdmin: adminProcedure
       .input(z.object({ categoryId: z.number().optional(), search: z.string().optional() }).optional())
       .query(({ input }) => getProducts({ ...input, activeOnly: false })),
+
+    exportCSV: adminProcedure
+      .input(z.object({ search: z.string().optional() }).optional())
+      .mutation(async ({ input }) => {
+        const products = await getProducts({ search: input?.search, activeOnly: false });
+        return buildProductsCsv(products);
+      }),
 
     byId: adminProcedure
       .input(z.object({ id: z.number() }))
