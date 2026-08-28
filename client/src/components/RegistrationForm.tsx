@@ -205,15 +205,16 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
 
 export function RegistrationSubmitted() {
   return (
-    <div className="w-full max-w-md border border-[#d8d1c2] bg-white p-10 text-center shadow-[0_18px_45px_rgba(52,45,35,0.1)]">
+    <div className="w-full max-w-md border border-[#d8d1c2] bg-white p-10 text-center shadow-[0_18px_45px_rgba(52,45,35,0.1)]" role="status" aria-live="polite">
       <div className="mx-auto mb-8 h-[3px] w-24 bg-[#c99a3d]" />
       <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#c99a3d]/15 text-[#a8751c]">
         <CheckCircle2 className="h-8 w-8" />
       </div>
       <h2 className="mb-3 text-2xl font-black uppercase tracking-tight text-[#1c1c1c]">Application Submitted</h2>
-      <p className="mb-6 text-sm leading-relaxed text-[#6a6257]">
-        Your application is under review. We will notify you once Gorilla Gear Nutrition has approved your private catalogue access.
+      <p className="mb-3 text-sm leading-relaxed text-[#6a6257]">
+        Your application has been received and is now under review. We will notify you once Gorilla Gear Nutrition has approved your private catalogue access.
       </p>
+      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#a8751c]">Redirecting you to sign in…</p>
     </div>
   );
 }

@@ -1,11 +1,18 @@
 import { ArrowLeft, LockKeyhole, ShieldCheck } from "lucide-react";
-import { useState } from "react";
-import { Link } from "wouter";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
 
 import { RegistrationForm, RegistrationSubmitted } from "@/components/RegistrationForm";
 
 export default function Register() {
   const [submitted, setSubmitted] = useState(false);
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (!submitted) return;
+    const redirectTimer = window.setTimeout(() => navigate("/login?registration=complete"), 4000);
+    return () => window.clearTimeout(redirectTimer);
+  }, [navigate, submitted]);
 
   if (submitted) {
     return (

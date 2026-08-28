@@ -686,3 +686,8 @@
 - [x] Audit all registration and account-password validation rules for the incorrect 32-character minimum.
 - [x] Change the customer password requirement and guidance to a minimum of 8 characters.
 - [x] Verify valid 8-character passwords pass while shorter values are rejected.
+
+## Membership Registration — Completion Experience
+- [x] Verify password visibility controls in the registration form.
+- [x] Add a clear success message and automatic redirect to sign in after a successful application.
+- [x] Test registration controls, confirmation messaging, and redirect timing on desktop and mobile.

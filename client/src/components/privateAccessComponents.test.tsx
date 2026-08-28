@@ -105,6 +105,24 @@ describe("RegistrationForm", () => {
     expect(mocks.mockRegister).not.toHaveBeenCalled();
   });
 
+  it("lets applicants show and hide their password values", async () => {
+    const user = userEvent.setup();
+    render(<RegistrationForm onSubmitted={vi.fn()} />);
+
+    const password = screen.getByLabelText("Password");
+    const confirmation = screen.getByLabelText("Confirm Password");
+    expect(password).toHaveAttribute("type", "password");
+    expect(confirmation).toHaveAttribute("type", "password");
+
+    await user.click(screen.getByRole("button", { name: "Show password" }));
+    await user.click(screen.getByRole("button", { name: "Show confirmation password" }));
+    expect(password).toHaveAttribute("type", "text");
+    expect(confirmation).toHaveAttribute("type", "text");
+
+    await user.click(screen.getByRole("button", { name: "Hide password" }));
+    expect(password).toHaveAttribute("type", "password");
+  });
+
   it("submits the validated registration payload without confirmationPassword", async () => {
     const user = userEvent.setup();
     render(<RegistrationForm onSubmitted={vi.fn()} />);
