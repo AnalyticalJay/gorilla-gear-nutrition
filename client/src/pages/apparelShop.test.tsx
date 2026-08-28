@@ -9,7 +9,7 @@ vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: () => ({ user: null, isAuthen
 vi.mock("@/lib/trpc", () => ({
   trpc: {
     categories: { list: { useQuery: () => ({ data: [{ id: 11, slug: "clothing" }], isLoading: false }) } },
-    products: { listPage: { useQuery: () => ({ data: { items: [{ id: 1, name: "Gorilla Gear Primal Standard", slug: "gorilla-tee", description: null, price: "350.00", primaryImage: null, stockQuantity: 100 }], total: 1 }, isLoading: false }) } },
+    products: { listPage: { useQuery: () => ({ data: { items: [{ id: 1, name: "Gorilla Gear Primal Standard", slug: "gorilla-tee", description: null, price: "350.00", primaryImage: null }], total: 1 }, isLoading: false }) } },
   },
 }));
 vi.mock("@/components/Navbar", () => ({ default: () => <nav>Navigation</nav> }));

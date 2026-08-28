@@ -14,7 +14,6 @@ type Product = {
   primaryImage: string | null;
   categoryName?: string | null;
   isFeatured?: boolean | null;
-  stockQuantity: number;
 };
 
 export default function ProductCard({
@@ -33,12 +32,11 @@ export default function ProductCard({
     onError: (err) => toast.error(err.message),
   });
 
-  const inStock = product.stockQuantity > 0;
   const hasPrice = Number(product.price ?? 0) > 0;
-  const isQuoteReady = inStock && hasPrice;
+  const isQuoteReady = hasPrice;
 
   return (
-    <div className="rounded-lg border border-[#454545] bg-[#111111] overflow-hidden group hover:border-[#a8751c]/40 hover:shadow-[0_0_20px_rgba(14,165,233,0.08)] transition-all duration-200 flex flex-col h-full">
+    <div className="rounded-lg border border-[#454545] bg-[#111111] overflow-hidden group hover:border-[#a8751c]/40 hover:shadow-[0_0_20px_rgba(168,117,28,0.10)] transition-all duration-200 flex flex-col h-full">
 
       {/* Image */}
       <Link href={`/products/${product.slug}`} className="block no-underline">
@@ -65,11 +63,10 @@ export default function ProductCard({
             </div>
           )}
 
-          {/* Out of stock overlay */}
-          {!isQuoteReady && (
+          {!hasPrice && (
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
               <span className="text-xs font-bold uppercase tracking-widest text-[#9b9388] border border-[#454545] px-3 py-1 rounded">
-                {hasPrice ? "Out of Stock" : "Price on Request"}
+                Price on Request
               </span>
             </div>
           )}

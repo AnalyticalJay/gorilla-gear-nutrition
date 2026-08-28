@@ -671,3 +671,8 @@
 - [x] Map active products to Injectables, Orals, SARMs, Peptides, Fat Loss, Healthcare, Supplements, or Clothing.
 - [x] Consolidate duplicate or legacy categories without changing prices, inventory, orders, or historical records.
 - [x] Verify the private catalogue and public collection filters after normalization.
+
+## Customer Inventory Privacy
+- [x] Audit all customer-facing stock quantities and availability language.
+- [x] Remove customer-facing stock counts while preserving stock validation and administrator inventory tools.
+- [x] Verify product, cart, and quote interfaces no longer reveal unit quantities.

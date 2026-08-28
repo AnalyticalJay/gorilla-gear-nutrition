@@ -27,7 +27,7 @@ import SupplementsShop from "@/pages/SupplementsShop";
 
 beforeEach(() => {
   categoriesQuery.mockReturnValue({ data: [{ id: 90001, name: "Supplements", slug: "supplements" }], isLoading: false });
-  productsQuery.mockReturnValue({ data: { items: [{ id: 2251, name: "HU - Creatine Monohydrate", slug: "hu-creatine-monohydrate", description: "Creatine Mono", dosageInfo: "Quantity: 30 servings | Strength: NA", price: "200.00", primaryImage: null, stockQuantity: 100 }], total: 1 }, isLoading: false });
+  productsQuery.mockReturnValue({ data: { items: [{ id: 2251, name: "HU - Creatine Monohydrate", slug: "hu-creatine-monohydrate", description: "Creatine Mono", dosageInfo: "Quantity: 30 servings | Strength: NA", price: "200.00", primaryImage: null }], total: 1 }, isLoading: false });
 });
 afterEach(() => cleanup());
 
@@ -50,6 +50,7 @@ describe("SupplementsShop", () => {
     expect(screen.getByRole("dialog")).toBeTruthy();
     expect(screen.getByText("Supplements quick view")).toBeTruthy();
     expect(screen.getByText("Quantity & strength")).toBeTruthy();
-    expect(screen.getByText("100 units available")).toBeTruthy();
+    expect(screen.getAllByText("R200.00").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/units available|in stock/i)).toBeNull();
   });
 });

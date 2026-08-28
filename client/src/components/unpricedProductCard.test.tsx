@@ -25,7 +25,6 @@ describe("unpriced ProductCard", () => {
       price: "0.00",
       primaryImage: null,
       categoryName: "Supplements",
-      stockQuantity: 0,
     }} />);
 
     expect(screen.getAllByText(/price on request/i).length).toBeGreaterThan(1);

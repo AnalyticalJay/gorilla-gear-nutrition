@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowUpRight, Eye, ImageOff, PackageCheck, ShoppingCart } from "lucide-react";
+import { ArrowUpRight, Eye, ImageOff, ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,6 @@ type SupplementProduct = {
   dosageInfo?: string | null;
   price: string | number | null;
   primaryImage: string | null;
-  stockQuantity: number;
 };
 
 export default function SupplementQuickViewCard({ product, isApproved }: { product: SupplementProduct; isApproved: boolean }) {
@@ -29,8 +28,7 @@ export default function SupplementQuickViewCard({ product, isApproved }: { produ
   const utils = trpc.useUtils();
   const hasPrice = Number(product.price ?? 0) > 0;
   const isUnpriced = isApproved && !hasPrice;
-  const inStock = product.stockQuantity > 0;
-  const canQuote = isApproved && hasPrice && inStock;
+  const canQuote = isApproved && hasPrice;
   const addToCart = trpc.cart.upsert.useMutation({
     onSuccess: () => {
       utils.cart.get.invalidate();
@@ -72,7 +70,7 @@ export default function SupplementQuickViewCard({ product, isApproved }: { produ
           <div className="mt-4 flex items-end justify-between gap-3 border-t border-white/10 pt-3">
             <div>
               <p className="text-lg font-black text-white">{displayPrice}</p>
-              <p className={`mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em] ${isApproved && inStock ? "text-[#c99a3d]" : "text-white/40"}`}>{!isApproved ? "Approval required" : inStock ? `${product.stockQuantity} in stock` : "Stock confirmation needed"}</p>
+              <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white/40">{!isApproved ? "Approval required" : hasPrice ? "Ready to quote" : "Price confirmation needed"}</p>
             </div>
             <button type="button" onClick={() => setOpen(true)} className="inline-flex min-h-10 items-center gap-1.5 border border-[#c99a3d]/55 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-[#e0b35a] transition-colors hover:border-[#e0b35a] hover:bg-[#c99a3d]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c99a3d]">
               <Eye className="h-3.5 w-3.5" /> View
@@ -96,12 +94,11 @@ export default function SupplementQuickViewCard({ product, isApproved }: { produ
             <div className="mt-6 grid gap-3 border-y border-white/10 py-4 text-sm">
               {product.dosageInfo && <div><p className="text-[9px] font-black uppercase tracking-[0.16em] text-white/40">Quantity & strength</p><p className="mt-1 font-semibold text-white/82">{product.dosageInfo}</p></div>}
               <div className="flex items-center justify-between gap-3"><span className="text-[9px] font-black uppercase tracking-[0.16em] text-white/40">Price</span><span className="font-black text-[#e0b35a]">{displayPrice}</span></div>
-              <div className="flex items-center justify-between gap-3"><span className="text-[9px] font-black uppercase tracking-[0.16em] text-white/40">Availability</span><span className="font-semibold text-white/82">{!isApproved ? "Member approval required" : inStock ? `${product.stockQuantity} units available` : "Contact us to confirm stock"}</span></div>
             </div>
             <DialogFooter className="mt-6 sm:justify-start">
               <Link href={`/products/${product.slug}`} className="no-underline"><Button variant="outline" className="min-h-11 rounded-none border-white/25 bg-transparent text-[10px] font-black uppercase tracking-[0.12em] text-white hover:border-[#c99a3d] hover:bg-white/5 hover:text-white">Full details <ArrowUpRight className="ml-2 h-3.5 w-3.5" /></Button></Link>
               {canQuote && <Button onClick={addToQuote} disabled={addToCart.isPending} className="min-h-11 rounded-none bg-[#c99a3d] text-[10px] font-black uppercase tracking-[0.12em] text-black hover:bg-[#e0b35a]"><ShoppingCart className="mr-2 h-3.5 w-3.5" />{addToCart.isPending ? "Adding..." : "Add to quote"}</Button>}
-              {!canQuote && <span className="inline-flex min-h-11 items-center gap-2 text-xs text-white/55"><PackageCheck className="h-4 w-4 text-[#c99a3d]" />{!isApproved ? "Member approval required" : hasPrice ? "Stock confirmation needed" : "Price confirmation needed"}</span>}
+              {!canQuote && <span className="inline-flex min-h-11 items-center text-xs text-white/55">{!isApproved ? "Member approval required" : "Price confirmation needed"}</span>}
             </DialogFooter>
           </div>
         </div>

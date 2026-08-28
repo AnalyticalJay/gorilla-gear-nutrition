@@ -163,23 +163,6 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* Stock */}
-              <div className="mb-6">
-                {!hasPrice ? (
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#c99a3d" }}>
-                    Price confirmation required
-                  </span>
-                ) : product.stockQuantity > 0 ? (
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#4ADE80" }}>
-                    ✓ In Stock ({product.stockQuantity} available)
-                  </span>
-                ) : (
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#F87171" }}>
-                    ✗ Out of Stock
-                  </span>
-                )}
-              </div>
-
               {/* Description */}
               {product.description && (
                 <div className="mb-6">
@@ -197,7 +180,7 @@ export default function ProductDetail() {
               )}
 
               {/* Add to Quote */}
-              {isApproved && hasPrice && product.stockQuantity > 0 && (
+              {isApproved && hasPrice && (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                   <div className="flex items-center self-start border border-[#454545] rounded overflow-hidden bg-[#111111]">
                     <button
@@ -208,7 +191,7 @@ export default function ProductDetail() {
                     </button>
                     <span className="flex h-11 min-w-12 items-center justify-center border-x border-[#454545] px-4 py-2 text-sm font-bold text-white sm:h-9">{quantity}</span>
                     <button
-                      onClick={() => setQuantity((q) => Math.min(product.stockQuantity, q + 1))}
+                      onClick={() => setQuantity((q) => Math.min(99, q + 1))}
                       className="flex h-11 w-11 items-center justify-center px-3 py-2 text-sm text-white transition-colors hover:bg-[#454545] sm:h-9 sm:w-10"
                     >
                       +

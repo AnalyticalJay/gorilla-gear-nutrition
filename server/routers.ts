@@ -95,6 +95,11 @@ const PRODUCT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 const PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 const PUBLIC_COLLECTION_SLUGS = new Set(["supplements", "clothing"]);
 
+function withoutCustomerStock<T extends { stockQuantity: unknown }>(product: T) {
+  const { stockQuantity: _stockQuantity, ...customerProduct } = product;
+  return customerProduct;
+}
+
 function getLoginAttemptKey(ctx: { req: unknown }, email: string) {
   const req = ctx.req as { ip?: string; socket?: { remoteAddress?: string }; headers?: Record<string, string | string[] | undefined> };
   const forwarded = req.headers?.["x-forwarded-for"];
@@ -351,9 +356,9 @@ export const appRouter = router({
           if (!input?.categoryId || !publicCategoryIds.has(input.categoryId)) return [];
         }
         const rows = await getProducts({ ...input, activeOnly: true });
-        // Strip prices for non-approved users — server-enforced
+        // Strip pricing for non-approved visitors and inventory from all customer responses.
         return rows.map((p) => ({
-          ...p,
+          ...withoutCustomerStock(p),
           price: isApproved ? p.price : null,
         }));
       }),
@@ -378,7 +383,7 @@ export const appRouter = router({
         return {
           ...page,
           items: page.items.map((product) => ({
-            ...product,
+            ...withoutCustomerStock(product),
             price: isApproved ? product.price : null,
           })),
         };
@@ -401,7 +406,7 @@ export const appRouter = router({
         if (!isApproved && !PUBLIC_COLLECTION_SLUGS.has(product.category?.slug ?? "")) {
           throw new TRPCError({ code: "NOT_FOUND" });
         }
-        return { ...product, price: isApproved ? product.price : null };
+        return { ...withoutCustomerStock(product), price: isApproved ? product.price : null };
       }),
 
     create: adminProcedure
@@ -593,7 +598,10 @@ export const appRouter = router({
 
   // ─── Cart ─────────────────────────────────────────────────────────────────
   cart: router({
-    get: approvedProcedure.query(({ ctx }) => getCartItems(ctx.user.id)),
+    get: approvedProcedure.query(async ({ ctx }) => {
+      const items = await getCartItems(ctx.user.id);
+      return items.map(({ productStock: _productStock, ...item }) => item);
+    }),
 
     upsert: approvedProcedure
       .input(z.object({ productId: z.number(), quantity: z.number().min(1) }))
@@ -633,7 +641,7 @@ export const appRouter = router({
 
         for (const item of cartRows) {
           if (item.quantity > item.productStock) {
-            throw new TRPCError({ code: "BAD_REQUEST", message: `Insufficient stock for ${item.productName}` });
+            throw new TRPCError({ code: "BAD_REQUEST", message: "The requested quantity is not currently available. Please adjust your quote or contact us." });
           }
         }
 

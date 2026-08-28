@@ -120,7 +120,7 @@ export default function Cart() {
                       <button
                         onClick={() => upsert.mutate({ productId: item.productId, quantity: item.quantity + 1 })}
                         className="flex h-11 w-11 items-center justify-center rounded-md border border-border transition-colors hover:bg-accent sm:h-8 sm:w-8"
-                        disabled={item.quantity >= item.productStock}
+                        disabled={upsert.isPending}
                       >
                         <Plus className="h-3 w-3" />
                       </button>
