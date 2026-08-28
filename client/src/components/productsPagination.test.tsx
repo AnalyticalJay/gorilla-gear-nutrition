@@ -30,6 +30,10 @@ vi.mock("wouter", () => ({
   useLocation: () => ["/products", vi.fn()],
 }));
 
+vi.mock("@/components/ProductCard", () => ({
+  default: ({ prioritizeImage }: { prioritizeImage?: boolean }) => <div data-testid="catalogue-card">{prioritizeImage ? "priority image" : "deferred image"}</div>,
+}));
+
 import Products from "@/pages/Products";
 
 beforeEach(() => {
@@ -55,6 +59,7 @@ describe("Products pagination", () => {
   it("requests the next offset and updates the page indicator", () => {
     render(<Products />);
     expect(screen.getByText("Page 1 of 3")).toBeTruthy();
+    expect(screen.getByTestId("catalogue-card").textContent).toBe("priority image");
 
     fireEvent.click(screen.getByRole("button", { name: "Next page" }));
 

@@ -63,7 +63,7 @@ export default function ApparelShop() {
           {loading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{[0, 1, 2, 3].map((index) => <div key={index} className="h-80 animate-pulse border border-white/10 bg-white/[0.035]" />)}</div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map((product) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}</div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map((product, index) => <ProductCard key={product.id} product={product} isApproved={isApproved} prioritizeImage={index < 3} />)}</div>
           ) : (
             <div className="border border-dashed border-white/20 bg-white/[0.025] px-6 py-16 text-center"><PackageOpen className="mx-auto h-10 w-10 text-[#c99a3d]" strokeWidth={1.3} /><h2 className="mt-5 text-xl font-black uppercase text-white">Collection in progress</h2><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-white/60">Apparel products will appear here as soon as they are added to the Clothing category.</p></div>
           )}

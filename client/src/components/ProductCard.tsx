@@ -19,9 +19,11 @@ type Product = {
 export default function ProductCard({
   product,
   isApproved,
+  prioritizeImage = false,
 }: {
   product: Product;
   isApproved: boolean;
+  prioritizeImage?: boolean;
 }) {
   const utils = trpc.useUtils();
   const addToCart = trpc.cart.upsert.useMutation({
@@ -45,6 +47,9 @@ export default function ProductCard({
             <img
               src={product.primaryImage}
               alt={product.name}
+              loading={prioritizeImage ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={prioritizeImage ? "high" : "auto"}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
             />
           ) : (

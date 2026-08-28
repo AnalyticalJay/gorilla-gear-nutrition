@@ -691,3 +691,8 @@
 - [x] Verify password visibility controls in the registration form.
 - [x] Add a clear success message and automatic redirect to sign in after a successful application.
 - [x] Test registration controls, confirmation messaging, and redirect timing on desktop and mobile.
+
+## Catalogue Performance — Product Images
+- [x] Measure product-list image payloads, loading behaviour, and customer-visible bottlenecks.
+- [x] Optimise catalogue image loading and rendering without changing managed product assets.
+- [x] Verify desktop and mobile image load behaviour and record the measured outcome.

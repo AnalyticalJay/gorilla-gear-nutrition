@@ -272,7 +272,7 @@ export default function Products() {
               ) : products.length > 0 ? (
                 <>
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                    {products.map((product) => <ProductCard key={product.id} product={product} isApproved={isApproved} />)}
+                    {products.map((product, index) => <ProductCard key={product.id} product={product} isApproved={isApproved} prioritizeImage={index < 3} />)}
                   </motion.div>
                   {totalPages > 1 && (
                     <nav aria-label="Product catalogue pagination" className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[#454545] pt-6 sm:flex-row">
