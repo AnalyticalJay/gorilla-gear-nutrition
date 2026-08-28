@@ -681,3 +681,8 @@
 - [x] Audit Biolabs and Genesis products, images, filters, and historical record relationships.
 - [x] Retire Biolabs and Genesis from active customer and administrator catalogue data without harming historical orders.
 - [x] Verify their products and brand filters are absent from customer and admin catalogue surfaces.
+
+## Membership Registration — Password Requirement
+- [x] Audit all registration and account-password validation rules for the incorrect 32-character minimum.
+- [x] Change the customer password requirement and guidance to a minimum of 8 characters.
+- [x] Verify valid 8-character passwords pass while shorter values are rejected.

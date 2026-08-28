@@ -183,7 +183,7 @@ export const appRouter = router({
           email: z.string().email(),
           phone: z.string().min(7),
           city: z.string().min(2),
-          password: z.string().min(32, "Password must be at least 32 characters"),
+          password: z.string().min(8, "Password must be at least 8 characters"),
           isOver18: z.boolean().refine((v) => v === true, { message: "You must be 18+" }),
         })
       )
@@ -288,7 +288,7 @@ export const appRouter = router({
     resetPassword: publicProcedure
       .input(z.object({
         token: z.string().regex(/^[a-f0-9]{64}$/i, "Invalid reset token"),
-        newPassword: z.string().min(32, "Password must be at least 32 characters"),
+        newPassword: z.string().min(8, "Password must be at least 8 characters"),
       }))
       .mutation(async ({ input }) => {
         const tokenHash = createHash("sha256").update(input.token).digest("hex");

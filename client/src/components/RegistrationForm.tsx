@@ -127,7 +127,7 @@ export function RegistrationForm({ onSubmitted }: { onSubmitted: () => void }) {
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
             {...register("password")}
-            placeholder="Minimum 32 characters"
+            placeholder="Minimum 8 characters"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? "password-error" : undefined}
             className={`${fieldClassName} pr-10`}

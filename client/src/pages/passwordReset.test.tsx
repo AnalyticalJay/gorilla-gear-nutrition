@@ -48,7 +48,7 @@ describe("password reset screens", () => {
   it("submits a strong password and confirms the update", async () => {
     window.history.pushState({}, "", "/reset-password?token=" + "a".repeat(64));
     render(<ResetPassword />);
-    const password = "a".repeat(32);
+    const password = "Strong#8";
     fireEvent.change(screen.getByLabelText("New Password"), { target: { value: password } });
     fireEvent.change(screen.getByLabelText("Confirm New Password"), { target: { value: password } });
     fireEvent.click(screen.getByRole("button", { name: /update password/i }));

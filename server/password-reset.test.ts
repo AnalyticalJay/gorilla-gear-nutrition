@@ -85,7 +85,7 @@ describe("password reset procedures", () => {
     const token = "b".repeat(64);
     dbMocks.consumePasswordResetToken.mockResolvedValueOnce(true);
 
-    const result = await appRouter.createCaller(makeContext()).auth.resetPassword({ token, newPassword: "a".repeat(32) });
+    const result = await appRouter.createCaller(makeContext()).auth.resetPassword({ token, newPassword: "Strong#8" });
 
     expect(result).toEqual({ success: true });
     expect(dbMocks.consumePasswordResetToken).toHaveBeenCalledWith(createHash("sha256").update(token).digest("hex"), expect.any(String));
@@ -95,6 +95,6 @@ describe("password reset procedures", () => {
     dbMocks.consumePasswordResetToken.mockResolvedValueOnce(false);
 
     await expect(appRouter.createCaller(makeContext()).auth.resetPassword({ token: "c".repeat(64), newPassword: "d".repeat(32) })).rejects.toMatchObject({ code: "BAD_REQUEST" });
-    await expect(appRouter.createCaller(makeContext()).auth.resetPassword({ token: "c".repeat(64), newPassword: "short" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await expect(appRouter.createCaller(makeContext()).auth.resetPassword({ token: "c".repeat(64), newPassword: "short7!" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
 });

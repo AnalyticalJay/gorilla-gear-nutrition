@@ -71,6 +71,14 @@ describe("registration validation", () => {
     expect(registrationSchema.safeParse(validApplication).success).toBe(true);
   });
 
+  it("accepts an exactly eight-character password and rejects a shorter one", () => {
+    const exactlyEight = { ...validApplication, password: "Strong#8", confirmPassword: "Strong#8" };
+    const tooShort = { ...validApplication, password: "short7!", confirmPassword: "short7!" };
+
+    expect(registrationSchema.safeParse(exactlyEight).success).toBe(true);
+    expect(registrationSchema.safeParse(tooShort).success).toBe(false);
+  });
+
   it("rejects mismatched passwords and underage applications", () => {
     const mismatch = registrationSchema.safeParse({ ...validApplication, confirmPassword: "different" });
     const underage = registrationSchema.safeParse({ ...validApplication, isOver18: false });

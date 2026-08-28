@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 
 const schema = z.object({
-  newPassword: z.string().min(32, "Use at least 32 characters for your new password"),
+  newPassword: z.string().min(8, "Use at least 8 characters for your new password"),
   confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords do not match",
@@ -46,7 +46,7 @@ export default function ResetPassword() {
             <KeyRound className="h-6 w-6" />
           </div>
           <h1 className="text-3xl font-black uppercase tracking-tight text-white">Set a new password</h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#c9c2b6]">Choose a strong password with at least 32 characters. This reset link can only be used once.</p>
+          <p className="mt-2 text-sm leading-relaxed text-[#c9c2b6]">Choose a strong password with at least 8 characters. This reset link can only be used once.</p>
 
           {showSuccess ? (
             <div className="mt-7 space-y-5" role="status" aria-live="polite">
@@ -69,7 +69,7 @@ export default function ResetPassword() {
               <div>
                 <Label htmlFor="new-password" className="text-sm font-bold uppercase tracking-wide text-[#c9c2b6]">New Password</Label>
                 <div className="relative mt-1.5">
-                  <Input id="new-password" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="At least 32 characters" {...register("newPassword")} className="h-11 border-[#454545] bg-[#101010] pr-10 text-white placeholder:text-[#6b665e] focus:border-[#a8751c]/50" />
+                  <Input id="new-password" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="At least 8 characters" {...register("newPassword")} className="h-11 border-[#454545] bg-[#101010] pr-10 text-white placeholder:text-[#6b665e] focus:border-[#a8751c]/50" />
                   <button type="button" aria-label={showPassword ? "Hide new password" : "Show new password"} onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9b9388] hover:text-white">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
                 </div>
                 {errors.newPassword && <p className="mt-1 text-xs text-[#FB7185]">{errors.newPassword.message}</p>}

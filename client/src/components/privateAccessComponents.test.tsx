@@ -109,12 +109,13 @@ describe("RegistrationForm", () => {
     const user = userEvent.setup();
     render(<RegistrationForm onSubmitted={vi.fn()} />);
 
+    expect(screen.getByPlaceholderText("Minimum 8 characters")).toBeInTheDocument();
     await user.type(screen.getByLabelText("Full Name"), "Aisha Daniels");
     await user.type(screen.getByLabelText("Email Address"), "aisha@example.com");
     await user.type(screen.getByLabelText("Phone"), "+27 82 111 1111");
     await user.type(screen.getByLabelText("City"), "Gqeberha");
-    await user.type(screen.getByLabelText("Password"), "secure-passphrase-that-is-32-chars!");
-    await user.type(screen.getByLabelText("Confirm Password"), "secure-passphrase-that-is-32-chars!");
+    await user.type(screen.getByLabelText("Password"), "Strong#8");
+    await user.type(screen.getByLabelText("Confirm Password"), "Strong#8");
     await user.click(screen.getByLabelText(/18 years of age or older/i));
     await user.click(screen.getByRole("button", { name: /submit application/i }));
 
@@ -123,7 +124,7 @@ describe("RegistrationForm", () => {
       email: "aisha@example.com",
       phone: "+27 82 111 1111",
       city: "Gqeberha",
-      password: "secure-passphrase-that-is-32-chars!",
+      password: "Strong#8",
       isOver18: true,
     });
   });
