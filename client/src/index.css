@@ -292,6 +292,17 @@
   }
 }
 
+@keyframes home-hero-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.125rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes mobile-nav-slide-down {
   from {
     opacity: 0;
@@ -307,7 +318,30 @@
   transform-origin: top center;
 }
 
+/* Keep below-the-fold marketing sections out of the first paint while preserving scroll geometry. */
+.home-deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 700px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .home-hero-content {
+    animation: home-hero-enter 520ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+
+  .home-pillars,
+  .account-panel-enter {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+    transition: opacity 480ms cubic-bezier(0.23, 1, 0.32, 1), transform 480ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .home-pillars.is-visible,
+  .account-panel-enter {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
   .mobile-nav-panel {
     animation: mobile-nav-slide-down 220ms cubic-bezier(0.23, 1, 0.32, 1);
   }
@@ -333,6 +367,17 @@
 
   .apply-access-button:active::after {
     animation: apply-access-ripple 420ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-content,
+  .home-pillars,
+  .account-panel-enter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
   }
 }
 

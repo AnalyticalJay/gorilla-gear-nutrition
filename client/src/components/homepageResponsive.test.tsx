@@ -63,7 +63,9 @@ describe("Homepage responsive structure", () => {
 
     const heroHeading = screen.getByText("Discipline").closest("h1");
     expect(heroHeading?.className).toContain("text-[clamp(3rem,10.5vw,6.65rem)]");
-    expect(container.querySelector("#collections")).toBeTruthy();
+    expect(container.querySelector("#collections")?.className).toContain("home-deferred-section");
+    expect(container.querySelector("#member-catalogue")?.className).toContain("home-deferred-section");
+    expect(container.querySelector("#coaching")?.className).toContain("home-deferred-section");
   });
 
   it("centres key marketing content on phones while retaining desktop alignment fallbacks", () => {

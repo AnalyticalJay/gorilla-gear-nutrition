@@ -1,4 +1,5 @@
 import React from "react";
+import { lazy, Suspense } from "react";
 import { trpc } from "@/lib/trpc";
 import {
   AlertTriangle,
@@ -16,12 +17,11 @@ import {
   Users,
 } from "lucide-react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 
 const numberFormat = new Intl.NumberFormat("en-ZA");
 const currencyFormat = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR", minimumFractionDigits: 2 });
+const AdminPipelineChart = lazy(() => import("./AdminPipelineChart"));
 
 const colors = {
   gold: "#a8751c",
@@ -59,11 +59,7 @@ function formatStatus(value: string) {
 
 function MetricCard({ label, value, detail, icon: Icon, accent }: { label: string; value: string; detail: string; icon: React.ElementType; accent: string }) {
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-xl border border-[#e5dfd4] bg-white p-5 shadow-[0_14px_34px_rgba(69,69,69,0.06)]"
-    >
+    <article className="admin-metric-card relative overflow-hidden rounded-xl border border-[#e5dfd4] bg-white p-5 shadow-[0_14px_34px_rgba(69,69,69,0.06)]">
       <div className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: accent }} />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -75,7 +71,7 @@ function MetricCard({ label, value, detail, icon: Icon, accent }: { label: strin
           <Icon className="h-5 w-5" />
         </span>
       </div>
-    </motion.article>
+    </article>
   );
 }
 
@@ -158,7 +154,7 @@ export default function AdminDashboard() {
       </section>
 
       <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
-        <Panel><div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8751c]">Order pipeline</p><h2 className="mt-2 text-xl font-black uppercase tracking-[-0.04em] text-[#1f1f1f]">Where work is moving</h2></div><span className="text-xs text-[#6b665e]">Quote and fulfilment stages</span></div><div className="mt-6 h-[250px] min-w-0">{isLoading ? <div className="h-full animate-pulse rounded-lg bg-[#f6f0e4]" /> : <ResponsiveContainer width="100%" height="100%"><BarChart data={pipelineData} margin={{ top: 8, right: 8, left: -18, bottom: 12 }}><CartesianGrid stroke="#e5dfd4" vertical={false} /><XAxis dataKey="name" angle={-18} textAnchor="end" height={55} tick={{ fill: colors.muted, fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis allowDecimals={false} tick={{ fill: colors.muted, fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip contentStyle={{ background: "#ffffff", border: "1px solid #e5dfd4", borderRadius: 8, color: colors.ink }} cursor={{ fill: "rgba(168,117,28,0.08)" }} /><Bar dataKey="value" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer>}</div></Panel>
+        <Panel><div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8751c]">Order pipeline</p><h2 className="mt-2 text-xl font-black uppercase tracking-[-0.04em] text-[#1f1f1f]">Where work is moving</h2></div><span className="text-xs text-[#6b665e]">Quote and fulfilment stages</span></div><div className="mt-6 h-[250px] min-w-0">{isLoading ? <div className="h-full animate-pulse rounded-lg bg-[#f6f0e4]" /> : <Suspense fallback={<div className="grid h-full place-items-center rounded-lg bg-[#f6f0e4] text-[10px] font-black uppercase tracking-[0.16em] text-[#a8751c]">Loading chart</div>}><AdminPipelineChart data={pipelineData} /></Suspense>}</div></Panel>
 
         <Panel><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8751c]">Catalogue health</p><h2 className="mt-2 text-xl font-black uppercase tracking-[-0.04em] text-[#1f1f1f]">Ready to sell</h2></div><Package className="h-5 w-5 text-[#a8751c]" /></div><div className="mt-6 flex items-end justify-between gap-4"><div><p className="text-4xl font-black tracking-[-0.06em] text-[#1f1f1f]">{isLoading ? "—" : `${coverage}%`}</p><p className="mt-1 text-xs text-[#6b665e]">Image coverage of active products</p></div><div className="relative flex h-16 w-16 items-center justify-center rounded-full border-4 border-[#eee9df]" style={{ background: `conic-gradient(${colors.success} ${coverage}%, #eee9df 0)` }}><div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xs font-black text-[#1f1f1f]">{isLoading ? "—" : `${Math.round(coverage)}%`}</div></div></div><div className="mt-7 space-y-4"><ProgressRow label="Products with images" value={analytics?.products.withImages ?? 0} total={analytics?.products.active ?? 0} color={colors.success} /><ProgressRow label="Missing images" value={analytics?.products.missingImages ?? 0} total={analytics?.products.active ?? 0} color={colors.danger} /></div><div className="mt-6 grid grid-cols-2 gap-3 border-t border-[#e5dfd4] pt-5"><div><p className="text-[10px] uppercase tracking-wider text-[#6b665e]">Active products</p><p className="mt-1 text-lg font-black text-[#1f1f1f]">{numberFormat.format(analytics?.products.active ?? 0)}</p></div><div><p className="text-[10px] uppercase tracking-wider text-[#6b665e]">Categories</p><p className="mt-1 text-lg font-black text-[#1f1f1f]">{numberFormat.format(analytics?.products.categories ?? 0)}</p></div></div>{(analytics?.products.missingImages ?? 0) > 0 && <Link href="/admin/bulk-images" className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-[#a8751c] no-underline hover:text-[#7c5a20]">Manage image backlog <ArrowRight className="h-4 w-4" /></Link>}</Panel>
       </section>

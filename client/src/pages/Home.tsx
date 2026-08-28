@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useIsMobile } from "@/hooks/useMobile";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -15,7 +14,6 @@ import {
   Truck,
   Users,
 } from "lucide-react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -68,10 +66,7 @@ const pillars = [
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
-  const isMobile = useIsMobile();
-  const privateCatalogueRef = useRef<HTMLDivElement>(null);
   const pillarsRef = useRef<HTMLElement>(null);
-  const prefersReducedMotion = useReducedMotion();
   const [pillarsInView, setPillarsInView] = useState(false);
   useEffect(() => {
     const target = pillarsRef.current;
@@ -89,15 +84,6 @@ export default function Home() {
     observer.observe(target);
     return () => observer.disconnect();
   }, []);
-  const { scrollYProgress: privateCatalogueScrollProgress } = useScroll({
-    target: privateCatalogueRef,
-    offset: ["start end", "end start"],
-  });
-  const privateCatalogueParallaxY = useTransform(
-    privateCatalogueScrollProgress,
-    [0, 1],
-    prefersReducedMotion ? [0, 0] : [-12, 12],
-  );
 
   return (
     <div className="min-h-screen bg-[#070707] text-white selection:bg-[#c99a3d] selection:text-black">
@@ -109,12 +95,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#070707_0%,#070707_36%,rgba(7,7,7,0.9)_62%,rgba(7,7,7,0.48)_100%)] sm:bg-[linear-gradient(90deg,#070707_0%,#070707_30%,rgba(7,7,7,0.86)_45%,rgba(7,7,7,0.28)_71%,rgba(7,7,7,0.58)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_20%,rgba(201,154,61,0.18),transparent_27%),linear-gradient(0deg,rgba(7,7,7,0.62)_0%,transparent_42%)]" />
           <div className="container relative flex min-h-[calc(100svh-5.9rem)] items-center py-10 sm:py-16 lg:min-h-[720px] lg:py-20">
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.52 }}
-              className="relative z-10 w-full max-w-xl text-center sm:text-left"
-            >
+            <div className="home-hero-content relative z-10 w-full max-w-xl text-center sm:text-left">
               <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.24em] text-[#c99a3d] sm:mb-5 sm:text-xs sm:tracking-[0.3em]">Premium supplements. Elite coaching. Real results.</p>
               <h1 className="text-[clamp(2.7rem,10.5vw,6.65rem)] font-black uppercase leading-[0.82] tracking-[-0.07em] text-white sm:text-[clamp(3rem,10.5vw,6.65rem)]">
                 Discipline
@@ -171,17 +152,14 @@ export default function Home() {
                 </span>
                 <ChevronDown className="h-4 w-4 text-[#c99a3d] transition-transform duration-200 group-hover:translate-y-1 group-hover:text-[#f0c65e]" aria-hidden="true" />
               </a>
-            </motion.div>
+            </div>
           </div>
           <div className="absolute bottom-5 right-5 hidden items-center gap-6 border-t border-white/25 pt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/75 sm:flex lg:right-10 lg:bottom-8"><span>Built to perform</span><span className="text-[#c99a3d]">GGN / 01</span></div>
         </section>
 
-        <motion.section
+        <section
           ref={pillarsRef}
-          initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={prefersReducedMotion || pillarsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.48, ease: [0.23, 1, 0.32, 1] }}
-          className="border-b border-white/10 bg-[#0d0d0d] py-6 sm:py-7"
+          className={`home-pillars border-b border-white/10 bg-[#0d0d0d] py-6 sm:py-7 ${pillarsInView ? "is-visible" : ""}`}
         >
           <div className="container grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
             {pillars.map(({ icon: Icon, title, copy }, index) => (
@@ -194,9 +172,9 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <section id="collections" className="scroll-mt-24 bg-[#080808] py-16 sm:py-20 lg:py-24">
+        <section id="collections" className="home-deferred-section scroll-mt-24 bg-[#080808] py-16 sm:py-20 lg:py-24">
           <div className="container">
             <div className="mb-8 text-center sm:mb-12">
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#c99a3d]">The Gorilla Gear edit</p>
@@ -225,27 +203,16 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="member-catalogue" className="scroll-mt-24 border-y border-white/10 bg-[#090909] py-16 sm:py-20 lg:py-24">
+        <section id="member-catalogue" className="home-deferred-section scroll-mt-24 border-y border-white/10 bg-[#090909] py-16 sm:py-20 lg:py-24">
           <div className="container">
-            <motion.div ref={privateCatalogueRef} className="group relative isolate overflow-hidden border border-[#c99a3d]/35 bg-[#111111]">
-              {isMobile || prefersReducedMotion ? (
-                <img
-                  src={artwork.privateCatalogue}
-                  alt="Private member catalogue collection"
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover object-right opacity-75 transition-[filter,opacity] duration-500 ease-out md:group-hover:brightness-110 md:group-hover:opacity-90"
-                />
-              ) : (
-                <motion.img
-                  src={artwork.privateCatalogue}
-                  alt="Private member catalogue collection"
-                  loading="lazy"
-                  decoding="async"
-                  style={{ y: privateCatalogueParallaxY, scale: 1.045 }}
-                  className="absolute -inset-4 h-[calc(100%+2rem)] w-[calc(100%+2rem)] max-w-none object-cover object-right opacity-75 transition-[filter,opacity] duration-500 ease-out will-change-transform md:group-hover:brightness-110 md:group-hover:opacity-90"
-                />
-              )}
+            <div className="group relative isolate overflow-hidden border border-[#c99a3d]/35 bg-[#111111]">
+              <img
+                src={artwork.privateCatalogue}
+                alt="Private member catalogue collection"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover object-right opacity-75 transition-[filter,opacity] duration-500 ease-out transform-gpu md:-inset-4 md:h-[calc(100%+2rem)] md:w-[calc(100%+2rem)] md:max-w-none md:scale-[1.045] md:group-hover:brightness-110 md:group-hover:opacity-90"
+              />
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,7,7,0.98)_0%,rgba(7,7,7,0.92)_42%,rgba(7,7,7,0.48)_100%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_35%,rgba(201,154,61,0.23),transparent_30%)] transition-opacity duration-700 group-hover:opacity-80" />
               <div className="relative grid min-h-[430px] items-center px-6 py-12 sm:min-h-[480px] sm:px-12 lg:grid-cols-[0.9fr_1.1fr] lg:px-16">
@@ -266,11 +233,11 @@ export default function Home() {
                 </div>
               </div>
               <div className="absolute bottom-5 right-5 hidden items-center gap-3 text-[9px] font-black uppercase tracking-[0.18em] text-white/55 sm:flex"><LockKeyhole className="h-3.5 w-3.5 text-[#c99a3d]" /> Member access only</div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
-        <section id="coaching" className="scroll-mt-24 border-y border-white/10 bg-[#0e0e0e] py-12 sm:py-20">
+        <section id="coaching" className="home-deferred-section scroll-mt-24 border-y border-white/10 bg-[#0e0e0e] py-12 sm:py-20">
           <div className="container grid items-stretch gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:gap-5">
             <div className="relative min-h-[300px] overflow-hidden border border-white/10 bg-[#151515] sm:min-h-[420px]">
               <img src={artwork.coaching} alt="Elite strength coaching in a premium training environment" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
@@ -295,7 +262,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-[#080808] py-7 sm:py-8">
+        <section className="home-deferred-section bg-[#080808] py-7 sm:py-8">
           <div className="container grid grid-cols-2 gap-x-4 gap-y-6 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-4">
             {[
               { icon: Truck, label: "Fast shipping", copy: "Nationwide delivery" },

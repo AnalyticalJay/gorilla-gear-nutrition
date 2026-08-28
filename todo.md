@@ -706,3 +706,8 @@
 - [x] Reproduce the live logo and product-image failure and capture the production response path.
 - [x] Implement a browser-compatible image delivery repair that works for customer and administrator accounts.
 - [x] Verify image rendering on product list and detail pages before release.
+
+## Website Performance — Overall Optimization
+- [x] Measure current production build, route payloads, and runtime bottlenecks.
+- [x] Optimize initial load, route loading, assets, and runtime rendering with low-risk changes.
+- [x] Verify desktop/mobile performance and functional regressions.

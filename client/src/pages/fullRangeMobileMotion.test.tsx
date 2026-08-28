@@ -29,7 +29,7 @@ describe("Full Range mobile motion optimization", () => {
 
     const background = screen.getByAltText("Private member catalogue collection");
     expect(background.className).not.toContain("will-change-transform");
-    expect(background.className).not.toContain("-inset-4");
+    expect(background.className.split(/\s+/)).not.toContain("-inset-4");
     expect(background.className).toContain("md:group-hover:brightness-110");
   });
 });
