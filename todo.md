@@ -739,3 +739,7 @@
 
 - [x] Render the bulk-import textarea example with a real line break and make the pre-preview finalize state visually clear.
 - [x] Support standard table-formatted `.xls` and `.xlsx` files with headers as well as legacy section-formatted workbooks.
+
+- [x] Reconcile the imported `ORAL STEROIDS` duplicate into the canonical `Orals` category and prevent future imports from creating duplicate taxonomy records.
+
+- [ ] Link verified main images to the newly imported private products where source imagery is available; keep the initials fallback until a safe match is confirmed.
