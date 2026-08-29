@@ -742,4 +742,4 @@
 
 - [x] Reconcile the imported `ORAL STEROIDS` duplicate into the canonical `Orals` category and prevent future imports from creating duplicate taxonomy records.
 
-- [ ] Link verified main images to the newly imported private products where source imagery is available; keep the initials fallback until a safe match is confirmed.
+- [x] Audit verified image sources for the newly imported private products; no safe exact matches were available, so the initials fallback remains until matching imagery is supplied.

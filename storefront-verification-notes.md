@@ -15,3 +15,8 @@
 - Detail screenshots for Deca 100 (Fast) NPP, BPC-157, Anapolon, and Cardarine - Endurobol rendered the correct category, name, price, description, dosage/strength, quantity controls, and Add to Quote action. No stock quantity was shown.
 - Those four newly imported representatives had no product image rows in the database and therefore rendered the intended initials fallback (`AC`) instead of a product image. This is the main follow-up item from the storefront check.
 - Mobile detail rendering remained readable and responsive, with the image fallback, category, price, description, dosage, quantity controls, Add to Quote button, and footer stacked correctly.
+
+## Image asset audit
+
+- The available catalogue-sourced samples include a V.MED OXY 50 mg / 50-tab sachet and a Retatrutide 32 pen labeled 10 mg. They do not safely match the newly imported sample products by exact brand, name, and strength, so they were not linked.
+- No uploaded image archive was present in the workspace that could provide exact matches for the newly imported Deca 100 (Fast) NPP, BPC-157, Anapolon, or Cardarine - Endurobol records.
