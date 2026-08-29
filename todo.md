@@ -736,3 +736,6 @@
 - [x] Make the existing `category` template column explicit with approved category examples.
 - [x] Verify Peptides, Injectables, and other taxonomy values are accepted by import parsing.
 - [x] Add regression coverage for category guidance and parsing.
+
+- [x] Render the bulk-import textarea example with a real line break and make the pre-preview finalize state visually clear.
+- [x] Support standard table-formatted `.xls` and `.xlsx` files with headers as well as legacy section-formatted workbooks.

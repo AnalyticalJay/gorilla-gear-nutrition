@@ -73,7 +73,7 @@ import {
   upsertCartItem,
 } from "./db";
 import { z } from "zod";
-import { normalizeBulkImportCategory, parseBulkImportPrice } from "./bulkImport";
+import { normalizeBulkImportCategory, parseBulkImportPrice, parseBulkImportCsv } from "./bulkImport";
 import { buildProductsCsv } from "./productExport";
 import { orders, users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -609,10 +609,10 @@ export const appRouter = router({
     bulkImportCSV: adminProcedure
       .input(z.object({ csvData: z.string() }))
       .mutation(async ({ input }) => {
-        const lines = input.csvData.trim().split('\n');
-        if (lines.length < 2) throw new TRPCError({ code: 'BAD_REQUEST', message: 'CSV must have header and products' });
+        const records = parseBulkImportCsv(input.csvData);
+        if (records.length < 2) throw new TRPCError({ code: 'BAD_REQUEST', message: 'CSV must have header and products' });
 
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const headers = records[0].map(h => h.trim().toLowerCase());
         const nameIdx = headers.indexOf('name');
         const categoryIdx = headers.indexOf('category');
         const dosageIdx = headers.indexOf('dosageinfo');
@@ -627,8 +627,8 @@ export const appRouter = router({
         const errors: string[] = [];
 
         const catSet = new Set<string>();
-        for (let i = 1; i < lines.length; i++) {
-          const parts = lines[i].split(',');
+        for (let i = 1; i < records.length; i++) {
+          const parts = records[i];
           if (parts[categoryIdx]) catSet.add(normalizeBulkImportCategory(parts[categoryIdx]));
         }
 
@@ -647,9 +647,9 @@ export const appRouter = router({
           }
         }
 
-        for (let i = 1; i < lines.length; i++) {
+        for (let i = 1; i < records.length; i++) {
           try {
-            const parts = lines[i].split(',').map(p => p.trim());
+            const parts = records[i].map(p => p.trim());
             const name = parts[nameIdx];
             const category = normalizeBulkImportCategory(parts[categoryIdx]);
             const dosage = dosageIdx >= 0 ? parts[dosageIdx] || '' : '';

@@ -47,3 +47,38 @@ export function parseBulkImportPrice(rawValue: string | undefined): string {
 
   return amount.toFixed(2);
 }
+
+export function parseBulkImportCsv(csv: string): string[][] {
+  const records: string[][] = [];
+  let record: string[] = [];
+  let field = "";
+  let quoted = false;
+
+  for (let index = 0; index < csv.length; index += 1) {
+    const character = csv[index];
+    const next = csv[index + 1];
+    if (character === '"') {
+      if (quoted && next === '"') {
+        field += '"';
+        index += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (character === "," && !quoted) {
+      record.push(field.trim());
+      field = "";
+    } else if ((character === "\n" || character === "\r") && !quoted) {
+      if (character === "\r" && next === "\n") index += 1;
+      record.push(field.trim());
+      field = "";
+      if (record.some((value) => value !== "")) records.push(record);
+      record = [];
+    } else {
+      field += character;
+    }
+  }
+
+  record.push(field.trim());
+  if (record.some((value) => value !== "")) records.push(record);
+  return records;
+}

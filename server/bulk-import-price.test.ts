@@ -35,5 +35,8 @@ describe("bulk import price parsing", () => {
     expect(source).toContain("Price (ZAR)");
     expect(source).toContain("Injectables, Orals, SARMs, Peptides, Fat Loss, Healthcare, Supplements, Clothing");
     expect(source).toContain("Not Mixed),Peptides,30mg");
+    expect(source).toContain("XLSX.utils.sheet_to_csv(worksheet");
+    expect(source).toContain("const nextPreview = previewBulkImport(nextCsv)");
+    expect(source).toContain("Prepared ${rowCount} products for review");
   });
 });
