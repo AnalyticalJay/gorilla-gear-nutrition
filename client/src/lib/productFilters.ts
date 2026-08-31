@@ -3,6 +3,7 @@ export type BrandFilter =
   | "Ouroboros Labs" 
   | "Keifei Pharmaceuticals" 
   | "UPA Labs" 
+  | "Pharmaceuticals"
   | "Mactropin" 
   | "SP Laboratories" 
   | "HD Labs"
@@ -21,6 +22,7 @@ export const AVAILABLE_BRANDS: BrandFilter[] = [
   "Ouroboros Labs",
   "Keifei Pharmaceuticals",
   "UPA Labs",
+  "Pharmaceuticals",
   "Mactropin",
   "SP Laboratories",
   "HD Labs",
@@ -38,6 +40,7 @@ export function getProductBrand(product: ProductSearchRecord): BrandFilter {
   if (text.includes("ouroboros") || text.includes("ol ")) return "Ouroboros Labs";
   if (text.includes("keifei")) return "Keifei Pharmaceuticals";
   if (text.includes("upa") || text.includes("upa labs")) return "UPA Labs";
+  if (text.includes("pharma")) return "Pharmaceuticals";
   if (text.includes("mactropin") || text.includes("mac ")) return "Mactropin";
   if (text.includes("sp laboratories") || text.includes("sp ")) return "SP Laboratories";
   

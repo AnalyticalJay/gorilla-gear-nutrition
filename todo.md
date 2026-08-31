@@ -750,8 +750,15 @@
 - [x] Create or reconcile the UPA brand without duplicate brand records and ensure it is available in the shop brand filter.
 - [x] Import only genuinely new UPA products with verified category and price data; preserve existing matching products without duplication.
 - [x] Audit existing UPA product images and link only exact UPA brand/product matches to UPA products.
-- [ ] Verify UPA filtering and representative product rendering on desktop and mobile, including customer stock privacy.
+- [x] Verify UPA filtering and representative product rendering on desktop and mobile, including customer stock privacy.
 - [x] Harden the admin bulk-import procedure to preserve supported brand prefixes and skip or update existing normalized product matches instead of inserting duplicates on reruns.
 
 ## Next Catalogue Handoff
-- [ ] Process the next uploaded product list with workbook validation, exact-match duplicate protection, canonical category normalization, brand-filter reconciliation, and verified image linking.
+- [x] Process the next uploaded product list with workbook validation, exact-match duplicate protection, canonical category normalization, brand-filter reconciliation, and verified image linking.
+
+## Active Implementation — Next Product List Import
+- [x] Inspect and normalize the newly uploaded `.xls` workbook into Brand, Category, Product name, Description, Strength, and Price fields.
+- [x] Compare every workbook row against the current product catalogue and classify exact or near duplicates before import.
+- [x] Import only validated non-duplicate rows through the review-first workflow, preserving existing records and canonical categories.
+- [x] Verify brand filtering, product images, prices, and representative storefront rendering for the imported list.
+- [x] Normalize the source `PHARMACUTICALS` label to the canonical `Pharmaceuticals` brand and expose it in shop brand filtering while preserving the existing `Pharma -` product naming convention.

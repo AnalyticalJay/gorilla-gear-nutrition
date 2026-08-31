@@ -20,3 +20,7 @@
 
 - The available catalogue-sourced samples include a V.MED OXY 50 mg / 50-tab sachet and a Retatrutide 32 pen labeled 10 mg. They do not safely match the newly imported sample products by exact brand, name, and strength, so they were not linked.
 - No uploaded image archive was present in the workspace that could provide exact matches for the newly imported Deca 100 (Fast) NPP, BPC-157, Anapolon, or Cardarine - Endurobol records.
+
+## Next product-list import — THrIfVRBqbhbuqLO.xls
+
+The workbook contained 64 priced rows under the source label `PHARMACUTICALS`. The source label was normalized to the readable `Pharmaceuticals` brand and product names follow the existing `Pharma -` convention. Reconciliation updated 62 existing records, preserved 61 existing image associations, and created only `Pharma - Pethidine` in canonical `Injectables` and `Pharma - Purate` in canonical `Orals`. A second dry run classified all 64 rows as updates and zero creates, proving the import is idempotent. Database validation found 65 active Pharma records, 65 unique name/dosage identities, and no active duplicate name/dosage groups. Desktop and mobile product-list/detail screenshots show correct category labels, prices, responsive layout, and no customer stock quantities. The two new records have no verified source images and retain the safe initials fallback.

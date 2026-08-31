@@ -35,6 +35,9 @@ const BRAND_ALIASES: Record<string, string> = {
   upa: "UPA Labs",
   "upa labs": "UPA Labs",
   "upa laboratories": "UPA Labs",
+  pharmaceuticals: "Pharmaceuticals",
+  pharmacuticals: "Pharmaceuticals",
+  pharma: "Pharmaceuticals",
 };
 
 export function normalizeBulkImportBrand(rawValue: string | undefined): string {
@@ -50,6 +53,9 @@ export function formatBulkImportProductName(name: string, brand: string): string
   if (!cleanBrand) return cleanName;
   if (cleanBrand === "UPA Labs") {
     return /^upa\s*[-:]/i.test(cleanName) ? cleanName : `UPA - ${cleanName}`;
+  }
+  if (cleanBrand === "Pharmaceuticals") {
+    return /^pharma\s*[-:]/i.test(cleanName) ? cleanName : `Pharma - ${cleanName}`;
   }
   return cleanName;
 }

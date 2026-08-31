@@ -15,7 +15,9 @@ describe("bulk import price parsing", () => {
   it("normalizes UPA brand aliases and preserves the shop-filter prefix", () => {
     expect(normalizeBulkImportBrand("UPA Labs")).toBe("UPA Labs");
     expect(normalizeBulkImportBrand("upa laboratories")).toBe("UPA Labs");
+    expect(normalizeBulkImportBrand("PHARMACUTICALS")).toBe("Pharmaceuticals");
     expect(formatBulkImportProductName("BPC-157", "UPA Labs")).toBe("UPA - BPC-157");
+    expect(formatBulkImportProductName("Arimidex", "PHARMACUTICALS")).toBe("Pharma - Arimidex");
     expect(formatBulkImportProductName("UPA - BPC-157", "UPA Labs")).toBe("UPA - BPC-157");
   });
 
@@ -45,6 +47,8 @@ describe("bulk import price parsing", () => {
     expect(source).toContain("XLSX.utils.sheet_to_csv(worksheet");
     expect(source).toContain("const nextPreview = previewBulkImport(nextCsv)");
     expect(source).toContain("Prepared ${rowCount} products for review");
+    const filterSource = readFileSync(resolve(process.cwd(), "client/src/lib/productFilters.ts"), "utf8");
+    expect(filterSource).toContain('"Pharmaceuticals"');
   });
 
   it("keeps bulk import brand-aware and idempotent", () => {
