@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { normalizeBulkImportCategory, parseBulkImportPrice } from "./bulkImport";
+import { formatBulkImportProductName, normalizeBulkImportBrand, normalizeBulkImportCategory, parseBulkImportPrice } from "./bulkImport";
 
 describe("bulk import price parsing", () => {
   it("normalizes common category aliases to the active taxonomy", () => {
@@ -10,6 +10,13 @@ describe("bulk import price parsing", () => {
     expect(normalizeBulkImportCategory("ORAL STEROIDS")).toBe("Orals");
     expect(normalizeBulkImportCategory("Weight Loss")).toBe("Fat Loss");
     expect(normalizeBulkImportCategory("SARMs")).toBe("SARMs");
+  });
+
+  it("normalizes UPA brand aliases and preserves the shop-filter prefix", () => {
+    expect(normalizeBulkImportBrand("UPA Labs")).toBe("UPA Labs");
+    expect(normalizeBulkImportBrand("upa laboratories")).toBe("UPA Labs");
+    expect(formatBulkImportProductName("BPC-157", "UPA Labs")).toBe("UPA - BPC-157");
+    expect(formatBulkImportProductName("UPA - BPC-157", "UPA Labs")).toBe("UPA - BPC-157");
   });
 
   it("normalizes valid ZAR prices to two decimals", () => {
@@ -38,5 +45,14 @@ describe("bulk import price parsing", () => {
     expect(source).toContain("XLSX.utils.sheet_to_csv(worksheet");
     expect(source).toContain("const nextPreview = previewBulkImport(nextCsv)");
     expect(source).toContain("Prepared ${rowCount} products for review");
+  });
+
+  it("keeps bulk import brand-aware and idempotent", () => {
+    const source = readFileSync(resolve(process.cwd(), "server/routers.ts"), "utf8");
+    expect(source).toContain("normalizeBulkImportBrand");
+    expect(source).toContain("formatBulkImportProductName");
+    expect(source).toContain("getBulkImportProductMatches");
+    expect(source).toContain("Duplicate product in upload");
+    expect(source).toContain("updated");
   });
 });

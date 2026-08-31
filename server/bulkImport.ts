@@ -31,6 +31,29 @@ export function normalizeBulkImportCategory(rawValue: string | undefined): strin
   return CATEGORY_ALIASES[key] ?? value;
 }
 
+const BRAND_ALIASES: Record<string, string> = {
+  upa: "UPA Labs",
+  "upa labs": "UPA Labs",
+  "upa laboratories": "UPA Labs",
+};
+
+export function normalizeBulkImportBrand(rawValue: string | undefined): string {
+  const value = (rawValue ?? "").trim().replace(/\s+/g, " ");
+  if (!value) return "";
+  const key = value.toLowerCase();
+  return BRAND_ALIASES[key] ?? value;
+}
+
+export function formatBulkImportProductName(name: string, brand: string): string {
+  const cleanName = name.trim();
+  const cleanBrand = normalizeBulkImportBrand(brand);
+  if (!cleanBrand) return cleanName;
+  if (cleanBrand === "UPA Labs") {
+    return /^upa\s*[-:]/i.test(cleanName) ? cleanName : `UPA - ${cleanName}`;
+  }
+  return cleanName;
+}
+
 export function parseBulkImportPrice(rawValue: string | undefined): string {
   const raw = (rawValue ?? "").trim();
   if (!raw) return "0.00";

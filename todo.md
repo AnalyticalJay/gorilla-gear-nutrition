@@ -743,3 +743,15 @@
 - [x] Reconcile the imported `ORAL STEROIDS` duplicate into the canonical `Orals` category and prevent future imports from creating duplicate taxonomy records.
 
 - [x] Audit verified image sources for the newly imported private products; no safe exact matches were available, so the initials fallback remains until matching imagery is supplied.
+
+## Active Implementation — UPA Catalogue Import
+- [x] Inspect the uploaded UPA workbook and normalize its Brand, Category, Product name, Description, Strength, and Price fields.
+- [x] Compare UPA workbook rows against existing products using normalized brand/name/category/strength keys and identify duplicates before import.
+- [x] Create or reconcile the UPA brand without duplicate brand records and ensure it is available in the shop brand filter.
+- [x] Import only genuinely new UPA products with verified category and price data; preserve existing matching products without duplication.
+- [x] Audit existing UPA product images and link only exact UPA brand/product matches to UPA products.
+- [ ] Verify UPA filtering and representative product rendering on desktop and mobile, including customer stock privacy.
+- [x] Harden the admin bulk-import procedure to preserve supported brand prefixes and skip or update existing normalized product matches instead of inserting duplicates on reruns.
+
+## Next Catalogue Handoff
+- [ ] Process the next uploaded product list with workbook validation, exact-match duplicate protection, canonical category normalization, brand-filter reconciliation, and verified image linking.

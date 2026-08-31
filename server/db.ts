@@ -549,6 +549,24 @@ export async function deleteCategory(id: number) {
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
+export async function getBulkImportProductMatches() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: products.id,
+      name: products.name,
+      description: products.description,
+      dosageInfo: products.dosageInfo,
+      categoryId: products.categoryId,
+      price: products.price,
+      isActive: products.isActive,
+    })
+    .from(products)
+    .orderBy(products.id);
+}
+
 export async function getProducts(opts?: {
   categoryId?: number;
   search?: string;

@@ -29,6 +29,7 @@ import {
   getAllOrders,
   getAllUsers,
   getCartItems,
+  getBulkImportProductMatches,
   getCategories,
   getCoachingEnquiries,
   getDb,
@@ -73,7 +74,7 @@ import {
   upsertCartItem,
 } from "./db";
 import { z } from "zod";
-import { normalizeBulkImportCategory, parseBulkImportPrice, parseBulkImportCsv } from "./bulkImport";
+import { formatBulkImportProductName, normalizeBulkImportBrand, normalizeBulkImportCategory, parseBulkImportPrice, parseBulkImportCsv } from "./bulkImport";
 import { buildProductsCsv } from "./productExport";
 import { orders, users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -617,14 +618,23 @@ export const appRouter = router({
         const categoryIdx = headers.indexOf('category');
         const dosageIdx = headers.indexOf('dosageinfo');
         const descIdx = headers.indexOf('description');
+        const brandIdx = headers.indexOf('brand');
         const priceIdx = headers.indexOf('price');
 
         if (nameIdx === -1 || categoryIdx === -1) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'CSV needs name and category columns' });
         }
 
-        let imported = 0, skipped = 0;
+        let imported = 0, updated = 0, skipped = 0;
         const errors: string[] = [];
+        const existingProducts = await getBulkImportProductMatches();
+        const seenKeys = new Set<string>();
+        const normalizeProductKey = (value: string) => value
+          .toLowerCase()
+          .replace(/^upa\s*[-:]\s*/i, '')
+          .replace(/[^a-z0-9]+/g, '')
+          .trim();
+        const normalizeComparableField = (value: string | null | undefined) => String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 
         const catSet = new Set<string>();
         for (let i = 1; i < records.length; i++) {
@@ -634,48 +644,88 @@ export const appRouter = router({
 
         const catMap: Record<string, number> = {};
         for (const catName of Array.from(catSet)) {
+          const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
           try {
-            const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             await createCategory({ name: catName, slug });
-            const cats = await getAllCategories();
-            const found = cats.find((c: any) => c.name === catName);
-            if (found) catMap[catName] = found.id;
-          } catch (e: any) {
-            const cats = await getAllCategories();
-            const found = cats.find((c: any) => c.name === catName);
-            if (found) catMap[catName] = found.id;
+          } catch {
+            // The canonical category already exists; continue to resolve it below.
           }
+          const cats = await getCategories();
+          const found = cats.find((category: any) => category.name === catName);
+          if (found) catMap[catName] = found.id;
         }
 
         for (let i = 1; i < records.length; i++) {
           try {
             const parts = records[i].map(p => p.trim());
-            const name = parts[nameIdx];
+            const sourceName = parts[nameIdx];
             const category = normalizeBulkImportCategory(parts[categoryIdx]);
+            const brand = brandIdx >= 0 ? normalizeBulkImportBrand(parts[brandIdx]) : '';
+            const name = formatBulkImportProductName(sourceName, brand);
             const dosage = dosageIdx >= 0 ? parts[dosageIdx] || '' : '';
             const desc = descIdx >= 0 ? parts[descIdx] || '' : '';
             const price = priceIdx >= 0 ? parseBulkImportPrice(parts[priceIdx]) : '0.00';
 
-            if (!name || !category) { skipped++; continue; }
+            if (!sourceName || !category) { skipped++; continue; }
 
-            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             const categoryId = catMap[category];
-
             if (!categoryId) {
               errors.push(`Row ${i + 1}: Category not found`);
               skipped++;
               continue;
             }
 
+            const productKey = `${categoryId}:${normalizeProductKey(name)}`;
+            if (seenKeys.has(productKey)) {
+              errors.push(`Row ${i + 1}: Duplicate product in upload`);
+              skipped++;
+              continue;
+            }
+            seenKeys.add(productKey);
+
+            const candidates = existingProducts.filter((product: any) => {
+              if (product.categoryId !== categoryId) return false;
+              if (normalizeProductKey(product.name) === normalizeProductKey(name)) return true;
+              return normalizeComparableField(product.description) === normalizeComparableField(desc)
+                && normalizeComparableField(product.dosageInfo) === normalizeComparableField(dosage)
+                && Number(product.price) === Number(price)
+                && /^upa\s*[-:]/i.test(String(product.name ?? ''));
+            });
+            const existing = candidates.sort((left: any, right: any) => {
+              const leftBrand = /^upa\s*[-:]/i.test(String(left.name ?? '')) ? 1 : 0;
+              const rightBrand = /^upa\s*[-:]/i.test(String(right.name ?? '')) ? 1 : 0;
+              return rightBrand - leftBrand || Number(right.isActive) - Number(left.isActive) || Number(left.id) - Number(right.id);
+            })[0];
+
+            if (existing) {
+              await updateProduct(existing.id, {
+                name,
+                categoryId,
+                price,
+                description: desc,
+                dosageInfo: dosage,
+                isActive: true,
+              });
+              existing.name = name;
+              existing.categoryId = categoryId;
+              existing.price = price;
+              existing.description = desc;
+              existing.dosageInfo = dosage;
+              updated++;
+              continue;
+            }
+
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             await createProduct({ name, slug, categoryId, price, stockQuantity: 100, description: desc, dosageInfo: dosage, isActive: true, isFeatured: false });
             imported++;
+            existingProducts.push({ id: -imported, name, categoryId, price, description: desc, dosageInfo: dosage, isActive: true });
           } catch (e: any) {
             if (!e.message?.includes('Duplicate')) errors.push(`Row ${i + 1}: ${e.message}`);
             skipped++;
           }
         }
 
-        return { imported, skipped, errors: errors.slice(0, 5), message: `Imported ${imported}, skipped ${skipped}` };
+        return { imported, updated, skipped, errors: errors.slice(0, 5), message: `Imported ${imported}, updated ${updated}, skipped ${skipped}` };
       }),
   }),
 
