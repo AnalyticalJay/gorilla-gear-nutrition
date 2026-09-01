@@ -776,6 +776,10 @@
 - [x] Reconcile existing products to brand, subcategory, and shop collection assignments without duplicate products or destructive historical changes.
 - [x] Extend admin and storefront filters, product views, exports, and bulk-import preview to use the new taxonomy.
 - [x] Run migration integrity checks, tests, production build, and responsive storefront/admin verification.
-- [ ] Save and deliver the completed dual-taxonomy checkpoint.
+- [x] Save and deliver the completed dual-taxonomy checkpoint.
 
 - [x] Verify non-canonical active family categories are inactive and products are assigned to exactly the eight approved product families without deleting historical records.
+
+## Active Deliverable — Updated Dual-Taxonomy CSV Template
+- [x] Generate a downloadable CSV template matching the approved brand, category, subcategory, shop collection, product detail, and price columns.
+- [x] Validate the header-only template contract, quoting, and compatibility with the current bulk-import preview.
