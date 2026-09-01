@@ -800,3 +800,10 @@
 - [x] Inspect rows 325–331 in the populated dual-taxonomy export and identify the seven unmapped products.
 - [x] Ensure the canonical BP Pharma brand exists and assign those seven products without duplicate product records.
 - [x] Update the populated CSV rows, validate CSV integrity and BP Pharma filtering, and save a corrected checkpoint.
+
+## Active Import — Corrected Populated Dual-Taxonomy CSV
+- [x] Inspect the corrected populated CSV and confirm it matches the current importer contract.
+- [x] Re-import the corrected CSV idempotently, updating matching products without creating duplicates.
+- [x] Verify BP Pharma assignments and sidebar filter visibility on the shop page.
+- [ ] Save and deliver the import verification checkpoint.
+- [x] Archive the three dependency-free duplicate Keifeitropin/HGH Fragment records revealed by the corrected CSV re-import, preserving the image-bearing canonical records and historical safety.
