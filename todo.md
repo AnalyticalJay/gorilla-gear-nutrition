@@ -783,3 +783,7 @@
 ## Active Deliverable — Updated Dual-Taxonomy CSV Template
 - [x] Generate a downloadable CSV template matching the approved brand, category, subcategory, shop collection, product detail, and price columns.
 - [x] Validate the header-only template contract, quoting, and compatibility with the current bulk-import preview.
+
+## Active Deliverable — Populated Dual-Taxonomy Catalogue Export
+- [x] Export all current active products into the approved dual-taxonomy CSV template.
+- [x] Validate exported row completeness, prices, taxonomy fields, and duplicate safety without changing catalogue data.
