@@ -127,6 +127,20 @@
       "when": 1787920961118,
       "tag": "0017_peaceful_gorgon",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1788287703823,
+      "tag": "0018_wet_triton",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1788287750398,
+      "tag": "0019_lumpy_whiplash",
+      "breakpoints": true
     }
   ]
 }

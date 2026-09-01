@@ -762,3 +762,20 @@
 - [x] Import only validated non-duplicate rows through the review-first workflow, preserving existing records and canonical categories.
 - [x] Verify brand filtering, product images, prices, and representative storefront rendering for the imported list.
 - [x] Normalize the source `PHARMACUTICALS` label to the canonical `Pharmaceuticals` brand and expose it in shop brand filtering while preserving the existing `Pharma -` product naming convention.
+
+## Active Audit — Complete Brand and Product Structure PDF
+- [x] Extract the complete brand, category, subcategory, and product hierarchy from the supplied PDF.
+- [x] Audit the current database and storefront filter vocabulary against the supplied structure.
+- [x] Classify products to retain, add, rename, reassign, or retire without changing data before approval.
+- [x] Deliver a structure-only implementation plan for user approval before applying catalogue changes.
+
+## Active Implementation — Approved Dual Taxonomy
+- [x] Re-read full-stack, storage, and accessibility guidance and audit current catalogue contracts before schema changes.
+- [x] Add first-class brands, subcategories, shop collections, aliases, and product assignment relations without removing the existing canonical family category.
+- [x] Seed the approved 21-brand vocabulary, PDF subcategories, shop collections, and aliases idempotently.
+- [x] Reconcile existing products to brand, subcategory, and shop collection assignments without duplicate products or destructive historical changes.
+- [x] Extend admin and storefront filters, product views, exports, and bulk-import preview to use the new taxonomy.
+- [x] Run migration integrity checks, tests, production build, and responsive storefront/admin verification.
+- [ ] Save and deliver the completed dual-taxonomy checkpoint.
+
+- [x] Verify non-canonical active family categories are inactive and products are assigned to exactly the eight approved product families without deleting historical records.

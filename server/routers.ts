@@ -81,6 +81,8 @@ import { eq } from "drizzle-orm";
 import { ENV } from "./_core/env";
 import { countPendingQuotes } from "../shared/adminStats";
 import { syncCourierTracking } from "./courierTracking";
+import { getCatalogueTaxonomy, getProductTaxonomyCoverage, upsertProductTaxonomy } from "./catalogueTaxonomy";
+import { normalizeTaxonomyLabel } from "../shared/catalogueTaxonomy";
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
@@ -420,10 +422,21 @@ export const appRouter = router({
       .mutation(({ input }) => deleteCategory(input.id)),
   }),
 
+  // ─── Catalogue Taxonomy ─────────────────────────────────────────────────────
+  catalogue: router({
+    taxonomy: publicProcedure.query(async ({ ctx }) => {
+      const taxonomy = await getCatalogueTaxonomy();
+      if (isApprovedMember(ctx.user)) return taxonomy;
+      return { brands: [], subcategories: [], collections: taxonomy.collections.filter((collection) => collection.isPublic), aliases: [] };
+    }),
+    taxonomyAdmin: adminProcedure.query(() => getCatalogueTaxonomy({ activeOnly: false })),
+    taxonomyCoverage: adminProcedure.query(() => getProductTaxonomyCoverage()),
+  }),
+
   // ─── Products ─────────────────────────────────────────────────────────────
   products: router({
     list: publicProcedure
-      .input(z.object({ categoryId: z.number().optional(), search: z.string().optional(), featuredOnly: z.boolean().optional() }).optional())
+      .input(z.object({ categoryId: z.number().optional(), search: z.string().optional(), featuredOnly: z.boolean().optional(), brandId: z.number().optional(), subcategoryId: z.number().optional(), shopCollectionId: z.number().optional() }).optional())
       .query(async ({ ctx, input }) => {
         const isApproved = isApprovedMember(ctx.user);
         if (!isApproved) {
@@ -444,6 +457,9 @@ export const appRouter = router({
         search: z.string().optional(),
         featuredOnly: z.boolean().optional(),
         brand: z.string().optional(),
+        brandId: z.number().optional(),
+        subcategoryId: z.number().optional(),
+        shopCollectionId: z.number().optional(),
         maxPrice: z.number().nonnegative().optional(),
         limit: z.number().int().min(1).max(48).default(24),
         offset: z.number().int().min(0).default(0),
@@ -465,7 +481,7 @@ export const appRouter = router({
       }),
 
     listAdmin: adminProcedure
-      .input(z.object({ categoryId: z.number().optional(), search: z.string().optional() }).optional())
+      .input(z.object({ categoryId: z.number().optional(), search: z.string().optional(), brandId: z.number().optional(), subcategoryId: z.number().optional(), shopCollectionId: z.number().optional() }).optional())
       .query(({ input }) => getProducts({ ...input, activeOnly: false })),
 
     exportCSV: adminProcedure
@@ -502,9 +518,18 @@ export const appRouter = router({
         stockQuantity: z.number().default(0),
         isActive: z.boolean().default(true),
         isFeatured: z.boolean().default(false),
+        brandId: z.number().optional(),
+        subcategoryId: z.number().optional(),
+        shopCollectionId: z.number().optional(),
+        sourceLabel: z.string().optional(),
+        reviewStatus: z.enum(["confirmed", "needs_review", "unmapped"]).optional(),
       }))
       .mutation(async ({ input }) => {
-        const id = await createProduct(input);
+        const { brandId, subcategoryId, shopCollectionId, sourceLabel, reviewStatus, ...productInput } = input;
+        const id = await createProduct(productInput);
+        if (brandId !== undefined) {
+          await upsertProductTaxonomy({ productId: id, brandId, subcategoryId, shopCollectionId, sourceLabel, reviewStatus });
+        }
         return { id };
       }),
 
@@ -520,10 +545,19 @@ export const appRouter = router({
         stockQuantity: z.number().optional(),
         isActive: z.boolean().optional(),
         isFeatured: z.boolean().optional(),
+        brandId: z.number().optional(),
+        subcategoryId: z.number().nullable().optional(),
+        shopCollectionId: z.number().nullable().optional(),
+        sourceLabel: z.string().nullable().optional(),
+        reviewStatus: z.enum(["confirmed", "needs_review", "unmapped"]).optional(),
       }))
-      .mutation(({ input }) => {
-        const { id, ...data } = input;
-        return updateProduct(id, data);
+      .mutation(async ({ input }) => {
+        const { id, brandId, subcategoryId, shopCollectionId, sourceLabel, reviewStatus, ...data } = input;
+        const result = await updateProduct(id, data);
+        if (brandId !== undefined) {
+          await upsertProductTaxonomy({ productId: id, brandId, subcategoryId, shopCollectionId, sourceLabel, reviewStatus });
+        }
+        return result;
       }),
 
     delete: adminProcedure
@@ -620,6 +654,8 @@ export const appRouter = router({
         const descIdx = headers.indexOf('description');
         const brandIdx = headers.indexOf('brand');
         const priceIdx = headers.indexOf('price');
+        const subcategoryIdx = headers.indexOf('subcategory');
+        const collectionIdx = headers.indexOf('shopcollection');
 
         if (nameIdx === -1 || categoryIdx === -1) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'CSV needs name and category columns' });
@@ -628,13 +664,28 @@ export const appRouter = router({
         let imported = 0, updated = 0, skipped = 0;
         const errors: string[] = [];
         const existingProducts = await getBulkImportProductMatches();
+        const taxonomy = await getCatalogueTaxonomy({ activeOnly: false });
+        const brandByLabel = new Map(taxonomy.brands.map((brand: any) => [normalizeTaxonomyLabel(brand.name), brand]));
+        const brandAliasByLabel = new Map(
+          taxonomy.aliases.map((alias: any) => [
+            normalizeTaxonomyLabel(alias.normalizedAlias),
+            brandByLabel.get(normalizeTaxonomyLabel(taxonomy.brands.find((brand: any) => brand.id === alias.brandId)?.name)),
+          ])
+        );
+        const subcategoryByLabel = new Map(taxonomy.subcategories.map((subcategory: any) => [normalizeTaxonomyLabel(subcategory.name), subcategory]));
+        const collectionByLabel = new Map(taxonomy.collections.flatMap((collection: any) => [[normalizeTaxonomyLabel(collection.name), collection], [normalizeTaxonomyLabel(collection.slug), collection]]));
         const seenKeys = new Set<string>();
         const normalizeProductKey = (value: string) => value
           .toLowerCase()
-          .replace(/^upa\s*[-:]\s*/i, '')
+          .replace(/^(?:upa|pharma|hd|bp|ol|keifei|mactropin|sp|cooper|noventra|dex|nova|oraltec|psytech|kohoh|healthy\s+u|nutritech|doughbro)\s*[-:]\s*/i, '')
           .replace(/[^a-z0-9]+/g, '')
           .trim();
         const normalizeComparableField = (value: string | null | undefined) => String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+        const resolveBrand = (raw: string) => {
+          const normalized = normalizeTaxonomyLabel(normalizeBulkImportBrand(raw));
+          return brandByLabel.get(normalized) ?? brandAliasByLabel.get(normalized);
+        };
+        const resolveTaxonomyLabel = (raw: string, values: Map<string, any>) => values.get(normalizeTaxonomyLabel(raw));
 
         const catSet = new Set<string>();
         for (let i = 1; i < records.length; i++) {
@@ -661,10 +712,13 @@ export const appRouter = router({
             const sourceName = parts[nameIdx];
             const category = normalizeBulkImportCategory(parts[categoryIdx]);
             const brand = brandIdx >= 0 ? normalizeBulkImportBrand(parts[brandIdx]) : '';
+            const brandRecord = resolveBrand(brand);
             const name = formatBulkImportProductName(sourceName, brand);
             const dosage = dosageIdx >= 0 ? parts[dosageIdx] || '' : '';
             const desc = descIdx >= 0 ? parts[descIdx] || '' : '';
             const price = priceIdx >= 0 ? parseBulkImportPrice(parts[priceIdx]) : '0.00';
+            const subcategory = subcategoryIdx >= 0 ? resolveTaxonomyLabel(parts[subcategoryIdx], subcategoryByLabel) : undefined;
+            const collection = collectionIdx >= 0 ? resolveTaxonomyLabel(parts[collectionIdx], collectionByLabel) : undefined;
 
             if (!sourceName || !category) { skipped++; continue; }
 
@@ -675,7 +729,7 @@ export const appRouter = router({
               continue;
             }
 
-            const productKey = `${categoryId}:${normalizeProductKey(name)}`;
+            const productKey = `${categoryId}:${brandRecord?.id ?? 'unmapped'}:${normalizeProductKey(name)}:${normalizeComparableField(dosage)}`;
             if (seenKeys.has(productKey)) {
               errors.push(`Row ${i + 1}: Duplicate product in upload`);
               skipped++;
@@ -685,6 +739,7 @@ export const appRouter = router({
 
             const candidates = existingProducts.filter((product: any) => {
               if (product.categoryId !== categoryId) return false;
+              if (brandRecord && product.brandId !== brandRecord.id) return false;
               if (normalizeProductKey(product.name) === normalizeProductKey(name)) return true;
               return normalizeComparableField(product.description) === normalizeComparableField(desc)
                 && normalizeComparableField(product.dosageInfo) === normalizeComparableField(dosage)
@@ -706,6 +761,9 @@ export const appRouter = router({
                 dosageInfo: dosage,
                 isActive: true,
               });
+              if (brandRecord) {
+                await upsertProductTaxonomy({ productId: existing.id, brandId: brandRecord.id, subcategoryId: subcategory?.id ?? null, shopCollectionId: collection?.id ?? null, sourceLabel: brand, reviewStatus: subcategory ? "confirmed" : "needs_review" });
+              }
               existing.name = name;
               existing.categoryId = categoryId;
               existing.price = price;
@@ -716,9 +774,12 @@ export const appRouter = router({
             }
 
             const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-            await createProduct({ name, slug, categoryId, price, stockQuantity: 100, description: desc, dosageInfo: dosage, isActive: true, isFeatured: false });
+            const createdId = await createProduct({ name, slug, categoryId, price, stockQuantity: 100, description: desc, dosageInfo: dosage, isActive: true, isFeatured: false });
+            if (brandRecord) {
+              await upsertProductTaxonomy({ productId: createdId, brandId: brandRecord.id, subcategoryId: subcategory?.id ?? null, shopCollectionId: collection?.id ?? null, sourceLabel: brand, reviewStatus: subcategory ? "confirmed" : "needs_review" });
+            }
             imported++;
-            existingProducts.push({ id: -imported, name, categoryId, price, description: desc, dosageInfo: dosage, isActive: true });
+            existingProducts.push({ id: -imported, name, categoryId, price, description: desc, dosageInfo: dosage, isActive: true, brandId: brandRecord?.id ?? null, brandName: brandRecord?.name ?? null });
           } catch (e: any) {
             if (!e.message?.includes('Duplicate')) errors.push(`Row ${i + 1}: ${e.message}`);
             skipped++;

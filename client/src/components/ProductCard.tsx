@@ -13,6 +13,8 @@ type Product = {
   price: string | null;
   primaryImage: string | null;
   categoryName?: string | null;
+  brandName?: string | null;
+  subcategoryName?: string | null;
   isFeatured?: boolean | null;
 };
 
@@ -80,11 +82,11 @@ export default function ProductCard({
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-3 text-center sm:p-4 sm:text-left">
-        {product.categoryName && (
-          <span className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#a8751c" }}>
-            {product.categoryName}
-          </span>
-        )}
+        <div className="mb-1.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-start">
+          {product.brandName && <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#a8751c" }}>{product.brandName}</span>}
+          {product.categoryName && <span className="text-[10px] font-bold uppercase tracking-widest text-[#9b9388]">{product.categoryName}</span>}
+        </div>
+        {product.subcategoryName && <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[#6b665e]">{product.subcategoryName}</p>}
 
         <Link href={`/products/${product.slug}`} className="no-underline flex-1">
           <h3 className="font-bold text-sm text-white leading-snug mb-3 group-hover:text-[#a8751c] transition-colors line-clamp-2">

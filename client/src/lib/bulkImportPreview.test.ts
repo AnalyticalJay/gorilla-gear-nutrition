@@ -28,6 +28,16 @@ describe("bulk import preview", () => {
     expect(result.errors[1]).toContain("Price must be a non-negative ZAR amount");
   });
 
+  it("retains optional subcategory and collection fields for review", () => {
+    const result = previewBulkImport([
+      "name,category,dosageInfo,description,brand,price,subcategory,shopCollection",
+      "Example,Injectables,10ml,Example,Pharmaceuticals,125.50,Injectable Oils,peptides-wellness",
+    ].join("\n"));
+
+    expect(result.ready).toBe(true);
+    expect(result.rows[0]).toMatchObject({ subcategory: "Injectable Oils", shopCollection: "peptides-wellness" });
+  });
+
   it("rejects files without a category column before import", () => {
     const result = previewBulkImport("name,price\nProduct,450");
     expect(result.ready).toBe(false);

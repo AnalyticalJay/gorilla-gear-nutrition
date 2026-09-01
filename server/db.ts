@@ -2,6 +2,10 @@ import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql, lt } from "
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
+  catalogueBrands,
+  catalogueProductTaxonomy,
+  catalogueShopCollections,
+  catalogueSubcategories,
   categories,
   coachingEnquiries,
   deliveryRules,
@@ -562,8 +566,12 @@ export async function getBulkImportProductMatches() {
       categoryId: products.categoryId,
       price: products.price,
       isActive: products.isActive,
+      brandId: catalogueProductTaxonomy.brandId,
+      brandName: catalogueBrands.name,
     })
     .from(products)
+    .leftJoin(catalogueProductTaxonomy, eq(products.id, catalogueProductTaxonomy.productId))
+    .leftJoin(catalogueBrands, eq(catalogueProductTaxonomy.brandId, catalogueBrands.id))
     .orderBy(products.id);
 }
 
@@ -572,6 +580,9 @@ export async function getProducts(opts?: {
   search?: string;
   featuredOnly?: boolean;
   activeOnly?: boolean;
+  brandId?: number;
+  subcategoryId?: number;
+  shopCollectionId?: number;
 }) {
   const db = await getDb();
   if (!db) return [];
@@ -590,14 +601,29 @@ export async function getProducts(opts?: {
       isFeatured: products.isFeatured,
       createdAt: products.createdAt,
       categoryName: categories.name,
+      brandId: catalogueProductTaxonomy.brandId,
+      brandName: catalogueBrands.name,
+      subcategoryId: catalogueProductTaxonomy.subcategoryId,
+      subcategoryName: catalogueSubcategories.name,
+      shopCollectionId: catalogueProductTaxonomy.shopCollectionId,
+      shopCollectionName: catalogueShopCollections.name,
+      shopCollectionSlug: catalogueShopCollections.slug,
+      taxonomyReviewStatus: catalogueProductTaxonomy.reviewStatus,
     })
     .from(products)
     .leftJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(catalogueProductTaxonomy, eq(products.id, catalogueProductTaxonomy.productId))
+    .leftJoin(catalogueBrands, eq(catalogueProductTaxonomy.brandId, catalogueBrands.id))
+    .leftJoin(catalogueSubcategories, eq(catalogueProductTaxonomy.subcategoryId, catalogueSubcategories.id))
+    .leftJoin(catalogueShopCollections, eq(catalogueProductTaxonomy.shopCollectionId, catalogueShopCollections.id))
     .where(
       and(
         opts?.activeOnly !== false ? eq(products.isActive, true) : undefined,
         opts?.categoryId ? eq(products.categoryId, opts.categoryId) : undefined,
-        opts?.featuredOnly ? eq(products.isFeatured, true) : undefined
+        opts?.featuredOnly ? eq(products.isFeatured, true) : undefined,
+        opts?.brandId ? eq(catalogueProductTaxonomy.brandId, opts.brandId) : undefined,
+        opts?.subcategoryId ? eq(catalogueProductTaxonomy.subcategoryId, opts.subcategoryId) : undefined,
+        opts?.shopCollectionId ? eq(catalogueProductTaxonomy.shopCollectionId, opts.shopCollectionId) : undefined
       )
     )
     .orderBy(products.createdAt);
@@ -632,6 +658,9 @@ export async function getProductsPage(opts: {
   featuredOnly?: boolean;
   activeOnly?: boolean;
   brand?: string;
+  brandId?: number;
+  subcategoryId?: number;
+  shopCollectionId?: number;
   maxPrice?: number;
   limit?: number;
   offset?: number;
@@ -645,6 +674,9 @@ export async function getProductsPage(opts: {
     opts.activeOnly !== false ? eq(products.isActive, true) : undefined,
     opts.categoryId ? eq(products.categoryId, opts.categoryId) : undefined,
     opts.featuredOnly ? eq(products.isFeatured, true) : undefined,
+    opts.brandId ? eq(catalogueProductTaxonomy.brandId, opts.brandId) : undefined,
+    opts.subcategoryId ? eq(catalogueProductTaxonomy.subcategoryId, opts.subcategoryId) : undefined,
+    opts.shopCollectionId ? eq(catalogueProductTaxonomy.shopCollectionId, opts.shopCollectionId) : undefined,
     opts.search
       ? or(
           like(products.name, `%${opts.search}%`),
@@ -675,6 +707,10 @@ export async function getProductsPage(opts: {
       .select({ count: count() })
       .from(products)
       .leftJoin(categories, eq(products.categoryId, categories.id))
+      .leftJoin(catalogueProductTaxonomy, eq(products.id, catalogueProductTaxonomy.productId))
+      .leftJoin(catalogueBrands, eq(catalogueProductTaxonomy.brandId, catalogueBrands.id))
+      .leftJoin(catalogueSubcategories, eq(catalogueProductTaxonomy.subcategoryId, catalogueSubcategories.id))
+      .leftJoin(catalogueShopCollections, eq(catalogueProductTaxonomy.shopCollectionId, catalogueShopCollections.id))
       .where(whereClause),
     db
       .select({
@@ -690,9 +726,21 @@ export async function getProductsPage(opts: {
         isFeatured: products.isFeatured,
         createdAt: products.createdAt,
         categoryName: categories.name,
+        brandId: catalogueProductTaxonomy.brandId,
+        brandName: catalogueBrands.name,
+        subcategoryId: catalogueProductTaxonomy.subcategoryId,
+        subcategoryName: catalogueSubcategories.name,
+        shopCollectionId: catalogueProductTaxonomy.shopCollectionId,
+        shopCollectionName: catalogueShopCollections.name,
+        shopCollectionSlug: catalogueShopCollections.slug,
+        taxonomyReviewStatus: catalogueProductTaxonomy.reviewStatus,
       })
       .from(products)
       .leftJoin(categories, eq(products.categoryId, categories.id))
+      .leftJoin(catalogueProductTaxonomy, eq(products.id, catalogueProductTaxonomy.productId))
+      .leftJoin(catalogueBrands, eq(catalogueProductTaxonomy.brandId, catalogueBrands.id))
+      .leftJoin(catalogueSubcategories, eq(catalogueProductTaxonomy.subcategoryId, catalogueSubcategories.id))
+      .leftJoin(catalogueShopCollections, eq(catalogueProductTaxonomy.shopCollectionId, catalogueShopCollections.id))
       .where(whereClause)
       .orderBy(products.createdAt)
       .limit(limit)
@@ -722,9 +770,13 @@ export async function getProductBySlug(slug: string) {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db
-    .select()
+    .select({ product: products, category: categories, taxonomy: catalogueProductTaxonomy, brand: catalogueBrands, subcategory: catalogueSubcategories, collection: catalogueShopCollections })
     .from(products)
     .leftJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(catalogueProductTaxonomy, eq(products.id, catalogueProductTaxonomy.productId))
+    .leftJoin(catalogueBrands, eq(catalogueProductTaxonomy.brandId, catalogueBrands.id))
+    .leftJoin(catalogueSubcategories, eq(catalogueProductTaxonomy.subcategoryId, catalogueSubcategories.id))
+    .leftJoin(catalogueShopCollections, eq(catalogueProductTaxonomy.shopCollectionId, catalogueShopCollections.id))
     .where(eq(products.slug, slug))
     .limit(1);
   if (!result[0]) return undefined;
@@ -732,12 +784,16 @@ export async function getProductBySlug(slug: string) {
   const images = await db
     .select()
     .from(productImages)
-    .where(eq(productImages.productId, result[0].products.id))
+    .where(eq(productImages.productId, result[0].product.id))
     .orderBy(productImages.isPrimary);
 
   return {
-    ...result[0].products,
-    category: result[0].categories,
+    ...result[0].product,
+    category: result[0].category,
+    brand: result[0].brand,
+    subcategory: result[0].subcategory,
+    shopCollection: result[0].collection,
+    taxonomy: result[0].taxonomy,
     images: images.map((image) => ({ ...image, imageUrl: toClientMediaUrl(image.imageUrl) })),
   };
 }
@@ -745,8 +801,18 @@ export async function getProductBySlug(slug: string) {
 export async function getProductById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(products).where(eq(products.id, id)).limit(1);
-  return result[0];
+  const [result] = await db
+    .select({ product: products, category: categories, taxonomy: catalogueProductTaxonomy, brand: catalogueBrands, subcategory: catalogueSubcategories, collection: catalogueShopCollections })
+    .from(products)
+    .leftJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(catalogueProductTaxonomy, eq(products.id, catalogueProductTaxonomy.productId))
+    .leftJoin(catalogueBrands, eq(catalogueProductTaxonomy.brandId, catalogueBrands.id))
+    .leftJoin(catalogueSubcategories, eq(catalogueProductTaxonomy.subcategoryId, catalogueSubcategories.id))
+    .leftJoin(catalogueShopCollections, eq(catalogueProductTaxonomy.shopCollectionId, catalogueShopCollections.id))
+    .where(eq(products.id, id))
+    .limit(1);
+  if (!result) return undefined;
+  return { ...result.product, category: result.category, brand: result.brand, subcategory: result.subcategory, shopCollection: result.collection, taxonomy: result.taxonomy };
 }
 
 export async function createProduct(data: {

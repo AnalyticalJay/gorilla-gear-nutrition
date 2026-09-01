@@ -42,6 +42,8 @@ export type BulkImportPreviewRow = {
   description: string;
   brand: string;
   price: string;
+  subcategory: string;
+  shopCollection: string;
   issue?: string;
 };
 
@@ -115,6 +117,8 @@ export function previewBulkImport(csv: string): BulkImportPreview {
   const descriptionIndex = indexOf("description");
   const brandIndex = indexOf("brand");
   const priceIndex = indexOf("price");
+  const subcategoryIndex = indexOf("subcategory");
+  const shopCollectionIndex = indexOf("shopcollection");
   const errors: string[] = [];
   const warnings: string[] = [];
   if (nameIndex < 0 || categoryIndex < 0) return { rows: [], categoryCounts: {}, errors: ["CSV needs name and category columns"], warnings: [], ready: false };
@@ -132,7 +136,7 @@ export function previewBulkImport(csv: string): BulkImportPreview {
       warnings.push(`Row ${rowNumber}: “${originalCategory}” is not one of the active categories`);
     }
     if (category) categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
-    return { rowNumber, name, category, originalCategory, dosageInfo: record[dosageIndex] ?? "", description: record[descriptionIndex] ?? "", brand: record[brandIndex] ?? "", price: priceResult.value, issue };
+    return { rowNumber, name, category, originalCategory, dosageInfo: record[dosageIndex] ?? "", description: record[descriptionIndex] ?? "", brand: record[brandIndex] ?? "", price: priceResult.value, subcategory: record[subcategoryIndex] ?? "", shopCollection: record[shopCollectionIndex] ?? "", issue };
   });
 
   return { rows, categoryCounts, errors, warnings, ready: rows.length > 0 && errors.length === 0 };

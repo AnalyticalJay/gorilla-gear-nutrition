@@ -8,25 +8,37 @@ import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, Lock, X, RotateCcw, ChevronDown, Tag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { BrandFilter, AVAILABLE_BRANDS } from "@/lib/productFilters";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { AVAILABLE_BRANDS } from "@/lib/productFilters";
+
+type StorefrontTaxonomy = {
+  brands: Array<{ id: number; name: string; isActive?: boolean }>;
+  subcategories: Array<{ id: number; name: string; isActive?: boolean }>;
+  collections: Array<{ id: number; name: string; slug: string; isActive?: boolean; isPublic?: boolean }>;
+  aliases: unknown[];
+};
 
 export default function Products() {
   const { user, loading, isAuthenticated } = useAuth();
   const isApproved = (user as any)?.status === "approved";
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
-  const [selectedBrand, setSelectedBrand] = useState<BrandFilter>("all");
+  const [selectedBrandId, setSelectedBrandId] = useState<number | undefined>();
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<number | undefined>();
+  const [selectedCollectionId, setSelectedCollectionId] = useState<number | undefined>();
   const [maxPrice, setMaxPrice] = useState<number>(0); // 0 means any price
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 24;
 
   const categoriesQuery = trpc.categories.list.useQuery(undefined, { enabled: isApproved });
+  const taxonomyQuery = (trpc as any).catalogue?.taxonomy?.useQuery?.(undefined, { enabled: isApproved }) ?? { data: undefined };
   const productsQuery = trpc.products.listPage.useQuery({
     categoryId: selectedCategory,
     search: search || undefined,
-    brand: selectedBrand === "all" ? undefined : selectedBrand,
+    brandId: selectedBrandId,
+    subcategoryId: selectedSubcategoryId,
+    shopCollectionId: selectedCollectionId,
     maxPrice: maxPrice > 0 ? maxPrice : undefined,
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
@@ -35,6 +47,9 @@ export default function Products() {
   const products = productsQuery.data?.items ?? [];
   const totalProducts = productsQuery.data?.total ?? 0;
   const categories = categoriesQuery.data ?? [];
+  const taxonomyData = taxonomyQuery.data as StorefrontTaxonomy | undefined;
+  const fallbackBrands = AVAILABLE_BRANDS.filter((brand) => brand !== "all").map((name, index) => ({ id: -(index + 1), name }));
+  const taxonomy: StorefrontTaxonomy = { brands: taxonomyData?.brands?.length ? taxonomyData.brands : fallbackBrands, subcategories: taxonomyData?.subcategories ?? [], collections: taxonomyData?.collections ?? [], aliases: taxonomyData?.aliases ?? [] };
   const totalPages = Math.max(Math.ceil(totalProducts / PAGE_SIZE), 1);
   const pageNumbers = useMemo(() => {
     const start = Math.max(1, Math.min(page - 2, totalPages - 4));
@@ -46,13 +61,18 @@ export default function Products() {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
 
-  const activeFilterCount = Number(Boolean(search)) + Number(selectedCategory !== undefined) + Number(selectedBrand !== "all") + Number(maxPrice > 0);
+  const activeFilterCount = Number(Boolean(search)) + Number(selectedCategory !== undefined) + Number(selectedBrandId !== undefined) + Number(selectedSubcategoryId !== undefined) + Number(selectedCollectionId !== undefined) + Number(maxPrice > 0);
   const selectedCategoryName = categories.find((category) => category.id === selectedCategory)?.name;
+  const selectedBrandName = taxonomy.brands.find((brand) => brand.id === selectedBrandId)?.name;
+  const selectedSubcategoryName = taxonomy.subcategories.find((subcategory) => subcategory.id === selectedSubcategoryId)?.name;
+  const selectedCollectionName = taxonomy.collections.find((collection) => collection.id === selectedCollectionId)?.name;
 
   const clearFilters = () => {
     setSearch("");
     setSelectedCategory(undefined);
-    setSelectedBrand("all");
+    setSelectedBrandId(undefined);
+    setSelectedSubcategoryId(undefined);
+    setSelectedCollectionId(undefined);
     setMaxPrice(0);
     setPage(1);
   };
@@ -119,23 +139,44 @@ export default function Products() {
           <Tag className="h-4 w-4 text-[#a8751c]" />
         </div>
         <div className="max-h-60 space-y-1.5 overflow-y-auto pr-1">
-          {AVAILABLE_BRANDS.map((brand) => {
-            const active = selectedBrand === brand;
-            const label = brand === "all" ? "All brands" : brand;
+          {[{ id: undefined, name: "All brands" }, ...taxonomy.brands].map((brand) => {
+            const active = selectedBrandId === brand.id;
             return (
               <button
-                key={brand}
+                key={brand.id ?? "all"}
                 onClick={() => {
-                  setSelectedBrand(brand);
+                  setSelectedBrandId(brand.id);
                   setPage(1);
                 }}
                 className={`flex min-h-10 w-full items-center justify-between rounded border px-3 py-2 text-left text-xs font-bold transition-colors ${active ? "border-[#a8751c]/60 bg-[#a8751c]/10 text-white" : "border-[#454545] text-[#9b9388] hover:border-[#a8751c]/40 hover:text-white"}`}
               >
-                <span className="truncate">{label}</span>
+                <span className="truncate">{brand.name}</span>
                 <span className={`h-2 w-2 flex-shrink-0 rounded-full ${active ? "bg-[#a8751c]" : "bg-[#5c5852]"}`} />
               </button>
             );
           })}
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Subcategory</p>
+          <ChevronDown className="h-4 w-4 text-[#a8751c]" />
+        </div>
+        <div className="max-h-52 space-y-1 overflow-y-auto pr-1">
+          <button onClick={() => { setSelectedSubcategoryId(undefined); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedSubcategoryId === undefined ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}><span>All subcategories</span>{selectedSubcategoryId === undefined && <span className="text-[10px]">Active</span>}</button>
+          {taxonomy.subcategories.map((subcategory) => <button key={subcategory.id} onClick={() => { setSelectedSubcategoryId(selectedSubcategoryId === subcategory.id ? undefined : subcategory.id); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedSubcategoryId === subcategory.id ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}><span className="truncate">{subcategory.name}</span>{selectedSubcategoryId === subcategory.id && <span className="text-[10px]">Active</span>}</button>)}
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Shop collection</p>
+          <Tag className="h-4 w-4 text-[#a8751c]" />
+        </div>
+        <div className="space-y-1">
+          <button onClick={() => { setSelectedCollectionId(undefined); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCollectionId === undefined ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}><span>All collections</span>{selectedCollectionId === undefined && <span className="text-[10px]">Active</span>}</button>
+          {taxonomy.collections.map((collection) => <button key={collection.id} onClick={() => { setSelectedCollectionId(selectedCollectionId === collection.id ? undefined : collection.id); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCollectionId === collection.id ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}><span className="truncate">{collection.name}</span>{selectedCollectionId === collection.id && <span className="text-[10px]">Active</span>}</button>)}
         </div>
       </div>
 
@@ -256,7 +297,9 @@ export default function Products() {
               <div className="mb-5 hidden items-center justify-between lg:flex">
                 <div className="flex flex-wrap items-center gap-2">
                   {search && <span className="rounded-full border border-[#a8751c]/30 bg-[#a8751c]/10 px-3 py-1 text-xs font-semibold text-[#e7c979]">Search: {search}</span>}
-                  {selectedBrand !== "all" && <span className="rounded-full border border-[#a8751c]/30 bg-[#a8751c]/10 px-3 py-1 text-xs font-semibold text-[#e7c979]">Brand: {selectedBrand}</span>}
+                  {selectedBrandName && <span className="rounded-full border border-[#a8751c]/30 bg-[#a8751c]/10 px-3 py-1 text-xs font-semibold text-[#e7c979]">Brand: {selectedBrandName}</span>}
+                  {selectedSubcategoryName && <span className="rounded-full border border-[#a8751c]/30 bg-[#a8751c]/10 px-3 py-1 text-xs font-semibold text-[#e7c979]">Subcategory: {selectedSubcategoryName}</span>}
+                  {selectedCollectionName && <span className="rounded-full border border-[#a8751c]/30 bg-[#a8751c]/10 px-3 py-1 text-xs font-semibold text-[#e7c979]">Collection: {selectedCollectionName}</span>}
                   {selectedCategoryName && <span className="rounded-full border border-[#454545] px-3 py-1 text-xs font-semibold text-[#c9c2b6]">Category: {selectedCategoryName}</span>}
                   {maxPrice > 0 && <span className="rounded-full border border-[#a8751c]/30 bg-[#a8751c]/10 px-3 py-1 text-xs font-semibold text-[#e7c979]">Under R{maxPrice}</span>}
                   {activeFilterCount === 0 && <span className="text-xs font-semibold uppercase tracking-widest text-[#9b9388]">Browse the full catalog</span>}

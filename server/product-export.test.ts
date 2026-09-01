@@ -15,8 +15,8 @@ describe("product CSV export", () => {
     }]);
 
     expect(csv).toBe(
-      "name,category,dosageInfo,description,brand,price\r\n" +
-      '"Compound, Premium",Injectables,10ml vial,"Line one\nLine two",Gorilla Gear,450.00\r\n',
+      "name,category,dosageInfo,description,brand,price,subcategory,shopCollection\r\n" +
+      '"Compound, Premium",Injectables,10ml vial,"Line one\nLine two",Gorilla Gear,450.00,,\r\n',
     );
   });
 
@@ -28,9 +28,26 @@ describe("product CSV export", () => {
       description: null,
       brand: null,
       price: null,
+      subcategoryName: "",
+      shopCollectionSlug: "",
     }]);
 
-    expect(csv).toContain("Unpriced product,,,,,0.00");
+    expect(csv).toContain("Unpriced product,,,,,0.00,,");
+  });
+
+  it("round-trips taxonomy metadata for admin re-imports", () => {
+    const csv = buildProductsCsv([{
+      name: "Pharma - Example",
+      categoryName: "Injectables",
+      dosageInfo: "10ml",
+      description: "Example",
+      brandName: "Pharmaceuticals",
+      subcategoryName: "Injectable Oils",
+      shopCollectionSlug: "peptides-wellness",
+      price: "125.5",
+    }]);
+
+    expect(csv).toContain("Pharma - Example,Injectables,10ml,Example,Pharmaceuticals,125.50,Injectable Oils,peptides-wellness");
   });
 
   it("keeps the export procedure restricted to administrators", () => {

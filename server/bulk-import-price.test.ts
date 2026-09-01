@@ -42,7 +42,9 @@ describe("bulk import price parsing", () => {
     expect(source).toContain("name,category,dosageInfo,description,brand,price");
     expect(source).toContain("price</span>");
     expect(source).toContain("Price (ZAR)");
-    expect(source).toContain("Injectables, Orals, SARMs, Peptides, Fat Loss, Healthcare, Supplements, Clothing");
+    expect(source).toContain("Use the eight active product families plus the approved PDF taxonomy.");
+    expect(source).toContain("subcategory");
+    expect(source).toContain("shopCollection");
     expect(source).toContain("Not Mixed),Peptides,30mg");
     expect(source).toContain("XLSX.utils.sheet_to_csv(worksheet");
     expect(source).toContain("const nextPreview = previewBulkImport(nextCsv)");

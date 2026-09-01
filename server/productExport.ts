@@ -6,6 +6,10 @@ export type ExportableProduct = {
   dosageInfo?: string | null;
   description?: string | null;
   brand?: string | null;
+  brandName?: string | null;
+  subcategoryName?: string | null;
+  shopCollectionName?: string | null;
+  shopCollectionSlug?: string | null;
   price?: string | number | null;
 };
 
@@ -27,8 +31,10 @@ export function buildProductsCsv(products: readonly ExportableProduct[]): string
     product.categoryName ?? "",
     product.dosageInfo ?? "",
     product.description ?? "",
-    product.brand ?? "",
+    product.brand ?? product.brandName ?? "",
     formatPrice(product.price),
+    product.subcategoryName ?? "",
+    product.shopCollectionSlug ?? product.shopCollectionName ?? "",
   ].map(escapeCsvField).join(","));
 
   return [header, ...rows].join("\r\n") + "\r\n";

@@ -131,14 +131,12 @@ export default function ProductDetail() {
 
             {/* Details */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-              {/* Category + stripe */}
-              <div className="flex items-center gap-3 mb-3">
+              {/* Taxonomy context + stripe */}
+              <div className="mb-3 flex flex-wrap items-center gap-3">
                 <div className="h-[3px] w-8" style={{ background: "linear-gradient(90deg, #a8751c 0%, #a8751c 50%, #a8751c 50%, #a8751c 100%)" }} />
-                {(product as any).category && (
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#a8751c" }}>
-                    {(product as any).category?.name}
-                  </span>
-                )}
+                {(product as any).brand && <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#a8751c" }}>{(product as any).brand?.name}</span>}
+                {(product as any).category && <span className="text-xs font-bold uppercase tracking-widest text-[#9b9388]">{(product as any).category?.name}</span>}
+                {(product as any).subcategory && <span className="text-xs font-semibold uppercase tracking-widest text-[#6b665e]">{(product as any).subcategory?.name}</span>}
               </div>
 
               <h1 className="text-2xl font-black uppercase tracking-tight text-white mb-5 sm:text-3xl">

@@ -1,6 +1,7 @@
 import {
   boolean,
   decimal,
+  foreignKey,
   int,
   json,
   mysqlEnum,
@@ -124,6 +125,58 @@ export const categories = mysqlTable("categories", {
 export type Category = typeof categories.$inferSelect;
 export type InsertCategory = typeof categories.$inferInsert;
 
+// ─── Approved Catalogue Taxonomy ────────────────────────────────────────────────
+// Brands, subcategories, and customer-facing collections are intentionally kept
+// separate from the existing product-family categories. This allows the PDF
+// hierarchy to be added without changing historical category references.
+export const catalogueBrands = mysqlTable("catalogue_brands", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 128 }).notNull(),
+  slug: varchar("slug", { length: 128 }).notNull().unique(),
+  description: text("description"),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CatalogueBrand = typeof catalogueBrands.$inferSelect;
+export type InsertCatalogueBrand = typeof catalogueBrands.$inferInsert;
+
+export const catalogueBrandAliases = mysqlTable("catalogue_brand_aliases", {
+  id: int("id").autoincrement().primaryKey(),
+  brandId: int("brandId").notNull().references(() => catalogueBrands.id),
+  alias: varchar("alias", { length: 128 }).notNull(),
+  normalizedAlias: varchar("normalizedAlias", { length: 128 }).notNull().unique(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CatalogueBrandAlias = typeof catalogueBrandAliases.$inferSelect;
+
+export const catalogueSubcategories = mysqlTable("catalogue_subcategories", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 128 }).notNull(),
+  slug: varchar("slug", { length: 128 }).notNull().unique(),
+  description: text("description"),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CatalogueSubcategory = typeof catalogueSubcategories.$inferSelect;
+
+export const catalogueShopCollections = mysqlTable("catalogue_shop_collections", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 128 }).notNull(),
+  slug: varchar("slug", { length: 128 }).notNull().unique(),
+  description: text("description"),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  isPublic: boolean("isPublic").default(false).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CatalogueShopCollection = typeof catalogueShopCollections.$inferSelect;
+
 // ─── Products ─────────────────────────────────────────────────────────────────
 export const products = mysqlTable("products", {
   id: int("id").autoincrement().primaryKey(),
@@ -154,6 +207,24 @@ export const productImages = mysqlTable("product_images", {
 });
 
 export type ProductImage = typeof productImages.$inferSelect;
+
+export const catalogueProductTaxonomy = mysqlTable("catalogue_product_taxonomy", {
+  productId: int("productId").primaryKey(),
+  brandId: int("brandId").notNull(),
+  subcategoryId: int("subcategoryId"),
+  shopCollectionId: int("shopCollectionId"),
+  sourceLabel: varchar("sourceLabel", { length: 255 }),
+  reviewStatus: mysqlEnum("reviewStatus", ["confirmed", "needs_review", "unmapped"]).default("needs_review").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  productFk: foreignKey({ name: "cpt_product_fk", columns: [table.productId], foreignColumns: [products.id] }),
+  brandFk: foreignKey({ name: "cpt_brand_fk", columns: [table.brandId], foreignColumns: [catalogueBrands.id] }),
+  subcategoryFk: foreignKey({ name: "cpt_subcategory_fk", columns: [table.subcategoryId], foreignColumns: [catalogueSubcategories.id] }),
+  collectionFk: foreignKey({ name: "cpt_collection_fk", columns: [table.shopCollectionId], foreignColumns: [catalogueShopCollections.id] }),
+}));
+
+export type CatalogueProductTaxonomy = typeof catalogueProductTaxonomy.$inferSelect;
 
 // ─── Cart Items ───────────────────────────────────────────────────────────────
 export const cartItems = mysqlTable("cart_items", {

@@ -24,6 +24,12 @@ describe("product brand and price filters", () => {
     expect(matchesBrand({ name: "BP Pharma product" }, "HD Labs")).toBe(false);
   });
 
+  it("covers the approved PDF brand vocabulary and avoids generic pharma collisions", () => {
+    expect(AVAILABLE_BRANDS as string[]).toEqual(expect.arrayContaining(["BodyPharm", "Pharmacom", "Cooper Pharmaceuticals", "DoughBro Cookies"]));
+    expect(getProductBrand({ name: "Pharmacom Test Product" })).toBe("Pharmacom");
+    expect(getProductBrand({ name: "Cooper Pharmaceuticals Product" })).toBe("Cooper Pharmaceuticals");
+  });
+
   it("does not surface retired Biolabs or Genesis suppliers in product filters", () => {
     expect(AVAILABLE_BRANDS as string[]).not.toContain("Genesis");
     expect(AVAILABLE_BRANDS as string[]).not.toContain("Biolab");

@@ -1,4 +1,4 @@
-export const BULK_IMPORT_HEADERS = ["name", "category", "dosageInfo", "description", "brand", "price"] as const;
+export const BULK_IMPORT_HEADERS = ["name", "category", "dosageInfo", "description", "brand", "price", "subcategory", "shopCollection"] as const;
 
 const CATEGORY_ALIASES: Record<string, string> = {
   peptide: "Peptides",
