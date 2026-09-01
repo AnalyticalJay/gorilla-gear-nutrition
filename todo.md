@@ -793,5 +793,10 @@
 - [x] Add sidebar filters for canonical product family, brand, subcategory, and shop collection using relational taxonomy IDs.
 - [x] Preserve search, price, pagination, public collection access, and approved-member gating while resetting results correctly on filter changes.
 - [x] Add regression coverage and verify desktop, tablet, and mobile filter interactions with the Gorilla Gear palette.
-- [ ] Save and deliver the shop-sidebar filter checkpoint.
+- [x] Save and deliver the shop-sidebar filter checkpoint.
 - [x] Make dual-taxonomy sidebar controls expose pressed states and ensure desktop/mobile search fields have unique accessible IDs.
+
+## Active Correction — BP Pharma Rows 325–331
+- [x] Inspect rows 325–331 in the populated dual-taxonomy export and identify the seven unmapped products.
+- [x] Ensure the canonical BP Pharma brand exists and assign those seven products without duplicate product records.
+- [x] Update the populated CSV rows, validate CSV integrity and BP Pharma filtering, and save a corrected checkpoint.
