@@ -787,3 +787,11 @@
 ## Active Deliverable — Populated Dual-Taxonomy Catalogue Export
 - [x] Export all current active products into the approved dual-taxonomy CSV template.
 - [x] Validate exported row completeness, prices, taxonomy fields, and duplicate safety without changing catalogue data.
+
+## Active Implementation — Dual-Taxonomy Shop Sidebar Filters
+- [x] Inspect the current shop filter state, taxonomy query contract, and responsive filter controls.
+- [x] Add sidebar filters for canonical product family, brand, subcategory, and shop collection using relational taxonomy IDs.
+- [x] Preserve search, price, pagination, public collection access, and approved-member gating while resetting results correctly on filter changes.
+- [x] Add regression coverage and verify desktop, tablet, and mobile filter interactions with the Gorilla Gear palette.
+- [ ] Save and deliver the shop-sidebar filter checkpoint.
+- [x] Make dual-taxonomy sidebar controls expose pressed states and ensure desktop/mobile search fields have unique accessible IDs.

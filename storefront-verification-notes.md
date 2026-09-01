@@ -24,3 +24,13 @@
 ## Next product-list import — THrIfVRBqbhbuqLO.xls
 
 The workbook contained 64 priced rows under the source label `PHARMACUTICALS`. The source label was normalized to the readable `Pharmaceuticals` brand and product names follow the existing `Pharma -` convention. Reconciliation updated 62 existing records, preserved 61 existing image associations, and created only `Pharma - Pethidine` in canonical `Injectables` and `Pharma - Purate` in canonical `Orals`. A second dry run classified all 64 rows as updates and zero creates, proving the import is idempotent. Database validation found 65 active Pharma records, 65 unique name/dosage identities, and no active duplicate name/dosage groups. Desktop and mobile product-list/detail screenshots show correct category labels, prices, responsive layout, and no customer stock quantities. The two new records have no verified source images and retain the safe initials fallback.
+
+## Dual-Taxonomy Sidebar Filter Verification
+- Desktop `/products` shows the relational Brand sidebar and dual-taxonomy content; the current live preview reports 781 products and uses the approved charcoal, white, and gold palette.
+- Mobile `/products` shows a dedicated Filters button and compact result count; the sidebar remains available through the responsive drawer.
+- Follow-up polish applied: desktop/mobile filter panels now use unique search input IDs, and brand, family, subcategory, collection, and price controls expose `aria-pressed` state.
+
+## Dual-Taxonomy Sidebar Implementation Verification
+- Desktop `/products` renders the relational brand sidebar beside the 781-product catalogue with the established charcoal, white, and gold palette.
+- Mobile `/products` renders the Filters trigger, result count, and single-column product layout without horizontal overflow.
+- Filter controls now reset pagination consistently, use taxonomy IDs for brand/family/subcategory/collection filtering, expose `aria-pressed`, and use unique search IDs across desktop and mobile instances.
