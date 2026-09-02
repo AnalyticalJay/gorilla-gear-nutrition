@@ -826,4 +826,12 @@
 - [x] Match candidate images only when brand, product identity, and strength are safely verified.
 - [x] Link verified Ouroboros images without duplicates, validate representative storefront rendering, and document unresolved products.
 - [x] Unlink the two confirmed Alpha & Omega images from Ouroboros GHK-CU 100mg and MOTS-C 40mg, leaving safe initials fallbacks until exact Ouroboros imagery is supplied.
-- [ ] Save and deliver the Ouroboros Laboratories image-audit checkpoint.
+- [x] Save and deliver the Ouroboros Laboratories image-audit checkpoint.
+
+## Active Media Audit — BP Pharma
+- [x] Audit current active BP Pharma products, strengths, image coverage, and existing media provenance.
+- [x] Browse the supplied South African reference stores for BP Pharma product evidence and candidate imagery.
+- [x] Match candidate images only when BP Pharma brand, product identity, and strength are safely verified.
+- [x] Correct unsafe or missing BP Pharma image links without duplicates, validate representative storefront rendering, and document unresolved products.
+- [x] Unlink the three BP Pharma images that do not show attributable BP branding—GHK-CU 50mg, Retatrutide 32mg, and Semaglutide 6mg—and preserve safe initials fallbacks until exact BP imagery is supplied.
+- [ ] Save and deliver the BP Pharma image-audit checkpoint.
