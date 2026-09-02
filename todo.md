@@ -813,9 +813,17 @@
 - [x] Add removable active-filter tags at the top of the shop page.
 - [x] Add a Clear All Filters button that resets search, price, brand, family, subcategory, collection, and pagination.
 - [x] Add regression coverage and verify desktop/mobile accessibility and Gorilla Gear styling.
-- [ ] Save and deliver the filter-controls checkpoint.
+- [x] Save and deliver the filter-controls checkpoint.
 
 ## Active Refinement — Shop Sidebar Filter Order
 - [x] Inspect the current filter-group order in the shop sidebar.
 - [x] Reorder the groups to Brand, Category, then Shop collection without changing filter behavior.
 - [x] Verify the order and accessibility on desktop and mobile, then save a checkpoint.
+
+## Active Media Audit — Ouroboros Laboratories
+- [x] Audit current Ouroboros products, strengths, image coverage, and existing media provenance.
+- [x] Browse the supplied South African reference stores for Ouroboros product evidence and candidate imagery.
+- [x] Match candidate images only when brand, product identity, and strength are safely verified.
+- [x] Link verified Ouroboros images without duplicates, validate representative storefront rendering, and document unresolved products.
+- [x] Unlink the two confirmed Alpha & Omega images from Ouroboros GHK-CU 100mg and MOTS-C 40mg, leaving safe initials fallbacks until exact Ouroboros imagery is supplied.
+- [ ] Save and deliver the Ouroboros Laboratories image-audit checkpoint.
