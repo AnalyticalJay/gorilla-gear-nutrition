@@ -834,4 +834,18 @@
 - [x] Match candidate images only when BP Pharma brand, product identity, and strength are safely verified.
 - [x] Correct unsafe or missing BP Pharma image links without duplicates, validate representative storefront rendering, and document unresolved products.
 - [x] Unlink the three BP Pharma images that do not show attributable BP branding—GHK-CU 50mg, Retatrutide 32mg, and Semaglutide 6mg—and preserve safe initials fallbacks until exact BP imagery is supplied.
-- [ ] Save and deliver the BP Pharma image-audit checkpoint.
+- [x] Save and deliver the BP Pharma image-audit checkpoint.
+
+## Active Media Audit — Next Approved Brand
+- [x] Identify the next approved brand after BP Pharma and audit its active products, strengths, image coverage, and media provenance.
+- [x] Browse both supplied South African reference websites for the brand’s product evidence and candidate imagery.
+- [x] Match candidate images only when brand, product identity, and strength are safely verified.
+- [x] Correct unsafe or missing image links without duplicates, validate storefront rendering, and document unresolved products.
+
+## Active Media Audit — Keifei Pharmaceuticals
+- [x] Audit current active Keifei products, strengths, image coverage, and existing media provenance.
+- [x] Browse both supplied South African reference websites for Keifei product evidence and candidate imagery.
+- [x] Match candidate images only when Keifei brand, product identity, and strength are safely verified.
+- [x] Correct unsafe or missing Keifei image links without duplicates, validate storefront rendering, and document unresolved products.
+- [x] Check the 17 no-image Keifei records for exact matches and cart/order dependencies before any safe duplicate archival.
+- [ ] Save and deliver the Keifei Pharmaceuticals image-audit checkpoint.
