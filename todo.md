@@ -836,11 +836,13 @@
 - [x] Unlink the three BP Pharma images that do not show attributable BP branding—GHK-CU 50mg, Retatrutide 32mg, and Semaglutide 6mg—and preserve safe initials fallbacks until exact BP imagery is supplied.
 - [x] Save and deliver the BP Pharma image-audit checkpoint.
 
-## Active Media Audit — Next Approved Brand
-- [x] Identify the next approved brand after BP Pharma and audit its active products, strengths, image coverage, and media provenance.
-- [x] Browse both supplied South African reference websites for the brand’s product evidence and candidate imagery.
-- [x] Match candidate images only when brand, product identity, and strength are safely verified.
-- [x] Correct unsafe or missing image links without duplicates, validate storefront rendering, and document unresolved products.
+## Active Media Audit — UPA Labs
+- [x] Audit active UPA Labs products, strengths, image coverage, and existing media provenance.
+- [x] Browse both supplied South African reference websites for UPA Labs product evidence and candidate imagery.
+- [x] Match candidate images only when UPA brand, product identity, and strength are safely verified.
+- [x] Replace unrelated Cooper-folder links with exact UPA reference images, archive the dependency-free duplicate Tren A 100 record, validate storefront rendering, and document UPA MGF as an unresolved safe fallback.
+- [x] Verify thirteen proxy-compatible UPA image routes, desktop/mobile detail pages, typecheck, full regression suite, and production build.
+- [ ] Save and deliver the UPA Labs image-audit checkpoint.
 
 ## Active Media Audit — Keifei Pharmaceuticals
 - [x] Audit current active Keifei products, strengths, image coverage, and existing media provenance.
@@ -848,4 +850,12 @@
 - [x] Match candidate images only when Keifei brand, product identity, and strength are safely verified.
 - [x] Correct unsafe or missing Keifei image links without duplicates, validate storefront rendering, and document unresolved products.
 - [x] Check the 17 no-image Keifei records for exact matches and cart/order dependencies before any safe duplicate archival.
-- [ ] Save and deliver the Keifei Pharmaceuticals image-audit checkpoint.
+- [x] Save and deliver the Keifei Pharmaceuticals image-audit checkpoint.
+
+## Active Media Audit — Next Brand After UPA
+- [ ] Identify the next approved brand after UPA Labs and audit its active products, strengths, image coverage, and media provenance.
+- [ ] Browse both supplied South African reference websites for the brand’s product evidence and candidate imagery.
+- [ ] Match candidate images only when brand, product identity, and strength are safely verified.
+- [ ] Correct unsafe or missing image links without duplicates, validate storefront rendering, and document unresolved products.
+- [ ] Save and deliver the next-brand image-audit checkpoint.
+- [ ] Publish the saved Keifei checkpoint `585563fb` from the Management UI.
