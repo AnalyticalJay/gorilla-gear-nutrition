@@ -34,3 +34,9 @@ The workbook contained 64 priced rows under the source label `PHARMACUTICALS`. T
 - Desktop `/products` renders the relational brand sidebar beside the 781-product catalogue with the established charcoal, white, and gold palette.
 - Mobile `/products` renders the Filters trigger, result count, and single-column product layout without horizontal overflow.
 - Filter controls now reset pagination consistently, use taxonomy IDs for brand/family/subcategory/collection filtering, expose `aria-pressed`, and use unique search IDs across desktop and mobile instances.
+
+## Shop Sidebar Filter Order — 2026-09-02
+- Reordered the filter stack to Brand → Category → Shop collection → Subcategory → Max Price in the shared desktop/mobile filter panel.
+- Desktop verification confirmed Brand is followed immediately by Category, using the existing charcoal, white, and gold palette.
+- Mobile verification confirmed the responsive Filters trigger and catalogue layout remain intact; the drawer uses the same shared panel order when opened.
+- TypeScript validation and focused filter regression tests passed: 11 tests across 2 files.

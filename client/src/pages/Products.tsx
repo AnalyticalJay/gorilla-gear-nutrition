@@ -170,32 +170,6 @@ export default function Products() {
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Subcategory</p>
-          <ChevronDown className="h-4 w-4 text-[#a8751c]" />
-        </div>
-        <div className="max-h-52 space-y-1 overflow-y-auto pr-1">
-                    <button aria-pressed={selectedSubcategoryId === undefined} onClick={() => { setSelectedSubcategoryId(undefined); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedSubcategoryId === undefined ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
-<span>All subcategories</span>{selectedSubcategoryId === undefined && <span className="text-[10px]">Active</span>}</button>
-                    {taxonomy.subcategories.map((subcategory) => <button key={subcategory.id} aria-pressed={selectedSubcategoryId === subcategory.id} onClick={() => { setSelectedSubcategoryId(selectedSubcategoryId === subcategory.id ? undefined : subcategory.id); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedSubcategoryId === subcategory.id ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
-<span className="truncate">{subcategory.name}</span>{selectedSubcategoryId === subcategory.id && <span className="text-[10px]">Active</span>}</button>)}
-        </div>
-      </div>
-
-      <div>
-        <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Shop collection</p>
-          <Tag className="h-4 w-4 text-[#a8751c]" />
-        </div>
-        <div className="space-y-1">
-                    <button aria-pressed={selectedCollectionId === undefined} onClick={() => { setSelectedCollectionId(undefined); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCollectionId === undefined ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
-<span>All collections</span>{selectedCollectionId === undefined && <span className="text-[10px]">Active</span>}</button>
-                    {taxonomy.collections.map((collection) => <button key={collection.id} aria-pressed={selectedCollectionId === collection.id} onClick={() => { setSelectedCollectionId(selectedCollectionId === collection.id ? undefined : collection.id); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCollectionId === collection.id ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
-<span className="truncate">{collection.name}</span>{selectedCollectionId === collection.id && <span className="text-[10px]">Active</span>}</button>)}
-        </div>
-      </div>
-
-      <div>
-        <div className="mb-3 flex items-center justify-between">
           <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Category</p>
           <ChevronDown className="h-4 w-4 text-[#a8751c]" />
         </div>
@@ -228,6 +202,36 @@ export default function Products() {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Shop collection</p>
+          <Tag className="h-4 w-4 text-[#a8751c]" />
+        </div>
+        <div className="space-y-1">
+          <button aria-pressed={selectedCollectionId === undefined} onClick={() => { setSelectedCollectionId(undefined); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCollectionId === undefined ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
+            <span>All collections</span>{selectedCollectionId === undefined && <span className="text-[10px]">Active</span>}
+          </button>
+          {taxonomy.collections.map((collection) => <button key={collection.id} aria-pressed={selectedCollectionId === collection.id} onClick={() => { setSelectedCollectionId(selectedCollectionId === collection.id ? undefined : collection.id); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedCollectionId === collection.id ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
+            <span className="truncate">{collection.name}</span>{selectedCollectionId === collection.id && <span className="text-[10px]">Active</span>}
+          </button>)}
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#c9c2b6]">Subcategory</p>
+          <ChevronDown className="h-4 w-4 text-[#a8751c]" />
+        </div>
+        <div className="max-h-52 space-y-1 overflow-y-auto pr-1">
+          <button aria-pressed={selectedSubcategoryId === undefined} onClick={() => { setSelectedSubcategoryId(undefined); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedSubcategoryId === undefined ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
+            <span>All subcategories</span>{selectedSubcategoryId === undefined && <span className="text-[10px]">Active</span>}
+          </button>
+          {taxonomy.subcategories.map((subcategory) => <button key={subcategory.id} aria-pressed={selectedSubcategoryId === subcategory.id} onClick={() => { setSelectedSubcategoryId(selectedSubcategoryId === subcategory.id ? undefined : subcategory.id); setPage(1); }} className={`flex min-h-10 w-full items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold transition-colors ${selectedSubcategoryId === subcategory.id ? "bg-[#a8751c]/10 text-[#a8751c]" : "text-[#9b9388] hover:bg-white/5 hover:text-white"}`}>
+            <span className="truncate">{subcategory.name}</span>{selectedSubcategoryId === subcategory.id && <span className="text-[10px]">Active</span>}
+          </button>)}
         </div>
       </div>
 

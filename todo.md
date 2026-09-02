@@ -805,5 +805,17 @@
 - [x] Inspect the corrected populated CSV and confirm it matches the current importer contract.
 - [x] Re-import the corrected CSV idempotently, updating matching products without creating duplicates.
 - [x] Verify BP Pharma assignments and sidebar filter visibility on the shop page.
-- [ ] Save and deliver the import verification checkpoint.
+- [x] Save and deliver the import verification checkpoint.
 - [x] Archive the three dependency-free duplicate Keifeitropin/HGH Fragment records revealed by the corrected CSV re-import, preserving the image-bearing canonical records and historical safety.
+
+## Active Implementation — Shop Filter Controls
+- [x] Inspect the existing filter state and shop-results layout for tag and reset insertion points.
+- [x] Add removable active-filter tags at the top of the shop page.
+- [x] Add a Clear All Filters button that resets search, price, brand, family, subcategory, collection, and pagination.
+- [x] Add regression coverage and verify desktop/mobile accessibility and Gorilla Gear styling.
+- [ ] Save and deliver the filter-controls checkpoint.
+
+## Active Refinement — Shop Sidebar Filter Order
+- [x] Inspect the current filter-group order in the shop sidebar.
+- [x] Reorder the groups to Brand, Category, then Shop collection without changing filter behavior.
+- [x] Verify the order and accessibility on desktop and mobile, then save a checkpoint.
