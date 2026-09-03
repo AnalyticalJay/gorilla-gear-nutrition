@@ -859,7 +859,7 @@
 - [x] Remove unverified Cooper-folder links, link the exact Vmed Sibutra Lean 30mg image, validate storefront rendering, and document the 14 safe fallbacks.
 - [x] Verify the proxy-compatible image route, desktop/mobile detail pages, zero remaining Cooper-folder links, and final 66-product coverage.
 - [x] Save and deliver the Vmed image-audit checkpoint.
-- [ ] Publish the saved Keifei checkpoint `585563fb` from the Management UI.
+- [x] Publish the saved Keifei checkpoint `585563fb` from the Management UI; user confirmed publication completed.
 
 ## Active Media Audit — HD Labs
 - [x] Audit active HD Labs products, strengths, image coverage, and media provenance.
@@ -890,4 +890,11 @@
 - [x] Preserve existing brand-specific Cooper archive imagery without cross-brand substitutions.
 - [x] Allow legacy Cooper and Cooper Images prefixes through the secure media proxy and add JFIF MIME support with regression coverage.
 - [x] Verify representative Cooper injectable, oral, peptide, and healthcare product pages on mobile.
-- [ ] Save and deliver the Cooper audit checkpoint.
+- [x] Save and deliver the Cooper audit checkpoint.
+
+## Active Media Audit — DEX Pharma
+- [x] Audit all five active DEX Pharma products, strengths, image coverage, and media provenance.
+- [x] Browse both supplied South African reference websites for DEX Pharma evidence and exact product imagery.
+- [x] Correct unsafe or missing DEX Pharma image associations only when brand, product, and strength are verified.
+- [x] Verify DEX Pharma media-proxy delivery and responsive product-detail rendering.
+- [ ] Save and deliver the DEX Pharma audit checkpoint.

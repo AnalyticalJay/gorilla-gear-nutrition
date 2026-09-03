@@ -29,3 +29,9 @@ No Pharmacom image associations were changed. Existing primary images remain in 
 Cooper Pharmaceuticals has 42 active products. All 42 were checked against both supplied reference stores; no exact Cooper package-and-strength matches were confirmed, so no external images were linked and no cross-brand substitutions were made. Existing Cooper archive imagery remains associated with the matching Cooper records.
 
 The audit exposed a separate delivery issue: 117 legacy Cooper image rows used `/manus-storage/cooper/` or `/manus-storage/cooper_images/` paths with `.jfif` extensions. The secure proxy previously rejected these prefixes and did not recognize JFIF, causing valid brand-specific artwork to fall back. The proxy now explicitly allows the two Cooper product-image prefixes, recognizes JFIF as `image/jpeg`, and retains the existing traversal, query-string, size, and private-prefix protections. Representative injectable, oral, peptide, and healthcare Cooper pages now render correctly on mobile.
+
+## DEX Pharma audit
+
+DEX Pharma has five active products, and all five currently had one primary image association. Both supplied reference stores were checked. Exact brand-and-strength evidence was found through clearly attributable secondary South African product pages for all five products: GHK-CU 100mg Pen, Retatrutide Pen 50mg, SLU-PP Pen 5mg, Tirzepatide Max Pen 60mg, and Wolverine Pen 30mg. The source pages and direct image URLs are recorded in `audit_dex_pharma_media.json`.
+
+The five source images were downloaded, re-uploaded under proxy-approved `ggn-dex-...` managed storage keys, and relinked to the existing primary rows for product IDs 2003–2007 without adding duplicate image records. All five media routes returned HTTP 200 with the expected JPEG/PNG content types. Mobile product-detail screenshots confirmed the exact DEX Pharma artwork renders for every product, with no stock quantities exposed.
