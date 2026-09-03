@@ -876,4 +876,10 @@
 - [x] Browse both supplied South African reference websites and directly linked product pages for iPharma evidence.
 - [x] Relink exact iPharma Retatrutide 30mg Pen, Tirzepatide 30mg Pen, and Izempic 5mg Pen images using proxy-approved managed storage keys.
 - [x] Leave Tirzepatide Self Mix Vial, Ozempic Self Mix Vial, Ozempic/Tirzepatide Hybrid, and GHK-CU Pen on their existing safe fallbacks because no exact reference match was confirmed.
-- [ ] Save and deliver the iPharma audit checkpoint.
+- [x] Save and deliver the iPharma audit checkpoint.
+
+## Active Media Audit — Pharmacom
+- [x] Audit all 39 active Pharmacom products, strengths, image coverage, and media provenance.
+- [x] Browse both supplied South African reference websites for Pharmacom evidence and directly retry the failed Test C 250 lookup.
+- [x] Confirm that no exact Pharmacom package-and-strength matches were found and preserve existing image associations without cross-brand substitutions.
+- [ ] Save and deliver the Pharmacom audit checkpoint.

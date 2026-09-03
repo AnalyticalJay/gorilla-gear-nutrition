@@ -17,3 +17,9 @@ BodyPharm is the next taxonomy brand after HD Labs but currently has zero active
 Anabolic Hyper provided exact packaging matches for three iPharma products: Retatrutide 30mg Pen, Tirzepatide 30mg Pen, and Izempic 5mg Pen. Their images were downloaded, re-uploaded under proxy-approved `ggn-` storage keys, and relinked to product records 1897, 1898, and 1900 without adding duplicate image rows. The secure proxy returned HTTP 200 with the expected JPEG/PNG content types for all three assets, and responsive product-detail screenshots confirmed the images render correctly.
 
 No exact matches were confirmed for iPharma Tirzepatide Self Mix Vial, Ozempic Self Mix Vial, Ozempic/Tirzepatide Hybrid, or GHK-CU Pen, so their existing safe fallbacks remain unchanged.
+
+## Pharmacom follow-up audit
+
+The next populated taxonomy brand, Pharmacom, contains 39 active products. Both supplied reference stores were checked across the full worklist. No exact Pharmacom package-and-strength match was found for 38 products. The single initially failed lookup, PC - Test C 250 (10ml Vial 250mg), was retried directly on Anabolic Hyper; the results showed Keifei, UPA, and Oxygen Labs alternatives only, not Pharmacom. It was therefore recorded as no exact match.
+
+No Pharmacom image associations were changed. Existing primary images remain in place because the available reference evidence did not establish attributable Pharmacom packaging, and cross-brand substitution would be unsafe.
