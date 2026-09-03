@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gt, gte, inArray, like, lte, or, sql, lt } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, gte, inArray, like, lte, or, sql, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   cartItems,
@@ -785,7 +785,7 @@ export async function getProductBySlug(slug: string) {
     .select()
     .from(productImages)
     .where(eq(productImages.productId, result[0].product.id))
-    .orderBy(productImages.isPrimary);
+    .orderBy(desc(productImages.isPrimary), asc(productImages.createdAt), asc(productImages.id));
 
   return {
     ...result[0].product,

@@ -862,8 +862,10 @@
 - [ ] Publish the saved Keifei checkpoint `585563fb` from the Management UI.
 
 ## Active Media Audit — HD Labs
-- [ ] Audit active HD Labs products, strengths, image coverage, and media provenance.
-- [ ] Browse both supplied South African reference websites for HD Labs product evidence and candidate imagery.
-- [ ] Match candidate images only when HD Labs brand, product identity, and strength are safely verified.
-- [ ] Correct unsafe or missing image links without duplicates, validate storefront rendering, and document unresolved products.
+- [x] Audit active HD Labs products, strengths, image coverage, and media provenance.
+- [x] Browse both supplied South African reference websites for HD Labs product evidence and candidate imagery.
+- [x] Match candidate images only when HD Labs brand, product identity, and strength are safely verified.
+- [x] Correct unsafe or missing image links without duplicates, validate storefront rendering, and document unresolved products.
 - [ ] Save and deliver the HD Labs image-audit checkpoint.
+
+- [x] Fix product-detail media normalization so newly linked HD Labs images render through `/api/media/` and fall back gracefully instead of showing broken-image icons.

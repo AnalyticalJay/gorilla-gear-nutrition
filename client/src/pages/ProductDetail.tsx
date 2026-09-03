@@ -15,6 +15,7 @@ export default function ProductDetail() {
   const isApproved = (user as any)?.status === "approved";
   const [quantity, setQuantity] = useState(1);
   const [imgIndex, setImgIndex] = useState(0);
+  const [failedImageIds, setFailedImageIds] = useState<Set<number>>(() => new Set());
 
   const utils = trpc.useUtils();
   const productQuery = trpc.products.bySlug.useQuery({ slug: slug ?? "" }, { enabled: !!slug });
@@ -66,6 +67,15 @@ export default function ProductDetail() {
 
   const images = product.images ?? [];
   const currentImage = images[imgIndex];
+  const currentImageFailed = currentImage ? failedImageIds.has(currentImage.id) : false;
+  const markImageFailed = (imageId: number) => {
+    setFailedImageIds((previous) => {
+      if (previous.has(imageId)) return previous;
+      const next = new Set(previous);
+      next.add(imageId);
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#101010]">
@@ -82,17 +92,18 @@ export default function ProductDetail() {
             {/* Images */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <div className="relative aspect-square rounded-lg overflow-hidden border border-[#454545] bg-[#111111] mb-4">
-                {currentImage ? (
+                {currentImage && !currentImageFailed ? (
                   <img
                     src={currentImage.imageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover"
+                    onError={() => markImageFailed(currentImage.id)}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="w-24 h-24 rounded-full flex items-center justify-center"
                       style={{ background: "#a8751c15", border: "1px solid #a8751c30" }}>
-                      <span className="font-black text-3xl" style={{ color: "#a8751c" }}>AC</span>
+                      <span className="font-black text-3xl" style={{ color: "#a8751c" }}>{product.name.slice(0, 2).toUpperCase()}</span>
                     </div>
                   </div>
                 )}
@@ -100,12 +111,14 @@ export default function ProductDetail() {
                   <>
                     <button
                       onClick={() => setImgIndex((i) => Math.max(0, i - 1))}
+                      aria-label="View previous product image"
                       className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 flex items-center justify-center hover:bg-black text-white transition-colors"
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setImgIndex((i) => Math.min(images.length - 1, i + 1))}
+                      aria-label="View next product image"
                       className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 flex items-center justify-center hover:bg-black text-white transition-colors"
                     >
                       <ChevronRight className="h-4 w-4" />
@@ -119,10 +132,15 @@ export default function ProductDetail() {
                     <button
                       key={img.id}
                       onClick={() => setImgIndex(i)}
+                      aria-label={`View image ${i + 1} of ${images.length}`}
                       className="h-16 w-16 shrink-0 rounded border-2 overflow-hidden transition-colors sm:h-20 sm:w-20"
                       style={{ borderColor: i === imgIndex ? "#a8751c" : "#454545" }}
                     >
-                      <img src={img.imageUrl} alt="" className="w-full h-full object-cover" />
+                      {failedImageIds.has(img.id) ? (
+                        <span className="flex h-full w-full items-center justify-center bg-[#171717] text-xs font-bold text-[#a8751c]">{product.name.slice(0, 2).toUpperCase()}</span>
+                      ) : (
+                        <img src={img.imageUrl} alt="" className="w-full h-full object-cover" onError={() => markImageFailed(img.id)} />
+                      )}
                     </button>
                   ))}
                 </div>
