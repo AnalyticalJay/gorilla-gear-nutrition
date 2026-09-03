@@ -39,6 +39,27 @@ describe("managed storage image proxy", () => {
     expect(res.send).toHaveBeenCalledWith(expect.any(Buffer));
   });
 
+  it("serves legacy Cooper product-image prefixes through the public proxy", async () => {
+    const upstreamFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ url: "https://signed-storage.example/cooper" }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-type": "image/jpeg" }),
+        arrayBuffer: async () => new Uint8Array([255, 216, 255, 217]).buffer,
+      });
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "cooper_images/Deca_100.jfif" } }, res);
+
+    expect(upstreamFetch).toHaveBeenCalledTimes(2);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.set).toHaveBeenCalledWith("Content-Type", "image/jpeg");
+  });
+
   it("rejects keys outside the approved public media prefixes", async () => {
     const upstreamFetch = vi.fn();
     vi.stubGlobal("fetch", upstreamFetch);

@@ -882,4 +882,12 @@
 - [x] Audit all 39 active Pharmacom products, strengths, image coverage, and media provenance.
 - [x] Browse both supplied South African reference websites for Pharmacom evidence and directly retry the failed Test C 250 lookup.
 - [x] Confirm that no exact Pharmacom package-and-strength matches were found and preserve existing image associations without cross-brand substitutions.
-- [ ] Save and deliver the Pharmacom audit checkpoint.
+- [x] Save and deliver the Pharmacom audit checkpoint.
+
+## Active Media Audit — Cooper Pharmaceuticals
+- [x] Audit all 42 active Cooper Pharmaceuticals products, strengths, image coverage, and media provenance.
+- [x] Browse both supplied South African reference websites for Cooper evidence and confirm no exact package-and-strength matches.
+- [x] Preserve existing brand-specific Cooper archive imagery without cross-brand substitutions.
+- [x] Allow legacy Cooper and Cooper Images prefixes through the secure media proxy and add JFIF MIME support with regression coverage.
+- [x] Verify representative Cooper injectable, oral, peptide, and healthcare product pages on mobile.
+- [ ] Save and deliver the Cooper audit checkpoint.

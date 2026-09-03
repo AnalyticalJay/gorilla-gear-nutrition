@@ -23,3 +23,9 @@ No exact matches were confirmed for iPharma Tirzepatide Self Mix Vial, Ozempic S
 The next populated taxonomy brand, Pharmacom, contains 39 active products. Both supplied reference stores were checked across the full worklist. No exact Pharmacom package-and-strength match was found for 38 products. The single initially failed lookup, PC - Test C 250 (10ml Vial 250mg), was retried directly on Anabolic Hyper; the results showed Keifei, UPA, and Oxygen Labs alternatives only, not Pharmacom. It was therefore recorded as no exact match.
 
 No Pharmacom image associations were changed. Existing primary images remain in place because the available reference evidence did not establish attributable Pharmacom packaging, and cross-brand substitution would be unsafe.
+
+## Cooper Pharmaceuticals follow-up audit
+
+Cooper Pharmaceuticals has 42 active products. All 42 were checked against both supplied reference stores; no exact Cooper package-and-strength matches were confirmed, so no external images were linked and no cross-brand substitutions were made. Existing Cooper archive imagery remains associated with the matching Cooper records.
+
+The audit exposed a separate delivery issue: 117 legacy Cooper image rows used `/manus-storage/cooper/` or `/manus-storage/cooper_images/` paths with `.jfif` extensions. The secure proxy previously rejected these prefixes and did not recognize JFIF, causing valid brand-specific artwork to fall back. The proxy now explicitly allows the two Cooper product-image prefixes, recognizes JFIF as `image/jpeg`, and retains the existing traversal, query-string, size, and private-prefix protections. Representative injectable, oral, peptide, and healthcare Cooper pages now render correctly on mobile.

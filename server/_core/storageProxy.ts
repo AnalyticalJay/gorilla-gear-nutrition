@@ -6,14 +6,15 @@ const imageContentTypes: Record<string, string> = {
   gif: "image/gif",
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
+  jfif: "image/jpeg",
   png: "image/png",
   svg: "image/svg+xml",
   webp: "image/webp",
 };
 
 const MAX_PUBLIC_MEDIA_BYTES = 8 * 1024 * 1024;
-const MEDIA_SEGMENT_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
-const PUBLIC_MEDIA_PREFIXES = ["catalogue", "products", "generated", "brand", "homepage"];
+const MEDIA_SEGMENT_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._() \-–—]*$/;
+const PUBLIC_MEDIA_PREFIXES = ["catalogue", "products", "generated", "brand", "homepage", "cooper", "cooper_images"];
 
 function isPublicMediaKey(key: string) {
   if (!key || key.length > 512 || key.startsWith("/") || key.includes("\\") || key.includes("..") || key.includes("?")) return false;
