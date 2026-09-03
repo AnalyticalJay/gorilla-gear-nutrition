@@ -9,3 +9,11 @@ The supplied Anabolic Hyper HD Labs collection was reachable at https://anabolic
 The current application database has 74 active HD-labelled products. A primary-image audit found 66 with a primary image and 8 without any image: HD - CJC-1295 with DAC, HD - GHRP-6, HD - HGH Fragment, HD - IGF-1 Lr3, HD - Creatine, HD - D3, HD - Slim Tabs, and HD - ZMA. No image was linked for these eight because the reference evidence inspected so far did not establish an exact HD Labs packaging match.
 
 The Clomid detail-page rendering issue was caused by two image rows on product 1831: a broken/non-attributable secondary media URL was returned before the verified primary image. The server now orders primary images first, then creation time and ID, and the client marks failed image rows and displays a brand-safe initials fallback instead of a broken image icon.
+
+## iPharma follow-up audit
+
+BodyPharm is the next taxonomy brand after HD Labs but currently has zero active products, so no image audit or data change was required for that empty brand. The next populated brand, iPharma, has seven active products and seven existing primary-image rows.
+
+Anabolic Hyper provided exact packaging matches for three iPharma products: Retatrutide 30mg Pen, Tirzepatide 30mg Pen, and Izempic 5mg Pen. Their images were downloaded, re-uploaded under proxy-approved `ggn-` storage keys, and relinked to product records 1897, 1898, and 1900 without adding duplicate image rows. The secure proxy returned HTTP 200 with the expected JPEG/PNG content types for all three assets, and responsive product-detail screenshots confirmed the images render correctly.
+
+No exact matches were confirmed for iPharma Tirzepatide Self Mix Vial, Ozempic Self Mix Vial, Ozempic/Tirzepatide Hybrid, or GHK-CU Pen, so their existing safe fallbacks remain unchanged.

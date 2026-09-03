@@ -866,6 +866,14 @@
 - [x] Browse both supplied South African reference websites for HD Labs product evidence and candidate imagery.
 - [x] Match candidate images only when HD Labs brand, product identity, and strength are safely verified.
 - [x] Correct unsafe or missing image links without duplicates, validate storefront rendering, and document unresolved products.
-- [ ] Save and deliver the HD Labs image-audit checkpoint.
+- [x] Save and deliver the HD Labs image-audit checkpoint.
 
 - [x] Fix product-detail media normalization so newly linked HD Labs images render through `/api/media/` and fall back gracefully instead of showing broken-image icons.
+
+## Active Media Audit — iPharma
+- [x] Confirm BodyPharm has zero active products and skip it without altering taxonomy or catalogue data.
+- [x] Audit all seven active iPharma products, strengths, image coverage, and media provenance.
+- [x] Browse both supplied South African reference websites and directly linked product pages for iPharma evidence.
+- [x] Relink exact iPharma Retatrutide 30mg Pen, Tirzepatide 30mg Pen, and Izempic 5mg Pen images using proxy-approved managed storage keys.
+- [x] Leave Tirzepatide Self Mix Vial, Ozempic Self Mix Vial, Ozempic/Tirzepatide Hybrid, and GHK-CU Pen on their existing safe fallbacks because no exact reference match was confirmed.
+- [ ] Save and deliver the iPharma audit checkpoint.
