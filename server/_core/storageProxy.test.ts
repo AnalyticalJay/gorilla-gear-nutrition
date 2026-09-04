@@ -102,6 +102,48 @@ describe("managed storage image proxy", () => {
     expect(res.set).toHaveBeenCalledWith("Content-Type", "image/png");
   });
 
+  it("serves legacy HD Labs nested and root-level product-image keys", async () => {
+    const upstreamFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ url: "https://signed-storage.example/hdlabs" }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-type": "image/png" }),
+        arrayBuffer: async () => new Uint8Array([137, 80, 78, 71]).buffer,
+      });
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "hdlabs_orals/1831_clomid.png" } }, res);
+
+    expect(upstreamFetch).toHaveBeenCalledTimes(2);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.set).toHaveBeenCalledWith("Content-Type", "image/png");
+  });
+
+  it("serves legacy HD Labs root-level product-image keys", async () => {
+    const upstreamFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ url: "https://signed-storage.example/hd" }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-type": "image/jpeg" }),
+        arrayBuffer: async () => new Uint8Array([255, 216, 255, 217]).buffer,
+      });
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "hd-amino-muscle-tropical_42063ec5.png" } }, res);
+
+    expect(upstreamFetch).toHaveBeenCalledTimes(2);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.set).toHaveBeenCalledWith("Content-Type", "image/png");
+  });
+
   it("rejects keys outside the approved public media prefixes", async () => {
     const upstreamFetch = vi.fn();
     vi.stubGlobal("fetch", upstreamFetch);

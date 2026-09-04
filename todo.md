@@ -904,4 +904,12 @@
 - [x] Trace broken product-card image URLs to legacy storage keys, missing assets, or proxy failures.
 - [x] Restore exact brand-correct images from existing managed assets or verified reference sources without cross-brand substitutions.
 - [x] Verify Pharmacom and Nutritech product cards and detail pages on desktop and mobile.
-- [ ] Save and deliver the media-repair checkpoint.
+- [x] Save and deliver the media-repair checkpoint.
+
+## Cross-Brand Media Proxy Audit
+- [x] Inventory all active product-image keys, prefixes, extensions, and brands.
+- [x] Identify legacy storage-key formats or image extensions blocked by the secure proxy.
+- [x] Repair only safe allowlist or format gaps and add regression coverage.
+- [x] Verify representative affected and unaffected brand routes and storefront rendering.
+- [ ] Save and deliver the cross-brand media audit checkpoint.
+- [x] Add a graceful product-card fallback for unexpected image-load failures so broken legacy URLs never show browser error icons.

@@ -1,5 +1,6 @@
 import React from "react";
 import { trpc } from "@/lib/trpc";
+import { useState } from "react";
 import { ShoppingCart, Lock, Eye } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "./ui/button";
@@ -28,6 +29,14 @@ export default function ProductCard({
   prioritizeImage?: boolean;
 }) {
   const utils = trpc.useUtils();
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageFallback = product.name
+    .replace(/[^A-Za-z0-9 ]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
   const addToCart = trpc.cart.upsert.useMutation({
     onSuccess: () => {
       utils.cart.get.invalidate();
@@ -45,19 +54,20 @@ export default function ProductCard({
       {/* Image */}
       <Link href={`/products/${product.slug}`} className="block no-underline">
         <div className="relative aspect-square bg-[#0D0D0D] overflow-hidden">
-          {product.primaryImage ? (
+          {product.primaryImage && !imageFailed ? (
             <img
               src={product.primaryImage}
               alt={product.name}
               loading={prioritizeImage ? "eager" : "lazy"}
               decoding="async"
               fetchPriority={prioritizeImage ? "high" : "auto"}
+              onError={() => setImageFailed(true)}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-[#454545] flex items-center justify-center">
-                <ShoppingCart className="h-7 w-7 text-[#5c5852]" />
+            <div className="w-full h-full flex items-center justify-center" aria-label={`${product.name} image unavailable`}>
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-[#a8751c]/35 bg-[#1a1712] text-2xl font-black tracking-[0.12em] text-[#c99a3d]" aria-hidden="true">
+                {imageFallback || <ShoppingCart className="h-7 w-7 text-[#5c5852]" />}
               </div>
             </div>
           )}

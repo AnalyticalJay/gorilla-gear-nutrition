@@ -39,3 +39,7 @@ The five source images were downloaded, re-uploaded under proxy-approved `ggn-de
 ## Pharmacom and Nutritech storefront media repair
 
 The broken cards were caused by a secure media-proxy allowlist mismatch, not missing database associations. Pharmacom images use nested `new_brand_images/pharmacom/...` keys, while Nutritech images use root-level `nutritech-...` keys. Both prefixes were absent from the approved public media rules, so the browser received 404 responses even though each product had a primary image row. The proxy now permits the nested Pharmacom prefix and the narrowly scoped root-level Nutritech filename pattern. Regression tests cover both paths, representative live routes return HTTP 200 with the expected image types, and responsive product-detail checks confirm Nutritech imagery renders again.
+
+## Cross-brand legacy media-key audit
+
+A full scan of active product-image associations found **zero active image rows blocked by the secure media-proxy allowlist** after adding support for Pharmacom, Nutritech, and the three HD Labs legacy families. Representative routes for catalogue, Cooper, HD Labs Amps/Injectables/Orals, Noventra, UPA, and generated assets were checked. The scan also identified two separate upstream storage failures: legacy `cooper/...` and one generated root asset returned storage-level 403/502 responses. These are not proxy allowlist blocks; the product-card `onError` fallback now prevents either case from displaying a browser broken-image icon. Private-document and traversal protections remain unchanged.
