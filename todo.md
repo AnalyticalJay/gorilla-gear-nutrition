@@ -897,4 +897,11 @@
 - [x] Browse both supplied South African reference websites for DEX Pharma evidence and exact product imagery.
 - [x] Correct unsafe or missing DEX Pharma image associations only when brand, product, and strength are verified.
 - [x] Verify DEX Pharma media-proxy delivery and responsive product-detail rendering.
-- [ ] Save and deliver the DEX Pharma audit checkpoint.
+- [x] Save and deliver the DEX Pharma audit checkpoint.
+
+## Media Repair — Pharmacom and Nutritech
+- [x] Inventory all active Pharmacom and Nutritech products and their image associations.
+- [x] Trace broken product-card image URLs to legacy storage keys, missing assets, or proxy failures.
+- [x] Restore exact brand-correct images from existing managed assets or verified reference sources without cross-brand substitutions.
+- [x] Verify Pharmacom and Nutritech product cards and detail pages on desktop and mobile.
+- [ ] Save and deliver the media-repair checkpoint.

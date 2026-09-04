@@ -14,7 +14,7 @@ const imageContentTypes: Record<string, string> = {
 
 const MAX_PUBLIC_MEDIA_BYTES = 8 * 1024 * 1024;
 const MEDIA_SEGMENT_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._() \-–—]*$/;
-const PUBLIC_MEDIA_PREFIXES = ["catalogue", "products", "generated", "brand", "homepage", "cooper", "cooper_images"];
+const PUBLIC_MEDIA_PREFIXES = ["catalogue", "products", "generated", "brand", "homepage", "cooper", "cooper_images", "new_brand_images", "nutritech"];
 
 function isPublicMediaKey(key: string) {
   if (!key || key.length > 512 || key.startsWith("/") || key.includes("\\") || key.includes("..") || key.includes("?")) return false;
@@ -25,7 +25,7 @@ function isPublicMediaKey(key: string) {
 
   const firstSegment = segments[0] ?? "";
   const isApprovedPrefix = segments.length > 1 && PUBLIC_MEDIA_PREFIXES.includes(firstSegment);
-  const isApprovedRootAsset = segments.length === 1 && (/^\d+_[a-z0-9-]+\./i.test(key) || /^ggn-[a-z0-9._-]+\./i.test(key));
+  const isApprovedRootAsset = segments.length === 1 && (/^\d+_[a-z0-9-]+\./i.test(key) || /^ggn-[a-z0-9._-]+\./i.test(key) || /^nutritech-[a-z0-9._-]+\./i.test(key));
   return isApprovedPrefix || isApprovedRootAsset;
 }
 

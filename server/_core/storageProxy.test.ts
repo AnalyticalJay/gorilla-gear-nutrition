@@ -60,6 +60,48 @@ describe("managed storage image proxy", () => {
     expect(res.set).toHaveBeenCalledWith("Content-Type", "image/jpeg");
   });
 
+  it("serves legacy Pharmacom and Nutritech product-image prefixes", async () => {
+    const upstreamFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ url: "https://signed-storage.example/pharmacom" }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-type": "image/jpeg" }),
+        arrayBuffer: async () => new Uint8Array([255, 216, 255, 217]).buffer,
+      });
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "new_brand_images/pharmacom/Deca_100.jpg" } }, res);
+
+    expect(upstreamFetch).toHaveBeenCalledTimes(2);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.set).toHaveBeenCalledWith("Content-Type", "image/jpeg");
+  });
+
+  it("serves root-level legacy Nutritech product-image keys", async () => {
+    const upstreamFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ url: "https://signed-storage.example/nutritech" }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ "content-type": "image/png" }),
+        arrayBuffer: async () => new Uint8Array([137, 80, 78, 71]).buffer,
+      });
+    vi.stubGlobal("fetch", upstreamFetch);
+    const get = vi.fn();
+    registerStorageProxy({ get } as any);
+    const handler = get.mock.calls[0]?.[1] as (req: any, res: any) => Promise<void>;
+    const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), send: vi.fn() };
+
+    await handler({ params: { 0: "nutritech-nt-isolate-chocolate-700g_09eabb92.png" } }, res);
+
+    expect(upstreamFetch).toHaveBeenCalledTimes(2);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.set).toHaveBeenCalledWith("Content-Type", "image/png");
+  });
+
   it("rejects keys outside the approved public media prefixes", async () => {
     const upstreamFetch = vi.fn();
     vi.stubGlobal("fetch", upstreamFetch);
