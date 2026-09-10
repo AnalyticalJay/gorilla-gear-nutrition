@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
-import { sendPasswordResetEmail, sendQuoteConfirmationEmail, sendOrderPackedEmail, sendOrderDispatchedEmail } from "./email";
+import { sendAdminNotificationEmail, sendCustomerStatusEmail, sendPasswordResetEmail, sendQuoteConfirmationEmail, sendOrderPackedEmail, sendOrderDispatchedEmail } from "./email";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
@@ -283,6 +283,22 @@ export const appRouter = router({
           title: "New User Registration",
           content: `New user **${input.fullName}** (${input.email}) from ${input.city} has registered and is awaiting approval.`,
         }).catch(() => {});
+        await Promise.all([
+          sendAdminNotificationEmail({
+            subject: "New member application — Gorilla Gear Nutrition",
+            title: "New member application",
+            content: `Name: ${input.fullName}\nEmail: ${input.email}\nPhone: ${input.phone}\nCity: ${input.city}\n\nThe application is awaiting admin approval.`,
+          }),
+          sendCustomerStatusEmail({
+            customerName: input.fullName,
+            customerEmail: input.email,
+            subject: "Application received — Gorilla Gear Nutrition",
+            heading: "Application received",
+            message: "Thank you for applying for Gorilla Gear Nutrition member access. Your application has been received and is awaiting review. We will email you again when the review is complete.",
+            actionLabel: "Sign in",
+            actionUrl: "https://gorillagear.co.za/login",
+          }),
+        ]);
         return { success: true, userId };
       }),
 
@@ -854,11 +870,15 @@ export const appRouter = router({
         });
 
         await clearCart(ctx.user.id);
-        await notifyOwner({
+                await notifyOwner({
           title: "New Quote Request (Nationwide R140 Flat Rate)",
           content: `Quote #${quoteId} submitted by ${ctx.user.fullName} (${ctx.user.email}). Subtotal: R${subtotal.toFixed(2)}, Nationwide Delivery: R${delivery.fee.toFixed(2)}, Total: R${total.toFixed(2)}. Review required.`,
         }).catch(() => {});
-
+        await sendAdminNotificationEmail({
+          subject: `New quote #${quoteId} — Gorilla Gear Nutrition`,
+          title: `New quote #${quoteId}`,
+          content: `Customer: ${ctx.user.fullName}\nEmail: ${ctx.user.email}\nSubtotal: R${subtotal.toFixed(2)}\nNationwide delivery: R${delivery.fee.toFixed(2)}\nTotal: R${total.toFixed(2)}\n\nReview the quote in the admin dashboard.`,
+        });
         await sendQuoteConfirmationEmail({
           quoteId,
           customerName: ctx.user.fullName,
@@ -1007,6 +1027,27 @@ export const appRouter = router({
       .input(z.object({ orderId: z.number(), decision: z.enum(["quote_approved", "quote_rejected"]), notes: z.string().max(2000).optional() }))
       .mutation(async ({ ctx, input }) => {
         await reviewQuote(input.orderId, ctx.user.id, input.decision, input.notes);
+        const order = await getOrderById(input.orderId);
+        const customer = order ? await getUserById(order.userId) : null;
+        const decisionLabel = input.decision === "quote_approved" ? "approved" : "rejected";
+        await Promise.all([
+          sendAdminNotificationEmail({
+            subject: `Quote #${input.orderId} ${decisionLabel} — Gorilla Gear Nutrition`,
+            title: `Quote #${input.orderId} ${decisionLabel}`,
+            content: `The quote was ${decisionLabel} by ${ctx.user.fullName}.${input.notes ? `\n\nAdmin notes: ${input.notes}` : ""}`,
+          }),
+          sendCustomerStatusEmail({
+            customerName: customer?.fullName ?? "Valued Customer",
+            customerEmail: customer?.email,
+            subject: `Quote #${input.orderId} ${decisionLabel} — Gorilla Gear Nutrition`,
+            heading: `Quote ${decisionLabel}`,
+            message: input.decision === "quote_approved"
+              ? `Your quote #${input.orderId} has been approved. You can now sign in to select the iKhokha payment option and complete payment.${input.notes ? `\n\nAdmin note: ${input.notes}` : ""}`
+              : `Your quote #${input.orderId} was not approved at this time.${input.notes ? `\n\nAdmin note: ${input.notes}` : ""}`,
+            actionLabel: "View your quote",
+            actionUrl: `https://gorillagear.co.za/orders/${input.orderId}`,
+          }),
+        ]);
         return { success: true };
       }),
 
@@ -1041,16 +1082,25 @@ export const appRouter = router({
         });
         const order = await getOrderById(input.orderId);
         const customer = order ? await getUserById(order.userId) : null;
-        if (order && customer?.email && input.trackingNumber) {
-          sendOrderDispatchedEmail({
-            orderId: order.id,
-            customerName: customer.fullName ?? "Valued Customer",
-            customerEmail: customer.email,
-            total: Number(order.totalAmount ?? "0"),
-            trackingNumber: input.trackingNumber,
-            trackingCarrier: input.trackingCarrier,
-            trackingUrl: input.trackingUrl,
-          }).catch((err) => console.error("[Email] Order dispatched notification error:", err));
+        if (order && input.trackingNumber) {
+          await Promise.all([
+            customer?.email
+              ? sendOrderDispatchedEmail({
+                  orderId: order.id,
+                  customerName: customer.fullName ?? "Valued Customer",
+                  customerEmail: customer.email,
+                  total: Number(order.totalAmount ?? "0"),
+                  trackingNumber: input.trackingNumber,
+                  trackingCarrier: input.trackingCarrier,
+                  trackingUrl: input.trackingUrl,
+                })
+              : Promise.resolve(false),
+            sendAdminNotificationEmail({
+              subject: `Order dispatched — Order #${order.id} | Gorilla Gear Nutrition`,
+              title: `Order #${order.id} dispatched`,
+              content: `Customer: ${customer?.fullName ?? "Unknown customer"}\nTracking number: ${input.trackingNumber}\nCarrier: ${input.trackingCarrier ?? "The Courier Guy"}\n\nThe customer dispatch notification was triggered.`,
+            }),
+          ]);
         }
       }),
 
@@ -1070,16 +1120,23 @@ export const appRouter = router({
         });
         const order = await getOrderById(input.orderId);
         const customer = order ? await getUserById(order.userId) : null;
-        if (order && customer?.email) {
-          if (input.packed === true && !orderBefore?.packedAt) {
-            sendOrderPackedEmail({
-              orderId: order.id,
-              customerName: customer.fullName ?? "Valued Customer",
-              customerEmail: customer.email,
-              total: Number(order.totalAmount ?? "0"),
-              waybillNumber: order.waybillNumber,
-            }).catch((err) => console.error("[Email] Order packed notification error:", err));
-          }
+        if (order && input.packed === true && !orderBefore?.packedAt) {
+          await Promise.all([
+            customer?.email
+              ? sendOrderPackedEmail({
+                  orderId: order.id,
+                  customerName: customer.fullName ?? "Valued Customer",
+                  customerEmail: customer.email,
+                  total: Number(order.totalAmount ?? "0"),
+                  waybillNumber: order.waybillNumber,
+                })
+              : Promise.resolve(false),
+            sendAdminNotificationEmail({
+              subject: `Order packed — Order #${order.id} | Gorilla Gear Nutrition`,
+              title: `Order #${order.id} packed`,
+              content: `Customer: ${customer?.fullName ?? "Unknown customer"}\nWaybill/reference: ${order.waybillNumber ?? "Not supplied"}\n\nThe customer packing notification was triggered.`,
+            }),
+          ]);
         }
       }),
 
@@ -1213,6 +1270,22 @@ export const appRouter = router({
             title: "User Approved",
             content: `User ${user.fullName} (${user.email}) has been approved.`,
           }).catch(() => {});
+          await Promise.all([
+            sendAdminNotificationEmail({
+              subject: "Member approved — Gorilla Gear Nutrition",
+              title: "Member approved",
+              content: `Name: ${user.fullName}\nEmail: ${user.email}\n\nThe member can now access the gated catalogue.`,
+            }),
+            sendCustomerStatusEmail({
+              customerName: user.fullName,
+              customerEmail: user.email,
+              subject: "Your Gorilla Gear Nutrition access is approved",
+              heading: "Access approved",
+              message: "Your Gorilla Gear Nutrition membership application has been approved. You can now sign in to view the full member catalogue and submit quotes.",
+              actionLabel: "Sign in",
+              actionUrl: "https://gorillagear.co.za/login",
+            }),
+          ]);
         }
         return { success: true };
       }),

@@ -24,6 +24,22 @@ export type PasswordResetEmailInput = {
   resetToken: string;
 };
 
+export type AdminNotificationInput = {
+  subject: string;
+  title: string;
+  content: string;
+};
+
+export type CustomerStatusEmailInput = {
+  customerName: string;
+  customerEmail: string | null | undefined;
+  subject: string;
+  heading: string;
+  message: string;
+  actionLabel?: string;
+  actionUrl?: string;
+};
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => {
     const entities: Record<string, string> = {
@@ -51,6 +67,7 @@ function createSmtpTransport() {
     port: ENV.smtpPort,
     secure: ENV.smtpSecure,
     requireTLS: !ENV.smtpSecure,
+    tls: ENV.smtpTlsServername ? { servername: ENV.smtpTlsServername, rejectUnauthorized: true } : undefined,
     auth: {
       user: ENV.smtpUser,
       pass: ENV.smtpPassword,
@@ -71,6 +88,56 @@ export function buildPasswordResetEmail(input: PasswordResetEmailInput) {
     text: `Hi ${input.customerName},\n\nWe received a request to reset your Gorilla Gear Nutrition password. Use the secure link below within 60 minutes:\n\n${resetUrl}\n\nIf you did not request this, you can safely ignore this email. Your password will not change.\n\nRegards,\nGorilla Gear Nutrition`,
     html: `<!doctype html><html><body style="margin:0;background:#f5f5f0;font-family:Arial,sans-serif;color:#111827;"><div style="max-width:620px;margin:0 auto;padding:32px 18px;"><div style="background:#111827;color:#fff;padding:22px 24px;"><div style="font-size:12px;letter-spacing:2px;font-weight:700;color:#ef654a;">GORILLA GEAR NUTRITION</div><h1 style="margin:10px 0 0;font-size:24px;">Reset your password</h1></div><div style="background:#fff;padding:26px 24px;"><p style="font-size:16px;">Hi ${safeName},</p><p>We received a request to reset your Gorilla Gear Nutrition password. This secure link expires in 60 minutes and can only be used once.</p><p><a href="${safeResetUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:13px 18px;font-weight:700;">Reset password</a></p><p style="font-size:13px;color:#6b7280;">If you did not request this, you can safely ignore this email. Your password will not change.</p></div><div style="padding:18px 24px;font-size:12px;color:#6b7280;">Gorilla Gear Nutrition · South Africa</div></div></body></html>`,
   };
+}
+
+export function buildAdminNotificationEmail(input: AdminNotificationInput) {
+  const safeTitle = escapeHtml(input.title);
+  const safeContent = escapeHtml(input.content).replace(/\\n/g, "<br />");
+  return {
+    from: ENV.smtpFrom,
+    to: ENV.adminNotificationEmail,
+    replyTo: ENV.smtpFrom,
+    subject: input.subject,
+    text: `${input.title}\n\n${input.content}\n\nGorilla Gear Nutrition`,
+    html: `<!doctype html><html><body style="margin:0;background:#f5f5f0;font-family:Arial,sans-serif;color:#111827;"><div style="max-width:620px;margin:0 auto;padding:32px 18px;"><div style="background:#111827;color:#fff;padding:22px 24px;"><div style="font-size:12px;letter-spacing:2px;font-weight:700;color:#d5a33a;">GORILLA GEAR NUTRITION</div><h1 style="margin:10px 0 0;font-size:24px;">${safeTitle}</h1></div><div style="background:#fff;padding:26px 24px;"><p style="line-height:1.65;">${safeContent}</p></div><div style="padding:18px 24px;font-size:12px;color:#6b7280;">Automated administrator notification</div></div></body></html>`,
+  };
+}
+
+export function buildCustomerStatusEmail(input: CustomerStatusEmailInput) {
+  const safeName = escapeHtml(input.customerName);
+  const safeMessage = escapeHtml(input.message).replace(/\\n/g, "<br />");
+  const action = input.actionUrl && input.actionLabel
+    ? `<p><a href="${escapeHtml(input.actionUrl)}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;padding:13px 18px;font-weight:700;">${escapeHtml(input.actionLabel)}</a></p>`
+    : "";
+  return {
+    from: ENV.smtpFrom,
+    to: input.customerEmail ?? undefined,
+    replyTo: ENV.smtpFrom,
+    subject: input.subject,
+    text: `Hi ${input.customerName},\n\n${input.message}${input.actionUrl ? `\n\n${input.actionLabel ?? "View details"}: ${input.actionUrl}` : ""}\n\nRegards,\nGorilla Gear Nutrition`,
+    html: `<!doctype html><html><body style="margin:0;background:#f5f5f0;font-family:Arial,sans-serif;color:#111827;"><div style="max-width:620px;margin:0 auto;padding:32px 18px;"><div style="background:#111827;color:#fff;padding:22px 24px;"><div style="font-size:12px;letter-spacing:2px;font-weight:700;color:#d5a33a;">GORILLA GEAR NUTRITION</div><h1 style="margin:10px 0 0;font-size:24px;">${escapeHtml(input.heading)}</h1></div><div style="background:#fff;padding:26px 24px;"><p style="font-size:16px;">Hi ${safeName},</p><p style="line-height:1.65;">${safeMessage}</p>${action}</div><div style="padding:18px 24px;font-size:12px;color:#6b7280;">Gorilla Gear Nutrition · South Africa</div></div></body></html>`,
+  };
+}
+
+async function sendMail(message: { from: string; to?: string; replyTo: string; subject: string; text: string; html: string }): Promise<boolean> {
+  if (!isSmtpConfigured() || !message.to) return false;
+  try {
+    await createSmtpTransport().sendMail(message);
+    return true;
+  } catch (error) {
+    console.error("[Email] SMTP delivery failed:", error);
+    return false;
+  }
+}
+
+export async function sendAdminNotificationEmail(input: AdminNotificationInput): Promise<boolean> {
+  if (!ENV.adminNotificationEmail) return false;
+  return sendMail(buildAdminNotificationEmail(input));
+}
+
+export async function sendCustomerStatusEmail(input: CustomerStatusEmailInput): Promise<boolean> {
+  if (!input.customerEmail) return false;
+  return sendMail(buildCustomerStatusEmail(input));
 }
 
 export async function sendPasswordResetEmail(input: PasswordResetEmailInput): Promise<boolean> {

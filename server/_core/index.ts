@@ -8,7 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { getOrderByIkhokhaReference, getUserById, updateIkhokhaPaymentAttemptStatus, updateOrderIkhokhaPayment } from "../db";
 import { getIkhokhaPaymentOutcome, getIkhokhaPaymentStatus } from "../ikhokha";
-import { sendPaymentApprovedEmail } from "../email";
+import { sendAdminNotificationEmail, sendPaymentApprovedEmail } from "../email";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
@@ -89,14 +89,29 @@ async function startServer() {
       await updateIkhokhaPaymentAttemptStatus(reference, outcome, typeof gatewayStatus === "string" ? gatewayStatus : null);
       if (outcome === "paid" && order.paymentStatus !== "paid") {
         const customer = await getUserById(order.userId);
-        if (customer?.email) {
-          sendPaymentApprovedEmail({
-            orderId: order.id,
-            customerName: customer.fullName ?? "Valued Customer",
-            customerEmail: customer.email,
-            total: Number(order.totalAmount ?? "0"),
-          }).catch((emailError) => console.error("[iKhokha callback] Payment email error", emailError));
-        }
+        await Promise.all([
+          customer?.email
+            ? sendPaymentApprovedEmail({
+                orderId: order.id,
+                customerName: customer.fullName ?? "Valued Customer",
+                customerEmail: customer.email,
+                total: Number(order.totalAmount ?? "0"),
+              })
+            : Promise.resolve(false),
+          sendAdminNotificationEmail({
+            subject: `Payment received — Order #${order.id} | Gorilla Gear Nutrition`,
+            title: `Payment received for Order #${order.id}`,
+            content: `Amount: R${Number(order.totalAmount ?? "0").toFixed(2)}\nCustomer: ${customer?.fullName ?? "Unknown customer"}\nEmail: ${customer?.email ?? "Unavailable"}\nReference: ${reference}\n\nThe order is ready for fulfilment processing.`,
+          }),
+        ]);
+      }
+      if (outcome === "failed") {
+        const customer = await getUserById(order.userId);
+        await sendAdminNotificationEmail({
+          subject: `Payment failed — Order #${order.id} | Gorilla Gear Nutrition`,
+          title: `Payment failed for Order #${order.id}`,
+          content: `Customer: ${customer?.fullName ?? "Unknown customer"}\nEmail: ${customer?.email ?? "Unavailable"}\nReference: ${reference}\nGateway status: ${typeof gatewayStatus === "string" ? gatewayStatus : "Not supplied"}\n\nPlease review the iKhokha payment audit.`,
+        });
       }
       return res.status(200).send("OK");
     } catch (error) {

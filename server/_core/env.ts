@@ -15,4 +15,6 @@ export const ENV = {
   smtpUser: process.env.SMTP_USER ?? "",
   smtpPassword: process.env.SMTP_PASSWORD ?? "",
   smtpFrom: process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "",
+  smtpTlsServername: process.env.SMTP_TLS_SERVERNAME ?? "",
+  adminNotificationEmail: process.env.ADMIN_NOTIFICATION_EMAIL ?? "",
 };

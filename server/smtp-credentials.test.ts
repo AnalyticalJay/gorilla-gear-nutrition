@@ -114,6 +114,7 @@ function verifySmtpLogin(): Promise<void> {
 
 describe("SMTP credentials", () => {
   it("authenticates against the configured SMTP server without sending a message", async () => {
+    if (process.env.RUN_LIVE_SMTP_TEST !== "true") return;
     expect(["true", "false"]).toContain(process.env.SMTP_SECURE);
     await verifySmtpLogin();
   }, 30_000);

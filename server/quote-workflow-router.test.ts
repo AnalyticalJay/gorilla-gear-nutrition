@@ -29,6 +29,8 @@ vi.mock("./_core/notification", () => ({
 }));
 
 vi.mock("./email", () => ({
+  sendAdminNotificationEmail: vi.fn().mockResolvedValue(true),
+  sendCustomerStatusEmail: vi.fn().mockResolvedValue(true),
   sendQuoteConfirmationEmail: vi.fn().mockResolvedValue(true),
 }));
 
